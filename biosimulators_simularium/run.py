@@ -4,7 +4,12 @@ from platform import platform
 import subprocess as subproc
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
-from biosimulators_simularium.converters.io import SmoldynDataConverter
+from biosimulators_simularium.converters.io import SmoldynDataConverter, generate_new_simularium_file
+
+
+__all__ = [
+    'run',
+]
 
 ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 ECOLI_OMEX_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523.omex'
@@ -32,6 +37,8 @@ def install_smoldyn_mac():
         subproc.run("sudo -H ./install.sh")
 
 
-def run():
-    pass
+def run(install_mac=1):
+    if install_mac:
+        install_smoldyn_mac()
+    return generate_new_simularium_file(ECOLI_ARCHIVE_DIRPATH, 0)
 

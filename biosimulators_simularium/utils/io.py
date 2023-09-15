@@ -2,6 +2,13 @@ from typing import Dict
 import os
 
 
+__all__ = [
+    'make_files_dict',
+    'remove_output_files',
+    'remove_file',
+]
+
+
 def make_files_dict(fp) -> Dict[str, str]:
     d = {}
     if os.path.exists(fp):
