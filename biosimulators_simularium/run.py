@@ -5,7 +5,7 @@ import subprocess as subproc
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_simularium.converters.io import SmoldynDataConverter, generate_new_simularium_file
-
+from biosimulators_simularium.utils.io import remove_file, remove_output_files
 
 __all__ = [
     'run',
@@ -37,8 +37,16 @@ def install_smoldyn_mac():
         subproc.run("sudo -H ./install.sh")
 
 
-def run(install_mac=1):
+def run(install_mac=1, rm_files=1):
+    model_out = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523/modelout.txt'
+    min_save = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523/MinSave.txt'
+
+    if rm_files:
+        remove_file(model_out)
+        remove_file(min_save)
+        remove_output_files()
+
     if install_mac:
         install_smoldyn_mac()
-    return generate_new_simularium_file(ECOLI_ARCHIVE_DIRPATH, 0)
+    return generate_new_simularium_file(ECOLI_ARCHIVE_DIRPATH)
 
