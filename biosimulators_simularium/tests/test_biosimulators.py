@@ -1,6 +1,5 @@
 import os
 from typing import Dict
-
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
 

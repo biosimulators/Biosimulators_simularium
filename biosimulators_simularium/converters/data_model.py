@@ -177,7 +177,7 @@ class DataConverter(ABC):
 
     def save_simularium_file(self, data, simularium_filename: str) -> None:
         output_dirpath = self.archive.output_dirpath
-        fp = os.path.join(self.output_dirpath, simularium_filename)
+        fp = os.path.join(output_dirpath, simularium_filename)
         BinaryWriter.save(
             data,
             fp,

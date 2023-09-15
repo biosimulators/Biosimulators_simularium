@@ -31,6 +31,7 @@ from biosimulators_utils.config import Config, get_config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
+from biosimulators_simularium.utils.io import remove_file, remove_output_files
 from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, DataConverter
 
 
@@ -131,3 +132,67 @@ class SmoldynDataConverter(DataConverter):
         translated = self.translate_data_object(data, box_size, n_dim)
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
+
+
+def generate_new_simularium_file(
+        archive_dirpath: str,
+        rm_files=1
+        ) -> None:
+    model_out = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523/modelout.txt'
+    min_save = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523/MinSave.txt'
+
+    if rm_files:
+        remove_file(model_out)
+        remove_file(min_save)
+        remove_output_files()
+
+    converter = SmoldynDataConverter(archive_fp=archive_dirpath)
+
+    config = Config(
+        LOG_PATH=converter.output,
+        COLLECT_COMBINE_ARCHIVE_RESULTS=True,
+        COLLECT_SED_DOCUMENT_RESULTS=True,
+        REPORT_FORMATS=[ReportFormat.h5]
+    )
+
+
+    # model = os.path.join(ECOLI_ARCHIVE_DIRPATH, 'model.txt')
+    lang = 'urn:sedml:language:smoldyn'
+    sim_params = converter.get_params_from_model_file(model, lang)
+    variables_list = sim_params.get('variables')
+    mapping = validate_variables(variables_list)
+
+    print(variables_list)
+    print()
+    print(mapping)
+
+    # NOW MAKE A TASK!
+
+    '''_, _, configuration = validate_model(model)
+
+    simulation = configuration[0]
+
+    simulation.runSim()'''
+
+
+    '''result, log = generator.run_simulation_from_archive(ECOLI_OMEX_DIRPATH)
+    print(result)'''
+
+    '''generator.run_simulation_from_smoldyn_file(
+        os.path.join(ECOLI_ARCHIVE_DIRPATH, 'model.txt')
+    )'''
+
+    '''result, log = generator.run_simulation_from_archive(
+        archive_fp='biosimulators_simularium/files/archives/custom.omex',
+    )'''
+
+    # converter = SmoldynDataConverter(OUTPUTS_DIRPATH)
+
+    # r0, r1, r2 = validate_model('biosimulators_simularium/files/archives/Andrews_ecoli_0523/model.txt')
+    # print(r2)
+
+    # input_file_data = converter.prepare_input_file_data(model_out)
+    # data_object = converter.prepare_smoldyn_data_for_conversion(file_data=input_file_data)
+
+    # trans = converter.translate_data(data_object, 100.)
+    # converter.convert_to_simularium(data_object, 'biosimulators_simularium/minE_Andrews')
