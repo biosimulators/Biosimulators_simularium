@@ -1,4 +1,4 @@
-from biosimulators_simularium.controllers.data_converters import SmoldynDataGenerator, SmoldynDataConverter
+from biosimulators_simularium.converters.data_model import SmoldynDataGenerator, SmoldynDataConverter
 from smoldyn import Simulation
 from simulariumio import InputFileData, DisplayData
 import os

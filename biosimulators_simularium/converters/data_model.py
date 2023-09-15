@@ -8,6 +8,7 @@
 
 import os
 from enum import Enum
+from dataclasses import dataclass
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 from smoldyn import Simulation
@@ -41,15 +42,29 @@ from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Va
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 
 
+@dataclass
+class Archive:
+    rootpath: str
+    model_path: Optional[str]
+    output_dirpath: Optional[str]
+    name: Optional[str]
+
+
+@dataclass
+class SimulariumFilePath:
+    path: str
+
+
 class DataConverter(ABC):
     def __init__(self,
-                 archive_rootpath: str,
-                 output_dirpath: Optional[str] = None):
-        self.archive_rootpath = archive_rootpath
-        self.output_dirpath = output_dirpath
+                 archive: Archive,
+                 simularium_fp: SimulariumFilePath):
+        self.archive = archive
+        self.simularium_fp = simularium_fp
+        self.archive.model_path = self._set_model_filepath()
 
     @abstractmethod
-    def _get_model_filepath(self) -> Union[str, None]:
+    def _set_model_filepath(self) -> Union[str, None]:
         """Find the model file in a given OMEX archive.
         """
         pass
@@ -89,10 +104,19 @@ class DataConverter(ABC):
         pass
 
     @staticmethod
-    def prepare_simularium_fp(simularium_dirpath: str, simularium_fname: str) -> str:
-        if not os.path.exists(simularium_dirpath):
-            os.mkdir(simularium_dirpath)
-        return os.path.join(simularium_dirpath, simularium_fname)
+    def prepare_simularium_fp(**simularium_config) -> str:
+        """Generate a simularium dir and joined path if not using the init object.
+
+            Kwargs:
+                (obj):`**simularium_config`: keys are 'simularium_dirpath' and 'simularium_fname'
+
+            Returns:
+                (obj):`str`: complete simularium filepath
+        """
+        dirpath = simularium_config.get('simularium_dirpath')
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
+        return os.path.join(dirpath, simularium_config.get('simularium_fname'))
 
     @staticmethod
     def prepare_input_file_data(output_filepath: str) -> InputFileData:
@@ -101,20 +125,6 @@ class DataConverter(ABC):
     @staticmethod
     def prepare_agent_data():
         pass
-
-    @staticmethod
-    def generate_display_data_object(
-            name: str,
-            radius: float,
-            display_type=DISPLAY_TYPE.SPHERE,
-            obj_color: Optional[str] = None,
-            ) -> DisplayData:
-        return DisplayData(
-            name=name,
-            radius=radius,
-            display_type=display_type,
-            color=obj_color
-        )
 
     @staticmethod
     def generate_metadata_object(box_size: np.ndarray[int], camera_data: CameraData) -> MetaData:
@@ -128,8 +138,24 @@ class DataConverter(ABC):
             ) -> CameraData:
         return CameraData(position=position, look_at_position=look_position, up_vector=up_vector)
 
+    @classmethod
+    def generate_display_data_object(
+            cls,
+            name: str,
+            radius: float,
+            display_type=DISPLAY_TYPE.SPHERE,
+            obj_color: Optional[str] = None,
+    ) -> DisplayData:
+        return DisplayData(
+            name=name,
+            radius=radius,
+            display_type=display_type,
+            color=obj_color
+        )
+
+    @classmethod
     def generate_display_data_object_dict(
-            self,
+            cls,
             agent_names: List[Tuple[str, str, float, str]]) -> Dict[str, DisplayData]:
         """Generate a display object dict.
 
@@ -142,7 +168,7 @@ class DataConverter(ABC):
         """
         data = {}
         for name in agent_names:
-            data[name[0]] = self.generate_display_data_object(
+            data[name[0]] = cls.generate_display_data_object(
                 name=name[0],
                 radius=name[2],
                 obj_color=name[3]
@@ -150,104 +176,13 @@ class DataConverter(ABC):
         return data
 
     def save_simularium_file(self, data, simularium_filename: str) -> None:
+        output_dirpath = self.archive.output_dirpath
         fp = os.path.join(self.output_dirpath, simularium_filename)
         BinaryWriter.save(
             data,
             fp,
             validate_ids=False
         )
-
-
-class SmoldynDataConverter(DataConverter):
-    def __init__(self,
-                 archive_rootpath: str,
-                 output_dirpath: Optional[str] = None):
-        super().__init__(archive_rootpath, output_dirpath)
-        self.model_filepath = self._get_model_filepath()
-
-    def _get_model_filepath(self) -> Union[str, None]:
-        if os.path.exists(self.archive_rootpath):
-            for root, _, files in os.walk(self.archive_rootpath):
-                for f in files:
-                    fp = os.path.join(root, f)
-                    return fp if fp.endswith('.txt') else None
-
-    @staticmethod
-    def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
-        return validate_variables(variables)
-
-    @staticmethod
-    def get_params_from_model_file(
-            model_fp: str,
-            sim_language: str,
-            sim_type=UniformTimeCourseSimulation
-            ) -> Dict[str, List]:
-        """Get the model changes, simulator, and variables from the model file without running the simulation
-
-            Args:
-                model_fp (:obj:`str`): path to model file
-                sim_language (:obj:`str`): urn format of model language ie: "uri:sedml:language:smoldyn"
-                sim_type (:obj:`Type`): object representing the subtype of simulation.
-
-            Returns:
-                :obj:`Dict` of `List` of model changes, simulation object, variables
-        """
-        res = get_parameters_variables_outputs_for_simulation(
-            model_filename=model_fp,
-            model_language=sim_language,
-            simulation_type=sim_type
-        )
-        return {
-            'model_changes': res[0],
-            'simulation': res[1],
-            'variables': res[2]
-
-        }
-
-    def generate_data_object_for_output(
-            self,
-            file_data: InputFileData,
-            display_data: Optional[Dict[str, DisplayData]] = None,
-            spatial_units="nm",
-            temporal_units="ns",
-            ) -> SmoldynData:
-        return SmoldynData(
-            smoldyn_file=file_data,
-            spatial_units=UnitData(spatial_units),
-            time_units=UnitData(temporal_units),
-            display_data=display_data,
-        )
-
-    def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3):
-        c = SmoldynConverter(data_object)
-        translation_magnitude = -box_size / 2
-        return c.filter_data([
-            TranslateFilter(
-                translation_per_type={},
-                default_translation=translation_magnitude * np.ones(n_dim)
-            ),
-        ])
-
-    def generate_simularium_file(
-            self,
-            file_data_path: str,
-            simularium_filename: str,
-            box_size: float,
-            spatial_units="nm",
-            temporal_units="ns",
-            n_dim=3,
-            display_data: Optional[Dict[str, DisplayData]] = None
-            ) -> None:
-        input_file = self.prepare_input_file_data(file_data_path)
-        data = self.generate_data_object_for_output(
-            file_data=input_file,
-            display_data=display_data,
-            spatial_units=spatial_units,
-            temporal_units=temporal_units
-        )
-        translated = self.translate_data_object(data, box_size, n_dim)
-        self.save_simularium_file(translated, simularium_filename)
-        print('New Simularium file generated!!')
 
 
 class SimulationSetupParams(str, Enum):
