@@ -47,15 +47,15 @@ class SmoldynDataConverter(DataConverter):
         self.archive = Archive(rootpath=archive_fp, output_dirpath=output_dirpath)
         self.simularium_fp = SimulariumFilePath(path=output_dirpath)
         super().__init__(self.archive, self.simularium_fp)
-        # self.archive.model_path = self._set_model_filepath()
+        self.archive.model_path = self._set_model_filepath()
         self.model_params = self.get_params_from_model_file(
-            model_fp=self.archive.model_filepath,
+            model_fp=self.archive.model_path,
             sim_language="uri:sedml:language:smoldyn"
         )
 
     def _set_model_filepath(self) -> Union[str, None]:
         if os.path.exists(self.archive.rootpath):
-            for root, _, files in os.walk(self.archive_rootpath):
+            for root, _, files in os.walk(self.archive.rootpath):
                 for f in files:
                     fp = os.path.join(root, f)
                     if fp.endswith('.txt'):
@@ -145,17 +145,15 @@ class SmoldynDataConverter(DataConverter):
             for root, _, files in os.walk(self.archive.rootpath):
                 for f in files:
                     fp = os.path.join(root, f)
-                    return fp if fp.endswith('out.txt') else None
+                    fp = fp if 'model.txt' not in fp and fp.endswith('txt') else None
+                    print(fp)
+                    return fp
 
 
-def generate_new_simularium_file(archive_dirpath: str) -> None:
-    converter = SmoldynDataConverter(archive_fp=archive_dirpath)
-
-    config = Config(
-        LOG_PATH=converter.output,
-        COLLECT_COMBINE_ARCHIVE_RESULTS=True,
-        COLLECT_SED_DOCUMENT_RESULTS=True,
-        REPORT_FORMATS=[ReportFormat.h5]
+def generate_new_simularium_file(archive_dirpath: str, output_dirpath: str) -> None:
+    converter = SmoldynDataConverter(
+        archive_fp=archive_dirpath,
+        output_dirpath=output_dirpath
     )
 
     lang = 'urn:sedml:language:smoldyn'

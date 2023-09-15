@@ -15,7 +15,7 @@ ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0
 ECOLI_OMEX_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523.omex'
 SED_DOC_PATH = os.path.join(ECOLI_ARCHIVE_DIRPATH, 'simulation.sedml')
 SIMULARIUM_DIRPATH = 'biosimulators_simularium/generated_simularium_files'
-SIMULARIUM_FILENAME = 'ecoli_spatial_from_sedml_0'
+SIMULARIUM_FILENAME = os.path.join(SIMULARIUM_DIRPATH, 'ecoli_spatial_from_sedml_0')
 OUTPUTS_DIRPATH = 'biosimulators_simularium/simulation_outputs'
 
 BOX_SIZE = 1.
@@ -32,9 +32,9 @@ AGENTS = [
 def install_smoldyn_mac():
     plat = platform()
     mac = "Darwin"
-    if mac or mac.lower() in plat:
-        subproc.run("cd smoldyn-2.72-mac")
-        subproc.run("sudo -H ./install.sh")
+    '''if mac or mac.lower() in plat:
+        subproc.run("cd biosimulators_simularium/smoldyn-2.72-mac")
+        subproc.run("sudo -H ./install.sh")'''
 
 
 def run(install_mac=1, rm_files=1):
@@ -48,5 +48,19 @@ def run(install_mac=1, rm_files=1):
 
     if install_mac:
         install_smoldyn_mac()
-    return generate_new_simularium_file(ECOLI_ARCHIVE_DIRPATH)
+    return generate_new_simularium_file(ECOLI_ARCHIVE_DIRPATH, SIMULARIUM_FILENAME)
 
+
+def test():
+    converter = SmoldynDataConverter(ECOLI_ARCHIVE_DIRPATH, SIMULARIUM_FILENAME)
+    model_out = converter.get_modelout_file()
+    file_data = converter.prepare_input_file_data(model_out)
+    data = converter.generate_data_object_for_output(file_data=file_data)
+    trans = converter.translate_data_object(data_object=data, box_size=1.)
+    converter.save_simularium_file(trans)
+
+
+# turn off!
+if __name__ == '__main__':
+    # run()
+    test()
