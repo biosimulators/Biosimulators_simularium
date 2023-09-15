@@ -45,8 +45,8 @@ from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variable
 @dataclass
 class Archive:
     rootpath: str
+    output_dirpath: str
     model_path: Optional[str]
-    output_dirpath: Optional[str]
     name: Optional[str]
 
 
@@ -176,8 +176,8 @@ class DataConverter(ABC):
         return data
 
     def save_simularium_file(self, data, simularium_filename: str) -> None:
-        output_dirpath = self.archive.output_dirpath
-        fp = os.path.join(output_dirpath, simularium_filename)
+        output_path = self.simularium_fp.path
+        fp = os.path.join(output_path, simularium_filename)
         BinaryWriter.save(
             data,
             fp,

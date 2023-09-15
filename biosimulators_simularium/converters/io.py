@@ -38,10 +38,10 @@ from biosimulators_simularium.converters.data_model import Archive, SimulariumFi
 class SmoldynDataConverter(DataConverter):
     def __init__(self,
                  archive_fp: str,
-                 output_dirpath: Optional[str] = None):
-        self.archive = Archive(rootpath=archive_fp)
+                 output_dirpath: str):
+        self.archive = Archive(rootpath=archive_fp, output_dirpath=output_dirpath)
         self.simularium_fp = SimulariumFilePath(path=output_dirpath)
-        super().__init__(self.archive, self.output_dirpath)
+        super().__init__(self.archive, self.simularium_fp)
         # self.archive.model_path = self._set_model_filepath()
         self.model_params = self.get_params_from_model_file(
             model_fp=self.archive.model_filepath,
