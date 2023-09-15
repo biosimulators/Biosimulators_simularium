@@ -61,11 +61,16 @@ class DataConverter(ABC):
             display_data: Optional[Dict[str, DisplayData]] = None,
             spatial_units="nm",
             temporal_units="ns",
-    ):
+            ):
+        """Generate a data object to fit the simulariumio.TrajectoryData interface.
+        """
         pass
 
     @abstractmethod
     def translate_data_object(self, data_object, box_size, n_dim):
+        """Create a mirrored negative image of a distribution and apply it to 3dimensions if
+            AND ONLY IF it contains all non-negative values.
+        """
         pass
 
     @abstractmethod
@@ -78,7 +83,9 @@ class DataConverter(ABC):
             temporal_units="ns",
             n_dim=3,
             display_data: Optional[Dict[str, DisplayData]] = None
-    ) -> None:
+            ) -> None:
+        """Create a data_object, optionally translate it, convert to simularium, and save.
+        """
         pass
 
     @staticmethod
@@ -101,7 +108,7 @@ class DataConverter(ABC):
             radius: float,
             display_type=DISPLAY_TYPE.SPHERE,
             obj_color: Optional[str] = None,
-    ) -> DisplayData:
+            ) -> DisplayData:
         return DisplayData(
             name=name,
             radius=radius,
@@ -118,21 +125,20 @@ class DataConverter(ABC):
             position: np.ndarray,
             look_position: np.ndarray,
             up_vector: np.ndarray
-    ) -> CameraData:
+            ) -> CameraData:
         return CameraData(position=position, look_at_position=look_position, up_vector=up_vector)
 
     def generate_display_data_object_dict(
             self,
             agent_names: List[Tuple[str, str, float, str]]) -> Dict[str, DisplayData]:
-        """
-        Params:
-        -------
-        agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining the Display Data configuration parameters.\n
-        The Tuple is expected to be as such: [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+        """Generate a display object dict.
 
-        Returns:
-        ________
-        `Dict[str, DisplayData]`
+            Args:
+                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining the Display Data configuration parameters.\n
+                The Tuple is expected to be as such: [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+
+            Returns:
+                `Dict[str, DisplayData]`
         """
         data = {}
         for name in agent_names:
@@ -143,7 +149,7 @@ class DataConverter(ABC):
             )
         return data
 
-    def convert_to_simularium(self, data, simularium_filename: str) -> None:
+    def save_simularium_file(self, data, simularium_filename: str) -> None:
         fp = os.path.join(self.output_dirpath, simularium_filename)
         BinaryWriter.save(
             data,
@@ -175,7 +181,7 @@ class SmoldynDataConverter(DataConverter):
             model_fp: str,
             sim_language: str,
             sim_type=UniformTimeCourseSimulation
-    ) -> Dict[str, List]:
+            ) -> Dict[str, List]:
         """Get the model changes, simulator, and variables from the model file without running the simulation
 
             Args:
@@ -204,7 +210,7 @@ class SmoldynDataConverter(DataConverter):
             display_data: Optional[Dict[str, DisplayData]] = None,
             spatial_units="nm",
             temporal_units="ns",
-    ) -> SmoldynData:
+            ) -> SmoldynData:
         return SmoldynData(
             smoldyn_file=file_data,
             spatial_units=UnitData(spatial_units),
@@ -231,16 +237,16 @@ class SmoldynDataConverter(DataConverter):
             temporal_units="ns",
             n_dim=3,
             display_data: Optional[Dict[str, DisplayData]] = None
-    ) -> None:
+            ) -> None:
         input_file = self.prepare_input_file_data(file_data_path)
-        data = self.prepare_smoldyn_data_for_conversion(
+        data = self.generate_data_object_for_output(
             file_data=input_file,
             display_data=display_data,
             spatial_units=spatial_units,
             temporal_units=temporal_units
         )
-        translated = self.translate_data(data, box_size, n_dim)
-        self.convert_to_simularium(translated, simularium_filename)
+        translated = self.translate_data_object(data, box_size, n_dim)
+        self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
 
 
