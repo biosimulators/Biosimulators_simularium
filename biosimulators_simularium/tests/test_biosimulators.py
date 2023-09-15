@@ -1,27 +1,8 @@
 import os
 from typing import Dict
-from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 
-import h5py
-import pandas as pd
-from smoldyn import Simulation
-from simulariumio import InputFileData, DisplayData
-from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
-from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
-from biosimulators_utils.model_lang.smoldyn.validation import validate_model
-from biosimulators_utils.sedml.data_model import (
-    Task,
-    Variable,
-    Model,
-    ModelLanguage,
-    UniformTimeCourseSimulation
-)
-from biosimulators_simularium.data_generators.smoldyn_data_generators import (
-    MinEDataGenerator,
-    SmoldynDataConverter
-)
 
 ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 ECOLI_OMEX_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523.omex'

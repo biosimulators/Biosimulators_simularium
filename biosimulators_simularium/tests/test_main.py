@@ -1,9 +1,9 @@
-from biosimulators_simularium.data_generators.smoldyn_data_generators import SmoldynDataGenerator, SmoldynDataConverter
+from biosimulators_simularium.controllers.data_converters import SmoldynDataGenerator, SmoldynDataConverter
 from smoldyn import Simulation
 from simulariumio import InputFileData, DisplayData
 import os
 from typing import Dict
-from simulariumio.smoldyn import SmoldynConverter, SmoldynData
+from simulariumio.smoldyn import SmoldynData
 
 MODEL_FP = 'biosimulators_simularium/files/models/ecoli_model.txt'
 MODEL_OUTPUT_FP = 'biosimulators_simularium/files/models/ecoli_modelout.txt'
