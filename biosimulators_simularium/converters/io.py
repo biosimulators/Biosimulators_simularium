@@ -80,7 +80,7 @@ class SmoldynDataConverter(DataConverter):
                 sim_type (:obj:`Type`): object representing the subtype of simulation.
 
             Returns:
-                :obj:`Dict` of `List` of model changes, simulation object, variables
+                :obj:`Dict` of `List` of keys: 'model_changes':`List`, `simulation`: `List[Simulation]`, `variables`:`List[biosimulator_utils.Variable]`
         """
         res = get_parameters_variables_outputs_for_simulation(
             model_filename=model_fp,
@@ -121,11 +121,11 @@ class SmoldynDataConverter(DataConverter):
     def generate_simularium_file(
             self,
             file_data_path: str,
-            simularium_filename: str,
             box_size: float,
             spatial_units="nm",
             temporal_units="ns",
             n_dim=3,
+            simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None
             ) -> None:
         input_file = self.prepare_input_file_data(file_data_path)
@@ -136,8 +136,17 @@ class SmoldynDataConverter(DataConverter):
             temporal_units=temporal_units
         )
         translated = self.translate_data_object(data, box_size, n_dim)
+
+        simularium_filename = simularium_filename or self.simularium_fp
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
+
+    def get_modelout_file(self) -> Union[str, None]:
+        if os.path.exists(self.archive.rootpath):
+            for root, _, files in os.walk(self.archive.rootpath):
+                for f in files:
+                    fp = os.path.join(root, f)
+                    return fp if fp.endswith('out.txt') else None
 
 
 def generate_new_simularium_file(
@@ -161,16 +170,20 @@ def generate_new_simularium_file(
         REPORT_FORMATS=[ReportFormat.h5]
     )
 
-
-    # model = os.path.join(ECOLI_ARCHIVE_DIRPATH, 'model.txt')
     lang = 'urn:sedml:language:smoldyn'
-    sim_params = converter.get_params_from_model_file(model, lang)
+    sim_params = converter.get_params_from_model_file(converter.archive.model_path, lang)
     variables_list = sim_params.get('variables')
     mapping = validate_variables(variables_list)
 
     print(variables_list)
     print()
     print(mapping)
+
+    model_out_file = converter.get_modelout_file()
+    converter.generate_simularium_file(
+        file_data_path=model_out_file,
+        box_size=1.
+    )
 
     # NOW MAKE A TASK!
 
