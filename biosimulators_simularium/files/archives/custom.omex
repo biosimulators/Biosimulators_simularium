@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <title>BioSimulations</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "BioSimulations",
+        "applicationSuite": "BioSimulations",
+        "applicationCategory": "Science",
+        "applicationSubCategory": "Simulation",
+        "license": ["https://docs.biosimulations.org/about/license/", "https://identifiers.org/spdx:MIT"],
+        "softwareHelp": "https://docs.biosimulations.org",
+        "discussionUrl": "https://github.com/biosimulations/biosimulations/issues",
+        "releaseNotes": "https://docs.biosimulations.org/news/changelog/",
+        "abstract": "Web application for sharing dynamical models of biological systems and visualizing their results",
+        "keywords": [
+          "biomodel",
+          "biosimulation",
+          "mathematical model",
+          "numerical simulation",
+          "computational biology",
+          "systems biology",
+          "reproduce",
+          "reuse",
+          "standards",
+          "BioNetGen Language",
+          "BNGL",
+          "CellML",
+          "continuous",
+          "COMBINE",
+          "discrete",
+          "stochastic",
+          "OMEX",
+          "Docker",
+          "Flux Balance Analysis",
+          "FBA",
+          "Logical",
+          "Qualitative",
+          "NeuroML",
+          "Low Entropy Model Specification",
+          "LEMS",
+          "SBML",
+          "Simulation Experiment Description Markup Language",
+          "SED-ML",
+          "Resource Balance Analysis",
+          "RBA",
+          "Smoldyn",
+          "XPP",
+          "Vega",
+          "data visualization",
+          "Hierarchical Data Format",
+          "HDF5"
+        ],
+        "image": "https://static.biosimulations.org/biosimulations-logo/logo-github.png",
+        "educationalLevel": "advanced",
+        "creator": {
+          "@type": "Organization",
+          "name": "BioSimulations",
+          "email": "info@biosimulations.org",
+          "logo": "https://static.biosimulations.org/biosimulations-logo/logo-github.png"
+        },
+        "url": "https://biosimulations.org",
+        "identifier": [
+          "http://identifiers.org/biocatalogue.service:4043",
+          "http://identifiers.org/biotools:biosimulations",
+          "http://identifiers.org/fairsharing:bsg-d001721",
+          "https://registry.identifiers.org/registry/biosimulations",
+          "http://identifiers.org/re3data:r3d100013361",
+          "http://identifiers.org/RRID:SCR_018733"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": 0,
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["Dataset", "DataCatalog"],
+        "name": "BioSimulations",
+        "description": "Database of published biosimulation projects, including models, simulation experiments, simulation results, and data visualizations of simulation results.",
+        "distribution": {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://api.biosimulations.org/projects"
+        },
+        "discussionUrl": "https://github.com/biosimulations/biosimulations/issues",
+        "educationalLevel": "advanced",
+        "license": ["https://docs.biosimulations.org/about/license/", "https://identifiers.org/spdx:MIT"],
+        "keywords": [
+          "biomodel",
+          "biosimulation",
+          "mathematical model",
+          "numerical simulation",
+          "computational biology",
+          "systems biology",
+          "reproduce",
+          "reuse",
+          "standards",
+          "BioNetGen Language",
+          "BNGL",
+          "CellML",
+          "continuous",
+          "COMBINE",
+          "discrete",
+          "stochastic",
+          "OMEX",
+          "Docker",
+          "Flux Balance Analysis",
+          "FBA",
+          "Logical",
+          "Qualitative",
+          "NeuroML",
+          "Low Entropy Model Specification",
+          "LEMS",
+          "SBML",
+          "Simulation Experiment Description Markup Language",
+          "SED-ML",
+          "Resource Balance Analysis",
+          "RBA",
+          "Smoldyn",
+          "XPP",
+          "Vega",
+          "data visualization",
+          "Hierarchical Data Format",
+          "HDF5"
+        ],
+        "image": "https://static.biosimulations.org/biosimulations-logo/logo-github.png",
+        "creator": {
+          "@type": "Organization",
+          "name": "BioSimulations",
+          "email": "info@biosimulations.org",
+          "logo": "https://static.biosimulations.org/biosimulations-logo/logo-github.png"
+        },
+        "url": "https://biosimulations.org",
+        "identifier": [
+          "http://identifiers.org/biocatalogue.service:4043",
+          "http://identifiers.org/biotools:biosimulations",
+          "http://identifiers.org/fairsharing:bsg-d001721",
+          "https://registry.identifiers.org/registry/biosimulations",
+          "http://identifiers.org/re3data:r3d100013361",
+          "http://identifiers.org/RRID:SCR_018733"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": 0,
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "BioSimulations",
+        "email": "info@biosimulations.org",
+        "url": "https://biosimulations.org",
+        "logo": "https://static.biosimulations.org/biosimulations-logo/logo-github.png"
+      }
+    </script>
+
+    <meta name="description" content="Web application for sharing dynamical models of biological systems and visualizing their results">
+    <meta name="keywords" content="biomodel, biosimulation, model, simulate, visualize, computational biology, systems biology, reproduce, reuse, standards, CellML, COMBINE, Docker, OMEX, SBML, SED-ML, Smoldyn, Vega">
+    <meta name="language" content="EN">
+    <meta name="copyright" content="Center for Reproducible Biomedical Modeling">
+    <meta name="author" content="Center for Reproducible Biomedical Modeling, info@biosimulations.org">
+    <meta name="reply-to" content="info@biosimulations.org">
+    <meta name="url" content="https://www.biosimulations.org">
+    <meta name="identifier-URL" content="https://www.biosimulations.org">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="application-name" content="BioSimulations">
+
+    <meta name="theme-color" content="#2196f3">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <link rel="icon" type="image/x-icon" href="favicon.svg">
+  <style>@import"https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Material+Icons&display=swap";html{height:100%;scroll-behavior:smooth;font-size:16px;font-family:Roboto,sans-serif}body{margin:0;height:100%}body{--primary-color:#2196f3;--primary-lighter-color:#9bcff9;--primary-darker-color:#1479ed;--text-primary-color:#ffffff;--text-primary-lighter-color:rgba(0, 0, 0, .8);--text-primary-darker-color:#ffffff}body{--accent-color:#ff9800;--accent-lighter-color:#ffe0b2;--accent-darker-color:#ff7b00;--text-accent-color:rgba(0, 0, 0, .8);--text-accent-lighter-color:rgba(0, 0, 0, .8);--text-accent-darker-color:rgba(0, 0, 0, .8)}body{--tertiary-color:#4caf50;--tertiary-lighter-color:#80e27e;--tertiary-darker-color:#388e3c;--text-tertiary-color:rgba(0, 0, 0, .8);--text-tertiary-lighter-color:rgba(0, 0, 0, .8);--text-tertiary-darker-color:rgba(0, 0, 0, .8)}body{--quaternary-color:#951ed9;--quaternary-lighter-color:#d097f0;--quaternary-darker-color:#8d1cce;--text-quaternary-color:rgba(0, 0, 0, .8);--text-quaternary-lighter-color:rgba(0, 0, 0, .8);--text-quaternary-darker-color:rgba(0, 0, 0, .8)}body{--warn-color:#f44336;--warn-lighter-color:#fcc7c3;--warn-darker-color:#ef2c22;--text-warn-color:#ffffff;--text-warn-lighter-color:rgba(0, 0, 0, .8);--text-warn-darker-color:#ffffff}</style><link rel="stylesheet" href="styles.3eb07e2f14fa39c6.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles.3eb07e2f14fa39c6.css"></noscript></head>
+  <body>
+    <biosimulations-root></biosimulations-root>
+    <noscript>Please enable JavaScript to continue using this application.</noscript>
+  <script src="runtime.94403f5c4e84b3c2.js" type="module"></script><script src="polyfills.e95376a0170cdb91.js" type="module"></script><script src="scripts.d7216593292b2345.js" defer></script><script src="main.5d2eee40d7b43b1f.js" type="module"></script>
+
+<!-- Google Tag Manager -->
+    <script src="https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js"></script>
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-TPK23P5');
+      const GA_LOCAL_STORAGE_KEY = 'ga:clientId';
+      if (window.localStorage) {
+        if (!localStorage.getItem(GA_LOCAL_STORAGE_KEY)) {
+          window.localStorage.setItem(GA_LOCAL_STORAGE_KEY, uuidv4());
+        }
+
+        dataLayer.push({
+          uuid: localStorage.getItem(GA_LOCAL_STORAGE_KEY),
+        });
+      }
+    </script>
+
+    <!-- End Google Tag Manager --></body></html>

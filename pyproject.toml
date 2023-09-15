@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Biosimulators_simularium"
+version = "0.1.0"
+description = "Converting spatial BioSimulator outputs to Simularium-compliant formats."
+authors = [{name="Alexander Patrie", email="apatrie@uchc.edu"}]
+
+[project.license]
+file = "LICENSE.txt"
+
+[options]
+python_requires = ">=3.9"
+install_requires = [
+    "zarr",
+    "simulariumio[tutorial]",
+    "biosimulators-utils"
+ ]
