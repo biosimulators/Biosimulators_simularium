@@ -34,38 +34,30 @@ from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variable
 from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, DataConverter
 
 
-__all__ = [
-    'SmoldynDataConverter',
-    'generate_new_simularium_file',
-]
-
-
 class SmoldynDataConverter(DataConverter):
     def __init__(self,
-                 archive_fp: str,
-                 output_dirpath: str):
-        self.archive = Archive(rootpath=archive_fp, output_dirpath=output_dirpath)
-        self.simularium_fp = SimulariumFilePath(path=output_dirpath)
-        super().__init__(self.archive, self.simularium_fp)
+                 archive: Archive,
+                 simularium_fp: SimulariumFilePath):
+        super().__init__(archive, simularium_fp)
         self.archive.model_path = self._set_model_filepath()
-        self.model_params = self.get_params_from_model_file(
+        '''self.model_params = self.get_params_from_model_file(
             model_fp=self.archive.model_path,
             sim_language="uri:sedml:language:smoldyn"
-        )
+        )'''
 
     def _set_model_filepath(self) -> Union[str, None]:
         if os.path.exists(self.archive.rootpath):
             for root, _, files in os.walk(self.archive.rootpath):
                 for f in files:
                     fp = os.path.join(root, f)
-                    if fp.endswith('.txt'):
+                    if 'model.txt' in fp:
                         return fp
 
     @staticmethod
     def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
         return validate_variables(variables)
 
-    @staticmethod
+    '''@staticmethod
     def get_params_from_model_file(
             model_fp: str,
             sim_language: str,
@@ -91,7 +83,7 @@ class SmoldynDataConverter(DataConverter):
             'simulation': res[1],
             'variables': res[2]
 
-        }
+        }'''
 
     def generate_data_object_for_output(
             self,
@@ -150,10 +142,10 @@ class SmoldynDataConverter(DataConverter):
                     return fp
 
 
-def generate_new_simularium_file(archive_dirpath: str, output_dirpath: str) -> None:
+def generate_new_simularium_file(archive: Archive, simularium_fp: SimulariumFilePath) -> None:
     converter = SmoldynDataConverter(
-        archive_fp=archive_dirpath,
-        output_dirpath=output_dirpath
+        archive_fp=archive,
+        output_dirpath=simularium_fp,
     )
 
     lang = 'urn:sedml:language:smoldyn'
@@ -167,7 +159,7 @@ def generate_new_simularium_file(archive_dirpath: str, output_dirpath: str) -> N
 
     model_out_file = converter.get_modelout_file()
     converter.generate_simularium_file(
-        file_data_path=model_out_file,
+        file_data_path='biosimulators_simularium/files/archives/Andrews_ecoli_0523/modelout.txt',
         box_size=1.
     )
 

@@ -175,12 +175,11 @@ class DataConverter(ABC):
             )
         return data
 
-    def save_simularium_file(self, data, simularium_filename: Optional[str] = None) -> None:
-        output_path = simularium_filename or self.simularium_fp.path
-        fp = os.path.join(output_path, simularium_filename)
+    @staticmethod
+    def save_simularium_file(data, simularium_filename) -> None:
         BinaryWriter.save(
             data,
-            fp,
+            simularium_filename,
             validate_ids=False
         )
 
