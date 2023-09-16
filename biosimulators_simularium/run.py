@@ -1,13 +1,13 @@
 import os
 from typing import Dict
 from platform import platform
-import smoldyn
 import subprocess as subproc
+from smoldyn.biosimulators.combine import init_smoldyn_simulation_from_configuration_file
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath
-from biosimulators_simularium.converters.io import SmoldynDataConverter, generate_new_simularium_file
+from biosimulators_simularium.converters.io import generate_new_simularium_file
 from biosimulators_simularium.utils.io import remove_file, remove_output_files
 from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
 
@@ -63,11 +63,11 @@ def test():
         simulation_type=UniformTimeCourseSimulation
     )
 
-    simulator = params[1][0]
+    '''simulator = params[1][0]
 
     simulator.runSim()
 
-    sim = smoldyn.biosimulators.fromFile(+)
+    sim = smoldyn.biosimulators.fromFile(+)'''
 
     file_data = converter.prepare_input_file_data(
         'biosimulators_simularium/files/archives/Andrews_ecoli_0523/modelout.txt'

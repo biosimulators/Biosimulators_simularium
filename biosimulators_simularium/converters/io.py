@@ -31,137 +31,15 @@ from biosimulators_utils.config import Config, get_config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
-from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, DataConverter
-
-
-class SmoldynDataConverter(DataConverter):
-    def __init__(self,
-                 archive: Archive,
-                 simularium_fp: SimulariumFilePath):
-        super().__init__(archive, simularium_fp)
-        self.archive.model_path = self._set_model_filepath()
-        '''self.model_params = self.get_params_from_model_file(
-            model_fp=self.archive.model_path,
-            sim_language="uri:sedml:language:smoldyn"
-        )'''
-
-    def _set_model_filepath(self) -> Union[str, None]:
-        if os.path.exists(self.archive.rootpath):
-            for root, _, files in os.walk(self.archive.rootpath):
-                for f in files:
-                    fp = os.path.join(root, f)
-                    if 'model.txt' in fp:
-                        return fp
-
-    @staticmethod
-    def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
-        return validate_variables(variables)
-
-    '''@staticmethod
-    def get_params_from_model_file(
-            model_fp: str,
-            sim_language: str,
-            sim_type=UniformTimeCourseSimulation
-            ) -> Dict[str, List]:
-        """Get the model changes, simulator, and variables from the model file without running the simulation
-
-            Args:
-                model_fp (:obj:`str`): path to model file
-                sim_language (:obj:`str`): urn format of model language ie: "uri:sedml:language:smoldyn"
-                sim_type (:obj:`Type`): object representing the subtype of simulation.
-
-            Returns:
-                :obj:`Dict` of `List` of keys: 'model_changes':`List`, `simulation`: `List[Simulation]`, `variables`:`List[biosimulator_utils.Variable]`
-        """
-        res = get_parameters_variables_outputs_for_simulation(
-            model_filename=model_fp,
-            model_language=sim_language,
-            simulation_type=sim_type
-        )
-        return {
-            'model_changes': res[0],
-            'simulation': res[1],
-            'variables': res[2]
-
-        }'''
-
-    def generate_data_object_for_output(
-            self,
-            file_data: InputFileData,
-            display_data: Optional[Dict[str, DisplayData]] = None,
-            spatial_units="nm",
-            temporal_units="ns",
-            ) -> SmoldynData:
-        return SmoldynData(
-            smoldyn_file=file_data,
-            spatial_units=UnitData(spatial_units),
-            time_units=UnitData(temporal_units),
-            display_data=display_data,
-        )
-
-    def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3):
-        c = SmoldynConverter(data_object)
-        translation_magnitude = -box_size / 2
-        return c.filter_data([
-            TranslateFilter(
-                translation_per_type={},
-                default_translation=translation_magnitude * np.ones(n_dim)
-            ),
-        ])
-
-    def generate_simularium_file(
-            self,
-            file_data_path: str,
-            box_size: float,
-            spatial_units="nm",
-            temporal_units="ns",
-            n_dim=3,
-            simularium_filename: Optional[str] = None,
-            display_data: Optional[Dict[str, DisplayData]] = None
-            ) -> None:
-        input_file = self.prepare_input_file_data(file_data_path)
-        data = self.generate_data_object_for_output(
-            file_data=input_file,
-            display_data=display_data,
-            spatial_units=spatial_units,
-            temporal_units=temporal_units
-        )
-        translated = self.translate_data_object(data, box_size, n_dim)
-
-        simularium_filename = simularium_filename or self.simularium_fp
-        self.save_simularium_file(translated, simularium_filename)
-        print('New Simularium file generated!!')
-
-    def get_modelout_file(self) -> Union[str, None]:
-        if os.path.exists(self.archive.rootpath):
-            for root, _, files in os.walk(self.archive.rootpath):
-                for f in files:
-                    fp = os.path.join(root, f)
-                    fp = fp if 'model.txt' not in fp and fp.endswith('txt') else None
-                    print(fp)
-                    return fp
+from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, SmoldynDataConverter
 
 
 def generate_new_simularium_file(archive: Archive, simularium_fp: SimulariumFilePath) -> None:
     converter = SmoldynDataConverter(
-        archive_fp=archive,
-        output_dirpath=simularium_fp,
+        archive=archive,
+        simularium_fp=simularium_fp,
     )
 
-    lang = 'urn:sedml:language:smoldyn'
-    sim_params = converter.get_params_from_model_file(converter.archive.model_path, lang)
-    variables_list = sim_params.get('variables')
-    mapping = validate_variables(variables_list)
-
-    print(variables_list)
-    print()
-    print(mapping)
-
-    model_out_file = converter.get_modelout_file()
-    converter.generate_simularium_file(
-        file_data_path='biosimulators_simularium/files/archives/Andrews_ecoli_0523/modelout.txt',
-        box_size=1.
-    )
 
     # NOW MAKE A TASK!
 
