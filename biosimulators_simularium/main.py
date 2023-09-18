@@ -8,7 +8,8 @@ from biosimulators_simularium.utils.io import remove_file, remove_output_files, 
 def run(archive_rootpath: str, simularium_file_name: str, install_smoldyn=False) -> None:
     if install_smoldyn:
         parse_platform()
-    return generate_new_simularium_file(archive_rootpath=archive_rootpath, simularium_filename=simularium_file_name)
+    simularium_filepath = os.path.join(archive_rootpath, simularium_file_name)
+    return generate_new_simularium_file(archive_rootpath=archive_rootpath, simularium_filename=simularium_filepath)
 
 
 def main():
@@ -45,11 +46,5 @@ def test_run(
     print(dir(input_file_data))
 
 
-archive_root = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
-simularium_fp = os.path.join(archive_root, 'MY_SIMULARIUM_TEST_OUTPUT')
-
-
 if __name__ == '__main__':
-    # convert(archive_rootpath=archive_root, install_smoldyn=False)
-    # generate_new_simularium_file(archive_rootpath=archive_root, simularium_filename=simularium_fp)
     main()
