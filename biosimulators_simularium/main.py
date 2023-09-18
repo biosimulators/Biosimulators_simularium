@@ -4,7 +4,7 @@ from biosimulators_simularium.converters.io import generate_new_simularium_file
 from biosimulators_simularium.utils.io import remove_file, remove_output_files, parse_platform
 
 
-def run(archive_rootpath: str, simularium_file_name: str, install_smoldyn=False) -> None:
+def run(archive_rootpath: str, simularium_file_name: str, install_smoldyn=0) -> None:
     if install_smoldyn:
         parse_platform()
     simularium_filepath = os.path.join(archive_rootpath, simularium_file_name)
@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description="Convert a smoldyn output file to simularium format")
     parser.add_argument("-archive_rootpath", required=True, help="Path to the archive root")
     parser.add_argument("-simularium_filename", required=True, help="Name of the Simularium file")
-    parser.add_argument("-install_smoldyn", action="store_true", help="Flag to install smoldyn")
+    parser.add_argument("-install_smoldyn", action="store_true", help="Install Smoldyn at runtime")
 
     args = parser.parse_args()
 
