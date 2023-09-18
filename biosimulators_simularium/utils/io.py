@@ -3,7 +3,7 @@
 
 
 import os
-from typing import Dict
+from typing import Dict, List
 from biosimulators_simularium.utils.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
 from biosimulators_simularium.utils.platform_parser import SmoldynPlatformParser
 
@@ -61,3 +61,15 @@ def test_interleaver():
 def parse_platform():
     return SmoldynPlatformParser()
 
+
+def extract_path_sections(fp: str) -> List[str]:
+    parts = []
+    while fp:
+        path, tail = os.path.split(fp)
+        if tail:
+            parts.insert(0, tail)
+        else:
+            if path:
+                parts.insert(0, path)
+            break
+    return parts

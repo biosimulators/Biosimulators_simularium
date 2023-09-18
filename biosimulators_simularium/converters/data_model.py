@@ -54,10 +54,11 @@ class CombineArchive:
                  rootpath: str,
                  outputs_dirpath: Optional[str] = None,
                  model_output_filename: Optional[str] = None,
-                 simularium_filename: Optional[str] = None):
+                 simularium_filename: Optional[str] = None,
+                 name='my_combine_archive'):
         self.rootpath = rootpath
         self.outputs_dirpath = outputs_dirpath
-        self.simularium_filename = simularium_filename
+        self.simularium_filename = simularium_filename or f'{name}_output_for_simularium'
         self.paths = self.__get_all_archive_filepaths()
         self.model_path = self.set_model_filepath()
 
@@ -100,7 +101,7 @@ class BiosimulatorsDataConverter(ABC):
         self.archive = archive
 
     @abstractmethod
-    def generate_data_object_for_output(
+    def generate_output_data_object(
             self,
             file_data: InputFileData,
             display_data: Optional[Dict[str, DisplayData]] = None,
@@ -121,7 +122,6 @@ class BiosimulatorsDataConverter(ABC):
     @abstractmethod
     def generate_simularium_file(
             self,
-            file_data_path: str,
             simularium_filename: str,
             box_size: float,
             spatial_units="nm",
@@ -209,8 +209,19 @@ class BiosimulatorsDataConverter(ABC):
             validate_ids=False
         )
 
-    def generate_input_file_data_object(self) -> InputFileData:
-        return InputFileData(self.archive.model_output_filename)
+    def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
+        """Generates a new instance of `simulariumio.data_model.InputFileData` based on
+            `self.archive.model_output_filename` (which itself is derived from the model file) if no `model_output_file`
+            is passed.
+
+            Args:
+                  model_output_file(:obj:`str`): `Optional`: file on which to base the `InputFileData` instance.
+            Returns:
+                  (:obj:`InputFileData`): simulariumio input file data object based on `self.archive.model_output_filename`
+
+        """
+        model_output_file = model_output_file or self.archive.model_output_filename
+        return InputFileData(model_output_file)
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
@@ -220,7 +231,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             not.
 
             Args:
-                :param:`archive`:(`CombineArchive`): new instance of a `CombineArchive` object.
+                archive (:obj:`CombineArchive`): new instance of a `CombineArchive` object.
         """
         super().__init__(archive)
         self.__disable_graphics()
@@ -243,7 +254,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
         return simulation.runSim()
 
-    def generate_data_object_for_output(
+    def generate_output_data_object(
             self,
             file_data: InputFileData,
             display_data: Optional[Dict[str, DisplayData]] = None,
@@ -269,7 +280,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            model_output_file,
             box_size: float,
             spatial_units="nm",
             temporal_units="ns",
@@ -277,8 +287,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None
             ) -> None:
-        input_file = self.generate_input_file_data_object(model_output_file)
-        data = self.generate_data_object_for_output(
+        input_file = self.generate_input_file_data_object()
+        data = self.generate_output_data_object(
             file_data=input_file,
             display_data=display_data,
             spatial_units=spatial_units,
@@ -286,7 +296,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         )
         translated = self.translate_data_object(data, box_size, n_dim)
 
-        simularium_filename = simularium_filename or self.simularium_fp.path
+        simularium_filename = simularium_filename or self.archive.simularium_filename
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
 
