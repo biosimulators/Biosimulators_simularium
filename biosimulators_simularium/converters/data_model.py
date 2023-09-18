@@ -21,6 +21,7 @@ from smoldyn.biosimulators.combine import (
     validate_variables,
     disable_smoldyn_graphics_in_simulation_configuration,
     read_smoldyn_simulation_configuration,
+    write_smoldyn_simulation_configuration,
 )
 from simulariumio import (
     TrajectoryData,
@@ -82,10 +83,10 @@ class CombineArchive:
                 return full_path
 
 
-a = CombineArchive(rootpath=ECOLI_ARCHIVE_ROOTPATH)
+'''a = CombineArchive(rootpath=ECOLI_ARCHIVE_ROOTPATH)
 
 print('it is: ' + a.model_path)
-print(a.paths)
+print(a.paths)'''
 
 
 class BiosimulatorsDataConverter(ABC):
@@ -146,7 +147,6 @@ class BiosimulatorsDataConverter(ABC):
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
-
 
     @staticmethod
     def prepare_agent_data():
@@ -216,18 +216,17 @@ class BiosimulatorsDataConverter(ABC):
 class SmoldynDataConverter(BiosimulatorsDataConverter):
     def __init__(self, archive: CombineArchive):
         super().__init__(archive)
+        smoldyn_config = read_smoldyn_simulation_configuration(self.archive.model_path)
+        disable_smoldyn_graphics_in_simulation_configuration(smoldyn_config)
+        write_smoldyn_simulation_configuration(smoldyn_config, self.archive.model_path)
+        self.simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
 
     @staticmethod
     def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
         return validate_variables(variables)
 
-    def get_simulation_object_from_model(self) -> Simulation:
-        return init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
-
-    def generate_model_output(self, simulation: Simulation) -> ModelOutputFile:
-        simulation.runSim()
-        model_filename = self.archive.model_path.replace('.txt', '')
-        return ModelOutputFile(path=model_filename + 'out.txt')
+    def generate_model_output(self) -> None:
+        return self.simulation.runSim()
 
     def generate_data_object_for_output(
             self,
@@ -255,7 +254,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            model_output_file: ModelOutputFile,
+            model_output_file,
             box_size: float,
             spatial_units="nm",
             temporal_units="ns",

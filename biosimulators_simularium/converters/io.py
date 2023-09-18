@@ -31,7 +31,7 @@ from biosimulators_utils.config import Config, get_config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
-from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, SmoldynDataConverter
+"""from biosimulators_simularium.converters.data_model import Archive, SimulariumFilePath, SmoldynDataConverter
 
 
 def generate_new_simularium_file(archive: Archive, simularium_fp: SimulariumFilePath) -> None:
@@ -71,3 +71,5 @@ def generate_new_simularium_file(archive: Archive, simularium_fp: SimulariumFile
 
     # trans = converter.translate_data(data_object, 100.)
     # converter.convert_to_simularium(data_object, 'biosimulators_simularium/minE_Andrews')
+    
+"""
