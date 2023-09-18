@@ -1,4 +1,4 @@
-from biosimulators_simularium.convert import _convert
+from biosimulators_simularium.main import _convert
 
 __all__ = [
     '_convert',

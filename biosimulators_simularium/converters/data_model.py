@@ -242,11 +242,22 @@ class BiosimulatorsDataConverter(ABC):
         return data
 
     @staticmethod
-    def save_simularium_file(data, simularium_filename) -> None:
+    def save_simularium_file(
+            data: Union[SmoldynData, TrajectoryData],
+            simularium_filename,
+            ) -> None:
+        """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
+            with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
+
+            Args:
+                  data(:obj:`Union[SmoldynData, TrajectoryData]`): data object to save.
+                  simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
+                    passed, will default to `self.archive.rootpath/self.archive.simularium_filename`
+        """
         BinaryWriter.save(
             data,
             simularium_filename,
-            validate_ids=False
+            validate_ids=True
         )
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
@@ -338,12 +349,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units=spatial_units,
             temporal_units=temporal_units
         )
-
-        print(f'The Data is: {data}')
         translated = self.translate_data_object(data, box_size, n_dim)
-        print(f'The translated data is: {translated}')
-
-        simularium_filename = simularium_filename or self.archive.simularium_filename
+        simularium_filename = simularium_filename \
+            or os.path.join(self.archive.rootpath, self.archive.simularium_filename)
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
 
