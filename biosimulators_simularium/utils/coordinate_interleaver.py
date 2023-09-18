@@ -22,6 +22,15 @@ class CoordinateInterleaver:
                 result |= ((arg >> i) & 1) << (i * num_values + j)
         return result
 
+    def coordinates_to_id(self, coordinates: Tuple = None):
+        coor = coordinates or self.coordinates
+        return self.interleave_bits(*coor)
+
+
+class CoordinateDeinterleaver:
+    def __init__(self, value: int):
+        self.value = value
+
     @staticmethod
     def deinterleave_bits(value, num_values):
         """Deinterleave bits into multiple integer values."""
@@ -31,20 +40,7 @@ class CoordinateInterleaver:
                 results[j] |= ((value >> (i * num_values + j)) & 1) << i
         return results
 
-    def coordinates_to_id(self, coordinates: Tuple = None):
-        coor = coordinates or self.coordinates
-        return self.interleave_bits(*coor)
-
-    def id_to_coordinates(self, value):
+    def id_to_coordinates(self, value: int = None):
+        value = value or self.value
         return self.deinterleave_bits(value, 3)
 
-
-def test_interleaver():
-    x, y, z = 1200, 3400, 5600
-    interleaver = CoordinateInterleaver(x, y, z)
-    id_value = interleaver.coordinates_to_id()
-    print(id_value)
-    print(interleaver.id_to_coordinates(id_value))  # Expected (12, 34, 56)
-
-
-test_interleaver()

@@ -1,11 +1,19 @@
-from typing import Dict
+"""This file contains methods for getting file directory information, parsing platform, and coordinate interleaving.
+"""
+
+
 import os
+from typing import Dict
+from biosimulators_simularium.utils.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
+from biosimulators_simularium.utils.platform_parser import SmoldynPlatformParser
 
 
 __all__ = [
     'make_files_dict',
     'remove_output_files',
     'remove_file',
+    'coordinates_to_id',
+    'id_to_coordinates',
 ]
 
 
@@ -30,3 +38,26 @@ def remove_output_files(fp='biosimulators_simularium/files/archives/Andrews_ecol
 
 def remove_file(fp) -> None:
     return os.remove(fp) if os.path.exists(fp) else None
+
+
+def coordinates_to_id(x, y, z) -> int:
+    interleaver = CoordinateInterleaver(x, y, z)
+    return interleaver.coordinates_to_id()
+
+
+def id_to_coordinates(id_value: int):
+    deinterleaver = CoordinateDeinterleaver(id_value)
+    return deinterleaver.id_to_coordinates()
+
+
+def test_interleaver():
+    x, y, z = 1200, 3400, 5600
+    interleaver = CoordinateInterleaver(x, y, z)
+    id_value = interleaver.coordinates_to_id()
+    print(id_value)
+    print(interleaver.id_to_coordinates(id_value))  # Expected (12, 34, 56)
+
+
+def parse_platform():
+    return SmoldynPlatformParser()
+
