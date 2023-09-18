@@ -1,5 +1,5 @@
-from biosimulators_simularium.main import _convert
+from biosimulators_simularium.main import *
 
 __all__ = [
-    '_convert',
+    'run',
 ]
