@@ -45,64 +45,46 @@ from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Va
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 
 
-@dataclass
-class _Archive:
-    rootpath: str
-    output_dirpath: Optional[str] = None
-    model_path: Optional[str] = None
-    name: Optional[str] = None
-
-
-@dataclass
-class SimulariumFilePath:
-    path: str
-
-
-@dataclass
-class ModelOutputFile:
-    path: str
+ECOLI_ARCHIVE_ROOTPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 
 
 class CombineArchive:
-    def __init__(self, rootpath: str, outputs_dirpath: Optional[str] = None):
+    def __init__(self,
+                 rootpath: str,
+                 outputs_dirpath: Optional[str] = None,
+                 simularium_filename: Optional[str] = None):
         self.rootpath = rootpath
         self.outputs_dirpath = outputs_dirpath
+        self.simularium_filename = simularium_filename
+        self.paths = self.__get_all_archive_filepaths()
         self.model_path = self.set_model_filepath()
 
-    def get_all_archive_filepaths(self) -> List[str]:
-        paths = []
+    def __get_all_archive_filepaths(self) -> Dict[str, str]:
+        paths = {}
         if os.path.exists(self.rootpath):
             for root, _, files in os.walk(self.rootpath):
                 for f in files:
                     fp = os.path.join(root, f)
-                    paths.append(fp)
+                    paths[f] = fp
         return paths
 
     def set_model_filepath(self, model_filename: Optional[str] = None) -> Union[str, None]:
         model_filename = model_filename or 'model.txt'  # default Smoldyn model name
-        all_paths = self.get_all_archive_filepaths()
-        for path in all_paths:
-            if model_filename in path:
-                return path
+        for k in self.paths.keys():
+            full_path = self.paths[k]
+            if model_filename in full_path:
+                return full_path
 
 
-a = CombineArchive(rootpath='biosimulators_simularium/files/archives/Andrews_ecoli_0523')
-print('It isssss: ' + a.model_path)
+'''class BiosimulatorsDataConverter(ABC):
+    def __init__(self, archive: CombineArchive):
+        """This class serves as the abstract interface for a simulator-specific implementation
+            of utilities through which the user may convert Biosimulators outputs to a valid simularium File.
 
-
-class DataConverter(ABC):
-    def __init__(self,
-                 archive: CombineArchive,
-                 simularium_fp: SimulariumFilePath):
-        self.archive = archive
-        self.simularium_fp = simularium_fp
-        self.archive.model_path = self._set_model_filepath()
-
-    @abstractmethod
-    def _set_model_filepath(self) -> Union[str, None]:
-        """Find the model file in a given OMEX archive.
+                Args:
+                    :param:`archive`:(`CombineArchive`): new instance of a `CombineArchive` object.
         """
-        pass
+        self.archive = archive
 
     @abstractmethod
     def generate_data_object_for_output(
@@ -219,24 +201,9 @@ class DataConverter(ABC):
         )
 
 
-class SmoldynDataConverter(DataConverter):
-    def __init__(self,
-                 archive: Archive,
-                 simularium_fp: SimulariumFilePath):
-        super().__init__(archive, simularium_fp)
-        self.archive.model_path = self._set_model_filepath()
-        '''self.model_params = self.get_params_from_model_file(
-            model_fp=self.archive.model_path,
-            sim_language="uri:sedml:language:smoldyn"
-        )'''
-
-    def _set_model_filepath(self) -> Union[str, None]:
-        if os.path.exists(self.archive.rootpath):
-            for root, _, files in os.walk(self.archive.rootpath):
-                for f in files:
-                    fp = os.path.join(root, f)
-                    if 'model.txt' in fp:
-                        return fp
+class SmoldynDataConverter(BiosimulatorsDataConverter):
+    def __init__(self, archive: CombineArchive):
+        super().__init__(archive)
 
     @staticmethod
     def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
@@ -249,33 +216,6 @@ class SmoldynDataConverter(DataConverter):
         simulation.runSim()
         model_filename = self.archive.model_path.replace('.txt', '')
         return ModelOutputFile(path=model_filename + '.txt')
-
-    '''@staticmethod
-    def get_params_from_model_file(
-            model_fp: str,
-            sim_language: str,
-            sim_type=UniformTimeCourseSimulation
-            ) -> Dict[str, List]:
-        """Get the model changes, simulator, and variables from the model file without running the simulation
-
-            Args:
-                model_fp (:obj:`str`): path to model file
-                sim_language (:obj:`str`): urn format of model language ie: "uri:sedml:language:smoldyn"
-                sim_type (:obj:`Type`): object representing the subtype of simulation.
-
-            Returns:
-                :obj:`Dict` of `List` of keys: 'model_changes':`List`, `simulation`: `List[Simulation]`, `variables`:`List[biosimulator_utils.Variable]`
-        """
-        res = get_parameters_variables_outputs_for_simulation(
-            model_filename=model_fp,
-            model_language=sim_language,
-            simulation_type=sim_type
-        )
-        return {
-            'model_changes': res[0],
-            'simulation': res[1],
-            'variables': res[2]
-        }'''
 
     def generate_data_object_for_output(
             self,
@@ -331,3 +271,4 @@ class SimulationSetupParams(str, Enum):
     ecoli_archive_dirpath = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
     sed_doc = os.path.join(ecoli_archive_dirpath, 'simulation.sedml')
     outputs_dirpath = 'biosimulators_simularium/outputs'
+'''
