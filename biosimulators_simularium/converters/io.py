@@ -78,6 +78,7 @@ def generate_new_simularium_file(archive: Archive, simularium_fp: SimulariumFile
 def generate_new_simularium_file(archive_rootpath: str):
     minE_archive = CombineArchive(rootpath=archive_rootpath)
     converter = SmoldynDataConverter(archive=minE_archive)
-    converter.generate_simularium_file()
+    print(converter.read_model_output_dataframe())
+    # converter.generate_simularium_file()
 
 

@@ -294,6 +294,10 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
         return simulation.runSim()
 
+    def read_model_output_dataframe(self) -> pd.DataFrame:
+        colnames = ['mol_name', 'x', 'y', 'z', 't']
+        return pd.read_csv(self.archive.model_output_filename, sep=" ", header=None, skiprows=1, names=colnames)
+
     def generate_output_data_object(
             self,
             file_data: InputFileData,
