@@ -52,6 +52,7 @@ class CombineArchive:
     def __init__(self,
                  rootpath: str,
                  outputs_dirpath: Optional[str] = None,
+                 model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None):
         self.rootpath = rootpath
         self.outputs_dirpath = outputs_dirpath
@@ -59,10 +60,15 @@ class CombineArchive:
         self.paths = self.__get_all_archive_filepaths()
         self.model_path = self.set_model_filepath()
 
+        self.model_output_filename = model_output_filename \
+            or self.model_path.replace('.txt', '') + 'out.txt'
+        self.paths['model_output_file'] = self.model_output_filename
+
     def __get_all_archive_filepaths(self) -> Dict[str, str]:
         paths = {}
         if os.path.exists(self.rootpath):
             for root, _, files in os.walk(self.rootpath):
+                paths['root'] = root
                 for f in files:
                     fp = os.path.join(root, f)
                     paths[f] = fp
@@ -76,7 +82,13 @@ class CombineArchive:
                 return full_path
 
 
-'''class BiosimulatorsDataConverter(ABC):
+a = CombineArchive(rootpath=ECOLI_ARCHIVE_ROOTPATH)
+
+print('it is: ' + a.model_path)
+print(a.paths)
+
+
+class BiosimulatorsDataConverter(ABC):
     def __init__(self, archive: CombineArchive):
         """This class serves as the abstract interface for a simulator-specific implementation
             of utilities through which the user may convert Biosimulators outputs to a valid simularium File.
@@ -135,9 +147,6 @@ class CombineArchive:
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
 
-    @staticmethod
-    def generate_input_file_data_object(model_output_file: ModelOutputFile) -> InputFileData:
-        return InputFileData(model_output_file.path)
 
     @staticmethod
     def prepare_agent_data():
@@ -200,6 +209,9 @@ class CombineArchive:
             validate_ids=False
         )
 
+    def generate_input_file_data_object(self) -> InputFileData:
+        return InputFileData(self.archive.model_output_filename)
+
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
     def __init__(self, archive: CombineArchive):
@@ -215,7 +227,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
     def generate_model_output(self, simulation: Simulation) -> ModelOutputFile:
         simulation.runSim()
         model_filename = self.archive.model_path.replace('.txt', '')
-        return ModelOutputFile(path=model_filename + '.txt')
+        return ModelOutputFile(path=model_filename + 'out.txt')
 
     def generate_data_object_for_output(
             self,
@@ -271,4 +283,3 @@ class SimulationSetupParams(str, Enum):
     ecoli_archive_dirpath = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
     sed_doc = os.path.join(ecoli_archive_dirpath, 'simulation.sedml')
     outputs_dirpath = 'biosimulators_simularium/outputs'
-'''
