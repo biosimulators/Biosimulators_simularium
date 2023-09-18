@@ -39,6 +39,7 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import InputFileData, SmoldynData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
+from simulariumio.data_objects.trajectory_data import TrajectoryData
 from biosimulators_utils.sedml.data_model import Task, Model, ModelLanguage
 from biosimulators_utils.config import Config, get_config
 from biosimulators_utils.report.data_model import ReportFormat
@@ -152,7 +153,7 @@ class BiosimulatorsDataConverter(ABC):
         pass
 
     @abstractmethod
-    def translate_data_object(self, data_object: OutputData, box_size, n_dim):
+    def translate_data_object(self, data_object: OutputData, box_size, n_dim) -> TrajectoryData:
         """Create a mirrored negative image of a distribution and apply it to 3dimensions if
             AND ONLY IF it contains all non-negative values.
         """
@@ -307,7 +308,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             display_data=display_data,
         )
 
-    def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3):
+    def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3) -> TrajectoryData:
         c = SmoldynConverter(data_object)
         translation_magnitude = -box_size / 2
         return c.filter_data([
@@ -335,11 +336,12 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         )
 
         print(f'The Data is: {data}')
-        '''translated = self.translate_data_object(data, box_size, n_dim)
+        translated = self.translate_data_object(data, box_size, n_dim)
+        print(f'The translated data is: {translated}')
 
         simularium_filename = simularium_filename or self.archive.simularium_filename
         self.save_simularium_file(translated, simularium_filename)
-        print('New Simularium file generated!!')'''
+        print('New Simularium file generated!!')
 
 
 class SimulationSetupParams(str, Enum):
