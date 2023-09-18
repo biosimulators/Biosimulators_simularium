@@ -90,6 +90,45 @@ print('it is: ' + a.model_path)
 print(a.paths)'''
 
 
+class OutputData(ABC):
+    def __init__(self, value, n_dim: int):
+        self.value = value
+        self.n_dim = n_dim
+
+
+class TranslatedData(ABC):
+    def __init__(self, data: OutputData, box_size: float):
+        self.data = data
+        self.c = self._set_converter(self.data)
+        self.box_size = box_size
+
+    @abstractmethod
+    def _set_converter(self, data):
+        pass
+
+
+class SmoldynOutputData(OutputData):
+    def __init__(self, value: SmoldynData, n_dim=3):
+        super().__init__(value, n_dim)
+
+
+class TranslatedSmoldynData(TranslatedData):
+    def __init__(self, data: SmoldynOutputData, box_size: float):
+        super().__init__(data, box_size)
+        self.c = self._set_converter(data)
+        self.box_size = box_size
+        translation_magnitude = -self.box_size / 2
+        self.filtered_data = self.c.filter_data([
+            TranslateFilter(
+                translation_per_type={},
+                default_translation=translation_magnitude * np.ones(data.n_dim)
+            ),
+        ])
+
+    def _set_converter(self, data: SmoldynOutputData):
+        return SmoldynConverter(data.value)
+
+
 class BiosimulatorsDataConverter(ABC):
     def __init__(self, archive: CombineArchive):
         """This class serves as the abstract interface for a simulator-specific implementation
@@ -113,7 +152,7 @@ class BiosimulatorsDataConverter(ABC):
         pass
 
     @abstractmethod
-    def translate_data_object(self, data_object, box_size, n_dim):
+    def translate_data_object(self, data_object: OutputData, box_size, n_dim):
         """Create a mirrored negative image of a distribution and apply it to 3dimensions if
             AND ONLY IF it contains all non-negative values.
         """
@@ -280,7 +319,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            box_size: float,
+            box_size=1.,
             spatial_units="nm",
             temporal_units="ns",
             n_dim=3,
@@ -294,11 +333,13 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units=spatial_units,
             temporal_units=temporal_units
         )
-        translated = self.translate_data_object(data, box_size, n_dim)
+
+        print(f'The Data is: {data}')
+        '''translated = self.translate_data_object(data, box_size, n_dim)
 
         simularium_filename = simularium_filename or self.archive.simularium_filename
         self.save_simularium_file(translated, simularium_filename)
-        print('New Simularium file generated!!')
+        print('New Simularium file generated!!')'''
 
 
 class SimulationSetupParams(str, Enum):

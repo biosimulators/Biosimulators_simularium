@@ -7,7 +7,7 @@ from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
 from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
 from biosimulators_simularium.converters.data_model import CombineArchive, SmoldynDataConverter
-# from biosimulators_simularium.converters.io import generate_new_simularium_file
+from biosimulators_simularium.converters.io import generate_new_simularium_file
 from biosimulators_simularium.utils.io import remove_file, remove_output_files, parse_platform
 
 
@@ -34,5 +34,5 @@ archive_root = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 
 
 if __name__ == '__main__':
-    convert(archive_rootpath=archive_root, install_smoldyn=False)
-
+    # convert(archive_rootpath=archive_root, install_smoldyn=False)
+    generate_new_simularium_file(archive_rootpath=archive_root)
