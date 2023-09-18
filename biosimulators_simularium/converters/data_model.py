@@ -215,18 +215,33 @@ class BiosimulatorsDataConverter(ABC):
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
     def __init__(self, archive: CombineArchive):
+        """General class for converting Smoldyn output (modelout.txt) to .simularium. Checks the passed archive object
+            directory for a `modelout.txt` file (standard Smoldyn naming convention) and runs the simulation by default if
+            not.
+
+            Args:
+                :param:`archive`:(`CombineArchive`): new instance of a `CombineArchive` object.
+        """
         super().__init__(archive)
+        self.__disable_graphics()
+        if not os.path.exists(self.archive.model_output_filename):
+            self.__generate_model_output_file()
+
+    def __disable_graphics(self):
+        """Helper method to wrap smoldyn functions. Read the passed `CombineArchive.model_path` as a list, turn off the
+            graphics using Smoldyn, and rewrite the model file with turned off graphics. NOTE: This method
+            is required for automation on the command-line.
+        """
         smoldyn_config = read_smoldyn_simulation_configuration(self.archive.model_path)
         disable_smoldyn_graphics_in_simulation_configuration(smoldyn_config)
         write_smoldyn_simulation_configuration(smoldyn_config, self.archive.model_path)
-        self.simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
 
-    @staticmethod
-    def validate_variables_from_archive_model(variables: List[Variable]) -> Dict:
-        return validate_variables(variables)
-
-    def generate_model_output(self) -> None:
-        return self.simulation.runSim()
+    def __generate_model_output_file(self) -> None:
+        """Method required for checking the existence of a `modelout.txt` file and running the simulation
+            with graphics turned off if not.
+        """
+        simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
+        return simulation.runSim()
 
     def generate_data_object_for_output(
             self,

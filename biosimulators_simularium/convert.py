@@ -11,7 +11,7 @@ from biosimulators_simularium.converters.data_model import CombineArchive, Smold
 from biosimulators_simularium.utils.io import remove_file, remove_output_files, parse_platform
 
 
-def run(
+def convert(
         archive_rootpath: str,
         archive_output_dirpath: str = None,
         new_simularium_fp: str = None,
@@ -23,12 +23,16 @@ def run(
     archive = CombineArchive(rootpath=archive_rootpath)
     converter = SmoldynDataConverter(archive)
     print(f'Model path: {converter.archive.model_path}')
+    print(converter.archive.model_output_filename)
 
-    converter.generate_model_output()
+    input_file_data = converter.generate_input_file_data_object()
+    print(input_file_data)
+    print(dir(input_file_data))
 
 
 archive_root = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 
 
-run(archive_rootpath=archive_root, install_smoldyn=False)
+if __name__ == '__main__':
+    convert(archive_rootpath=archive_root, install_smoldyn=False)
 
