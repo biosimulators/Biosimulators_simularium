@@ -11,17 +11,17 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
-from smoldyn import Simulation
-import smoldyn
 import numpy as np
 import pandas as pd
 import zarr
-from smoldyn.biosimulators.combine import init_smoldyn_simulation_from_configuration_file, validate_variables
-from smoldyn import biosimulators as bioSim
+from smoldyn import Simulation
 from smoldyn.biosimulators.data_model import SmoldynOutputFile
-from simulariumio.smoldyn.smoldyn_data import InputFileData, SmoldynData
-from simulariumio.smoldyn import SmoldynConverter, SmoldynData
-from simulariumio.filters import TranslateFilter
+from smoldyn.biosimulators.combine import (
+    init_smoldyn_simulation_from_configuration_file,
+    validate_variables,
+    disable_smoldyn_graphics_in_simulation_configuration,
+    read_smoldyn_simulation_configuration,
+)
 from simulariumio import (
     TrajectoryData,
     CameraData,
@@ -35,6 +35,9 @@ from simulariumio import (
     BinaryWriter,
     InputFileData,
 )
+from simulariumio.smoldyn.smoldyn_data import InputFileData, SmoldynData
+from simulariumio.smoldyn import SmoldynConverter, SmoldynData
+from simulariumio.filters import TranslateFilter
 from biosimulators_utils.sedml.data_model import Task, Model, ModelLanguage
 from biosimulators_utils.config import Config, get_config
 from biosimulators_utils.report.data_model import ReportFormat
@@ -43,9 +46,9 @@ from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variable
 
 
 @dataclass
-class Archive:
+class _Archive:
     rootpath: str
-    output_dirpath: str
+    output_dirpath: Optional[str] = None
     model_path: Optional[str] = None
     name: Optional[str] = None
 
@@ -60,9 +63,36 @@ class ModelOutputFile:
     path: str
 
 
+class CombineArchive:
+    def __init__(self, rootpath: str, outputs_dirpath: Optional[str] = None):
+        self.rootpath = rootpath
+        self.outputs_dirpath = outputs_dirpath
+        self.model_path = self.set_model_filepath()
+
+    def get_all_archive_filepaths(self) -> List[str]:
+        paths = []
+        if os.path.exists(self.rootpath):
+            for root, _, files in os.walk(self.rootpath):
+                for f in files:
+                    fp = os.path.join(root, f)
+                    paths.append(fp)
+        return paths
+
+    def set_model_filepath(self, model_filename: Optional[str] = None) -> Union[str, None]:
+        model_filename = model_filename or 'model.txt'  # default Smoldyn model name
+        all_paths = self.get_all_archive_filepaths()
+        for path in all_paths:
+            if model_filename in path:
+                return path
+
+
+a = CombineArchive(rootpath='biosimulators_simularium/files/archives/Andrews_ecoli_0523')
+print('It isssss: ' + a.model_path)
+
+
 class DataConverter(ABC):
     def __init__(self,
-                 archive: Archive,
+                 archive: CombineArchive,
                  simularium_fp: SimulariumFilePath):
         self.archive = archive
         self.simularium_fp = simularium_fp

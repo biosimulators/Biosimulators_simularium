@@ -2,7 +2,6 @@ import os
 from typing import Dict
 import platform
 import subprocess as subproc
-from smoldyn.biosimulators.combine import init_smoldyn_simulation_from_configuration_file
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
@@ -16,7 +15,7 @@ def run(
         archive_rootpath: str,
         archive_output_dirpath: str,
         new_simularium_fp: str,
-        install_smoldyn=0
+        install_smoldyn=False
         ):
     if install_smoldyn:
         parse_platform()
@@ -32,9 +31,6 @@ def run(
 archive_root = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
 archive_output = 'biosimulators_simularium'
 simularium_fp = os.path.join(archive_output, 'test_simularium_file_new')
-install_deps = 0
 
-run(archive_root, archive_output, simularium_fp, install_deps)
-
-
+run(archive_root, archive_output, simularium_fp, install_smoldyn=False)
 
