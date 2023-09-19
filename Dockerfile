@@ -8,7 +8,7 @@ LABEL \
     org.opencontainers.image.title="biosimulators_simularium" \
     org.opencontainers.image.version="${SIMULATOR_VERSION}" \
     org.opencontainers.image.description="A Python-based tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format" \
-    org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_tellurium" \
+    org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_simularium" \
     org.opencontainers.image.vendor="BioSimulators Team" \
     org.opencontainers.image.licenses="MIT" \
     base_image="python:3.10-slim-buster" \
