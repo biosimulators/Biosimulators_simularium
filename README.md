@@ -11,7 +11,8 @@ The easiest way to interact with Biosimulators_simularium on a standalone-basis 
 3. `cd Biosimulators_simularium`
 4. Choose a tag-name for the image(we use a generic name here): `docker build -t biosimulators-simularium-image .`
 5. `docker run biosimulators-simularium-image \
-      -
+      -a {path/to/the/root/of/your/OMEX/archive} \
+      -s {desired/path/where/to/save/your/new/simularium/file}`
 
 
 
