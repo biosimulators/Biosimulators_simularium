@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM python:3.10-slim-buster
 
 ARG VERSION="0.2.0"
 ARG SIMULATOR_VERSION="2.72"
@@ -11,7 +11,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_simularium" \
     org.opencontainers.image.vendor="BioSimulators Team" \
     org.opencontainers.image.licenses="MIT" \
-    base_image="ubuntu:latest" \
+    base_image="python:3.10-slim-buster" \
     version="${VERSION}" \
     software="smoldyn" \
     software.version="${SIMULATOR_VERSION}" \
@@ -21,17 +21,17 @@ LABEL \
     about.license="MIT" \
     about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
-COPY . /app/
+RUN apt-get update -y \
+    && apt-get install -y build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get update \
-    && apt-get install -y python3.10 python3.10-venv python3.10-dev python3-pip \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 \
-    && pip install --upgrade pip setuptools wheel \
-    && pip install .
+COPY . /app
+
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install /app
 
 ENTRYPOINT ["biosimulators-simularium"]
 CMD []

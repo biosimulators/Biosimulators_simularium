@@ -40,11 +40,6 @@ from simulariumio.smoldyn.smoldyn_data import InputFileData, SmoldynData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
 from simulariumio.data_objects.trajectory_data import TrajectoryData
-from biosimulators_utils.sedml.data_model import Task, Model, ModelLanguage
-from biosimulators_utils.config import Config, get_config
-from biosimulators_utils.report.data_model import ReportFormat
-from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Variable, Task
-from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 
 
 ECOLI_ARCHIVE_ROOTPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'

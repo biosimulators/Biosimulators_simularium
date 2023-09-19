@@ -1,1 +1,2 @@
+import biosimulators_simularium
 from biosimulators_simularium._version import __version__
