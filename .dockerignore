@@ -1,3 +1,6 @@
 **/*.egg-info
+.pypirc
 .smoldyn-2.72-mac/
 generated_simularium_files/
+build/
+dist/

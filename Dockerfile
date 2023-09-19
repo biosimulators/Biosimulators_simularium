@@ -1,6 +1,6 @@
 FROM python:3.10-slim-buster
 
-ARG VERSION="0.2.0"
+ARG VERSION="0.2.4"
 ARG SIMULATOR_VERSION="2.72"
 
 LABEL \
