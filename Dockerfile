@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-slim
 
 ARG VERSION="0.2.0"
 ARG SIMULATOR_VERSION="2.72"
@@ -11,7 +11,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_simularium" \
     org.opencontainers.image.vendor="BioSimulators Team" \
     org.opencontainers.image.licenses="MIT" \
-    base_image="python:3.10-slim-buster" \
+    base_image="python:3.10-slim" \
     version="${VERSION}" \
     software="smoldyn" \
     software.version="${SIMULATOR_VERSION}" \
@@ -19,7 +19,7 @@ LABEL \
     about.home="https://github.com/biosimulators/Biosimulators_simularium" \
     about.license_file="https://github.com/biosimulators/Biosimulators/blob/dev/LICENSE.txt" \
     about.license="MIT" \
-    about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators" \
+    about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -34,8 +34,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip \
-    && pip install smoldyn \
     && pip install . \
+    && pip install smoldyn \
     && rm -rf /root/.cache/pip/
 
 ENTRYPOINT ["biosimulators-simularium"]
