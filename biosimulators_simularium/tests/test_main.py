@@ -5,9 +5,9 @@ import os
 from typing import Dict
 from simulariumio.smoldyn import SmoldynData
 
-MODEL_FP = 'biosimulators_simularium/files/models/ecoli_model.txt'
-MODEL_OUTPUT_FP = 'biosimulators_simularium/files/models/ecoli_modelout.txt'
-ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
+MODEL_FP = 'biosimulators_simularium/test_files/models/ecoli_model.txt'
+MODEL_OUTPUT_FP = 'biosimulators_simularium/test_files/models/ecoli_modelout.txt'
+ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
 SED_DOC_PATH = os.path.join(ECOLI_ARCHIVE_DIRPATH, 'simulation.sedml')
 SIMULARIUM_DIRPATH = 'biosimulators_simularium/generated_simularium_files'
 SIMULARIUM_FILENAME = 'ecoli_spatial_7'

@@ -47,7 +47,7 @@ from biosimulators_utils.sedml.data_model import UniformTimeCourseSimulation, Va
 from biosimulators_utils.model_lang.smoldyn.utils import get_parameters_variables_outputs_for_simulation
 
 
-ECOLI_ARCHIVE_ROOTPATH = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
+ECOLI_ARCHIVE_ROOTPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
 
 
 class CombineArchive:
@@ -358,7 +358,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
 class SimulationSetupParams(str, Enum):
     project_root = 'biosimulators_simularium'
-    model_fp = 'biosimulators_simularium/files/models/ecoli_model.txt'
-    ecoli_archive_dirpath = 'biosimulators_simularium/files/archives/Andrews_ecoli_0523'
+    model_fp = 'biosimulators_simularium/test_files/models/ecoli_model.txt'
+    ecoli_archive_dirpath = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
     sed_doc = os.path.join(ecoli_archive_dirpath, 'simulation.sedml')
     outputs_dirpath = 'biosimulators_simularium/outputs'

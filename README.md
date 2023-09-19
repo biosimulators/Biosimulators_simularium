@@ -1,10 +1,16 @@
 # Biosimulators_simularium
 Converting Biosimulators spatial simulation outputs into a Simularium-compliant format.
 
+PLEASE NOTE: The command-line arguments for the standalone version of this program are as follows:
+
+    -a (`str`): archive_rootpath => path to the root of your COMBINE/OMEX archive relative to where you currently are.
+    -s (`str`): simularium_fp => desired path where to store the newly generated filepath. Will default to your OMEX archive.
+
 
 ## Getting Started (With Docker)
 
 The easiest way to interact with Biosimulators_simularium on a standalone-basis is by using Docker. 
+
 
 1. `cd {WHERE YOU ARE GOING TO WORK}`
 2. `git clone https://github.com/biosimulators/biosimulators-simularium.git`

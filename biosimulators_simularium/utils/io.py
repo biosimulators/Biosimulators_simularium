@@ -27,7 +27,7 @@ def make_files_dict(fp) -> Dict[str, str]:
     return d
 
 
-def remove_output_files(fp='biosimulators_simularium/files/archives/Andrews_ecoli_0523') -> None:
+def remove_output_files(fp='biosimulators_simularium/test_files/archives/Andrews_ecoli_0523') -> None:
     if os.path.exists(fp):
         for root, _, files in os.walk(fp):
             for f in files:
