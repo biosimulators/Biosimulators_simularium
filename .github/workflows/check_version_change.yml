@@ -1,0 +1,29 @@
+on: [push]
+
+jobs:
+  check_version:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Check for changes in Dockerfile or __version__ file
+      id: check_files
+      run: |
+        git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E 'Dockerfile|__version__'
+        if [ $? -eq 0 ]; then
+          echo "::set-output name=changed::true"
+        else
+          echo "::set-output name=changed::false"
+        fi
+
+    - name: Create GitHub Issue for Version Change
+      if: steps.check_files.outputs.changed == 'true'
+      uses: octokit/request-action@v2.x
+      with:
+        route: POST /repos/${{ github.repository }}/issues
+        title: "Version Change Detected"
+        body: "A change was detected in the Dockerfile or __version__ file."
+        labels: "version-change"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

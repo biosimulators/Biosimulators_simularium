@@ -7,28 +7,27 @@ LABEL \
     org.opencontainers.image.authors="Alexander Patrie <apatrie@uchc.edu>, BioSimulators Team <info@biosimulators.org>" \
     org.opencontainers.image.title="biosimulators_simularium" \
     org.opencontainers.image.version="${SIMULATOR_VERSION}" \
-    org.opencontainers.image.description="A Python-based tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format." \
+    org.opencontainers.image.description="A Python-based tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format" \
     org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_tellurium" \
-    org.opencontainers.image.authors="BioSimulators Team <info@biosimulators.org>" \
     org.opencontainers.image.vendor="BioSimulators Team" \
-    org.opencontainers.image.licenses="Apache-2.0" \
-    \
-    base_image="python:3.9-slim-buster" \
+    org.opencontainers.image.licenses="MIT" \
+    base_image="python:3.10-slim-buster" \
     version="${VERSION}" \
-    software="tellurium" \
+    software="smoldyn" \
     software.version="${SIMULATOR_VERSION}" \
-    about.summary="Python-based environment for model building, simulation, and analysis that facilitates reproducibility of models in systems and synthetic biology" \
-    about.home="http://tellurium.analogmachine.org/" \
+    about.summary="A Python-based tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format" \
+    about.home="https://github.com/biosimulators/Biosimulators_simularium" \
     about.documentation="https://tellurium.readthedocs.io/" \
-    about.license_file="https://github.com/sys-bio/tellurium/blob/develop/LICENSE.txt" \
-    about.license="SPDX:Apache-2.0" \
-    about.tags="kinetic modeling,dynamical simulation,systems biology,biochemical networks,SBML,SED-ML,COMBINE,OMEX,BioSimulators" \
-    maintainer="BioSimulators Team <info@biosimulators.org>"
+    about.license_file="https://github.com/biosimulators/Biosimulators/blob/dev/LICENSE.txt" \
+    about.license="MIT" \
+    about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators" \
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 COPY . /app/
+
+WORKDIR /app
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -41,4 +40,5 @@ RUN pip install --upgrade pip \
     && pip install . \
     && rm -rf /root/.cache/pip/
 
-CMD ["python", "your_main_script.py"]
+ENTRYPOINT ["python", "biosimulators_simularium/main.py"]
+CMD []
