@@ -17,7 +17,6 @@ LABEL \
     software.version="${SIMULATOR_VERSION}" \
     about.summary="A Python-based tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format" \
     about.home="https://github.com/biosimulators/Biosimulators_simularium" \
-    about.documentation="https://tellurium.readthedocs.io/" \
     about.license_file="https://github.com/biosimulators/Biosimulators/blob/dev/LICENSE.txt" \
     about.license="MIT" \
     about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators" \
