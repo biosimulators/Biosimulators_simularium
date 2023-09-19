@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM ubuntu:latest
 
 ARG VERSION="0.2.0"
 ARG SIMULATOR_VERSION="2.72"
@@ -11,7 +11,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/biosimulators/Biosimulators_simularium" \
     org.opencontainers.image.vendor="BioSimulators Team" \
     org.opencontainers.image.licenses="MIT" \
-    base_image="python:3.10-slim" \
+    base_image="ubuntu:latest" \
     version="${VERSION}" \
     software="smoldyn" \
     software.version="${SIMULATOR_VERSION}" \
@@ -21,22 +21,15 @@ LABEL \
     about.license="MIT" \
     about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-COPY . /app/
-WORKDIR /app
-
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y python3.10 python3.10-venv python3.10-dev python3-pip \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 \
+    && python3 -m pip install --upgrade pip setuptools wheel \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-RUN pip install --upgrade pip \
-    && pip install . \
-    && pip install smoldyn \
-    && rm -rf /root/.cache/pip/
 
 ENTRYPOINT ["biosimulators-simularium"]
 CMD []
