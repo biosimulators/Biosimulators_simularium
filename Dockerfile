@@ -26,7 +26,6 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 COPY . /app/
-
 WORKDIR /app
 
 RUN apt-get update \
@@ -40,5 +39,5 @@ RUN pip install --upgrade pip \
     && pip install . \
     && rm -rf /root/.cache/pip/
 
-ENTRYPOINT ["python", "biosimulators_simularium/main.py"]
+ENTRYPOINT ["biosimulators-simularium"]
 CMD []
