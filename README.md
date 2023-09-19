@@ -15,14 +15,15 @@ The easiest way to interact with Biosimulators_simularium on a standalone-basis 
 1. `cd {WHERE YOU ARE GOING TO WORK}`
 2. `git clone https://github.com/biosimulators/biosimulators-simularium.git`
 3. `cd Biosimulators_simularium`
-4. Choose a tag-name for the image(we use a generic name here): `docker build -t biosimulators-simularium-image .`
+4. Choose a tag-name for the image(we use a generic name here): `docker build -t biosimularium .`
 
-Say we want to add a `.simularium` file based on a Smoldyn model's output. We have this model file in an archive with the
-rootpath of `./archives/myArchive` and save it to `../mySimulariumOutputs`:
+Say we want to add a `.simularium` file to our COMBINE archive based on a Smoldyn model's output. We have this model file in an archive with the
+rootpath of `./biosimulators_simularium/test_files/archives/minE_Andrews_052023` and save it to `./biosimulators_simularium/test_files/archives/minE_Andrews_052023`
+(the same archive):
 
-    docker run biosimulators-simularium-image \
-      -a ./archives/myArchive \
-      -s ../mySimulariumOutputs
+    docker run biosimularium \
+      -a './biosimulators_simularium/test_files/archives/minE_Andrews_052023' \
+      -s './biosimulators_simularium/test_files/archives/minE_Andrews_052023'
 
 
 ## Getting Started (Building from Source)

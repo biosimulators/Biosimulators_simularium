@@ -4,5 +4,5 @@
 *.idea
 *.empty
 test_simulation_outputs/
-smoldyn-2.72-mac/
+.smoldyn-2.72-mac/
 __pycache__

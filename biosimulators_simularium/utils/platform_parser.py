@@ -43,7 +43,7 @@ class SmoldynPlatformParser(PlatformParser):
         if not is_mac:
             sp.run(f"pip install {dep}".split(), capture_output=True, shell=True, text=True)
         else:
-            smoldyn_install_dirpath = 'smoldyn-2.72-mac'
+            smoldyn_install_dirpath = '.smoldyn-2.72-mac'
             result = sp.run('sudo -H ./install.sh'.split(), cwd=smoldyn_install_dirpath)
             try:
                 print('Installation successful!')
