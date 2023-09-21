@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='biosimulators-simularium',
-    version='0.2.4',
+    version='0.2.5',
     packages=find_packages(),
     url='https://github.com/biosimulators/Biosimulators_simularium',
     author='Alexander Patrie/BioSimulators Team',
@@ -12,9 +12,8 @@ setup(
     long_description=open('README.md').read(),
     install_requires=[
         'zarr',
-        'simulariumio[tutorial]',
-        'smoldyn',
-        'biosimulators-utils'
+        'simulariumio',
+        'biosimulators-utils[smoldyn]'
     ],
     entry_points={
             'console_scripts': [

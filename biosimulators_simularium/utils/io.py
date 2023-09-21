@@ -9,31 +9,37 @@ from biosimulators_simularium.utils.platform_parser import SmoldynPlatformParser
 
 
 __all__ = [
+    'get_filepaths',
     'make_files_dict',
     'remove_output_files',
     'remove_file',
     'coordinates_to_id',
     'id_to_coordinates',
+    'parse_platform',
 ]
 
 
-def make_files_dict(fp) -> Dict[str, str]:
+def get_filepaths(dirpath: str) -> List[str]:
+    paths = []
+    for root, _, files in os.walk(dirpath):
+        for f in files:
+            fp = os.path.join(root, f)
+            paths.append(fp)
+    return paths
+
+
+def make_files_dict(dirpath: str) -> Dict[str, str]:
     d = {}
-    if os.path.exists(fp):
-        for root, _, files in os.walk(fp):
-            for i, f in enumerate(files):
-                fp = os.path.join(root, f)
-                d[fp + str(i)] = fp
+    for c in os.path.split(dirpath):
+        d[c[0]] = os.path.join(c[0], c[1])
     return d
 
 
 def remove_output_files(fp='biosimulators_simularium/test_files/archives/Andrews_ecoli_0523') -> None:
-    if os.path.exists(fp):
-        for root, _, files in os.walk(fp):
-            for f in files:
-                fp = os.path.join(root, f)
-                if fp.endswith('.txt') and 'model' not in fp:
-                    os.remove(fp)
+    files = get_filepaths(fp)
+    for f in files:
+        if f.endswith('.txt') and 'model' not in f:
+            os.remove(f)
 
 
 def remove_file(fp) -> None:
