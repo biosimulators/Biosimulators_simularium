@@ -61,7 +61,8 @@ def test_interleaver():
     interleaver = CoordinateInterleaver(x, y, z)
     id_value = interleaver.coordinates_to_id()
     print(id_value)
-    print(interleaver.id_to_coordinates(id_value))  # Expected (12, 34, 56)
+    deinterleaver = CoordinateDeinterleaver(id_value)
+    print(deinterleaver.id_to_coordinates())  # Expected (12, 34, 56)
 
 
 def parse_platform():
