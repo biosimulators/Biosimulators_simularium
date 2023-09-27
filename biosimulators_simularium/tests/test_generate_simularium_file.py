@@ -1,7 +1,6 @@
 from os import path as p
 from biosimulators_simularium.converters.utils import (
     generate_model_validation_object,
-    standardize_model_output_filename
 )
 from biosimulators_simularium.converters.data_model import (
     ModelValidation,
