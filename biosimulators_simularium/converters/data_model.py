@@ -302,13 +302,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if generate_model_output:
             self.generate_model_output_file()
 
-    def __set_model_output_filepath(self):
-        for root, _, files in os.walk(self.archive.rootpath):
-            for f in files:
-                if f.endswith('.txt') and 'model' not in f and os.path.exists(f):
-                    f = os.path.join(root, f)
-                    os.rename(f, self.archive.model_output_filename)
-
     def generate_model_output_file(self,
                                    model_output_filename: Optional[str] = None,
                                    smoldyn_archive: Optional[SmoldynCombineArchive] = None) -> None:
