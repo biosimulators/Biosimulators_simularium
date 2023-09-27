@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='biosimulators-simularium',
-    version='0.2.5',
+    version='0.2.6',
     packages=find_packages(),
     url='https://github.com/biosimulators/Biosimulators_simularium',
     author='Alexander Patrie/BioSimulators Team',

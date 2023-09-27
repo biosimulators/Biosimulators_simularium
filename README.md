@@ -1,5 +1,6 @@
 # Biosimulators_simularium
-Converting Biosimulators spatial simulation outputs into a Simularium-compliant format.
+Converting Biosimulators spatial simulation outputs into a Simularium-compliant format. This tooling acts as a 
+superset of `Biosimulators_utils`.
 
 PLEASE NOTE: The command-line arguments for the standalone version of this program are as follows:
 
@@ -7,9 +8,29 @@ PLEASE NOTE: The command-line arguments for the standalone version of this progr
     -s (`str`): simularium_fp => desired path where to store the newly generated filepath. Will default to your OMEX archive.
 
 
-## Getting Started (With Docker)
+## Getting Started with Python(PyPI) (_*Recommended*_)
 
-The easiest way to interact with Biosimulators_simularium on a standalone-basis is by using Docker. 
+The easiest way to interact with `Biosimulators_simularium` is via the Python Package Index and a
+[virtual environment](https://docs.python.org/3/tutorial/venv.html). 
+We recommend [installing and using Conda](https://conda.io/projects/conda/en/latest/user-guide/concepts/environments.html):
+   
+   After you have created the environment...
+
+   1. `conda create -n biosimularium python=3.10`
+   2. `conda activate biosimularium`
+   3. `pip install biosimulators-simularium`
+
+   To verify successfull platform and installation...
+   
+   1. `python3`
+   2. `import biosimulators_simularium as biosimularium`
+   3. `biosimularium.__version__` should display the most recent version with no errors.
+
+
+## Getting Started with Docker (_*Experimental*_)
+
+You may also interact with Biosimulators_simularium on a standalone-basis by using Docker. _Please note_: this feature
+is experimental and may not be functional depending on the current development:
 
 
 1. `cd {WHERE YOU ARE GOING TO WORK}`
@@ -55,5 +76,11 @@ A Jupyter Notebook will soon be available which is based off of the simulariumio
 give users the ability to have a tool that quickly generates simularium files with the click of a button based 
 on a valid COMBINE/OMEX archive.
 
+
+### We welcome any and all collaborations and/or raising of issues:
+
+   To report an issue, please visit [our Github issues page](https://github.com/biosimulators/Biosimulators_simularium/issues).
+
+   To contact us, please send an email to apatrie@uchc.edu or info@biosimulators.org
 
 
