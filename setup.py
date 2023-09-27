@@ -13,7 +13,7 @@ setup(
     install_requires=[
         'zarr',
         'simulariumio',
-        'biosimulators-utils'
+        'biosimulators-utils[smoldyn]'
     ],
     entry_points={
             'console_scripts': [
