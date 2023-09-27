@@ -9,6 +9,7 @@ from biosimulators_simularium.converters.utils import generate_model_validation_
 
 __all__ = [
     'generate_new_simularium_file',
+    'verify_simularium_in_archive',
 ]
 
 

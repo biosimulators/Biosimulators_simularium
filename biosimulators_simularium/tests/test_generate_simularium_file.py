@@ -38,7 +38,7 @@ def test_generate_simularium_file_from_object():
 
     converter = SmoldynDataConverter(archive)
 
-    standardize_model_output_filename(archive)
+    '''standardize_model_output_filename(archive)'''
     # create SmoldynDataConverter object and convert modelout to simularium via interface
 
     '''converter.generate_simularium_file()'''

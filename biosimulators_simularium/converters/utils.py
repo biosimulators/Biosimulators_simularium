@@ -78,11 +78,3 @@ def generate_model_validation_object(archive: SmoldynCombineArchive) -> ModelVal
     validation_info = validate_model(archive.model_path)
     validation = ModelValidation(validation_info)
     return validation
-
-
-def standardize_model_output_filename(archive: SmoldynCombineArchive) -> None:
-    for root, _, files in os.walk(archive.rootpath):
-        for f in files:
-            if f.endswith('.txt') and 'model' not in f:
-                f = os.path.join(root, f)
-                os.rename(f, archive.model_output_filename)

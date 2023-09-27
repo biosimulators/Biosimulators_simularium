@@ -30,7 +30,7 @@ from simulariumio.filters import TranslateFilter
 from simulariumio.data_objects.trajectory_data import TrajectoryData, AgentData
 from biosimulators_utils.combine.io import CombineArchiveReader
 from biosimulators_utils.archive.io import ArchiveReader
-from biosimulators_simularium.converters.utils import generate_model_validation_object
+from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 
 
 __all__ = [
@@ -128,6 +128,17 @@ class SmoldynCombineArchive:
         manifest_contents = [c.to_tuple() for c in reader.read_manifest(manifest)]
         model_info = manifest_contents[0][1]
         return 'smoldyn' in model_info
+
+    def generate_model_validation_object(self) -> ModelValidation:
+        """Generate an instance of `ModelValidation` based on the output of `self.model_path`
+            with `biosimulators-utils.model_lang.smoldyn.validate_model` method.
+
+        Returns:
+            :obj:`ModelValidation`
+        """
+        validation_info = validate_model(self.model_path)
+        validation = ModelValidation(validation_info)
+        return validation
 
 
 class BiosimulatorsDataConverter(ABC):
@@ -317,9 +328,15 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         model_output_filename = model_output_filename or self.archive.model_output_filename
         archive = smoldyn_archive or self.archive
         if not os.path.exists(model_output_filename):
-            validation = generate_model_validation_object(archive)
+            validation = archive.generate_model_validation_object()
             validation.simulation.runSim()
-        self.__set_model_output_filepath()
+
+        # standardize the modelout filename
+        for root, _, files in os.walk(archive.rootpath):
+            for f in files:
+                if f.endswith('.txt') and 'model' not in f:
+                    f = os.path.join(root, f)
+                    os.rename(f, archive.model_output_filename)
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
         colnames = ['mol_name', 'x', 'y', 'z', 't']
