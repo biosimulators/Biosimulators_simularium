@@ -1,9 +1,6 @@
 from os import path as p
-from biosimulators_simularium.converters.utils import (
-    generate_model_validation_object,
-)
+import warnings
 from biosimulators_simularium.converters.data_model import (
-    ModelValidation,
     SmoldynCombineArchive,
     SmoldynDataConverter
 )
@@ -16,6 +13,7 @@ TEST_ARCHIVE_ROOTPATH = p.join(
     'minE_Andrews_052023',
 )
 TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')
+GENERATE_MODEL_OUTPUT = True
 
 
 def test_generate_simularium_file_from_object():
@@ -25,22 +23,26 @@ def test_generate_simularium_file_from_object():
         print(e)
         return
 
+    # construct an archive instance to base operations on
     archive = SmoldynCombineArchive(
         rootpath=TEST_ARCHIVE_ROOTPATH,
         simularium_filename=TEST_SIMULARIUM_FILENAME
     )
 
     # generate a modelout file if one does not exist
-    '''if not p.exists(archive.model_output_filename):
-        validation = generate_model_validation_object(archive)
-        validation.simulation.runSim()'''
+    converter = SmoldynDataConverter(
+        archive=archive,
+        generate_model_output=GENERATE_MODEL_OUTPUT
+    )
 
-    converter = SmoldynDataConverter(archive)
+    try:
+        df = converter.read_model_output_dataframe()
+        print(f'A dataframe was able to be created from the valid model output:\n{df}\n')
+    except Exception as e:
+        warnings.warn(str(e))
 
-    '''standardize_model_output_filename(archive)'''
     # create SmoldynDataConverter object and convert modelout to simularium via interface
-
-    '''converter.generate_simularium_file()'''
+    converter.generate_simularium_file()
 
 
 def test_generate_simularium_file_from_function():
