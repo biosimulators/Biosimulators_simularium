@@ -5,7 +5,7 @@ from biosimulators_simularium.utils.io import parse_platform, get_filepaths
 from biosimulators_simularium.__main__ import run
 
 
-TEST_ARCHIVE_ROOTPATH = 'biosimulators_simularium/test_files/archives/minE_Andrews_052023'
+TEST_ARCHIVE_ROOTPATH = 'biosimulators_simularium/fixtures/archives/minE_Andrews_052023'
 
 
 def test_generate_new_simularium_file():

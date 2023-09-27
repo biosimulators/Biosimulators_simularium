@@ -15,7 +15,7 @@ from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
-import smoldyn
+from smoldyn import Simulation as smoldynSim
 from simulariumio import (
     CameraData,
     UnitData,
@@ -52,7 +52,7 @@ def __extract_omex(omex_filename, output_folder):
 
 
 class ModelValidation:
-    def __init__(self, validation: Tuple[List[str], List[str], Tuple[smoldyn.Simulation, List[str]]]):
+    def __init__(self, validation: Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]):
         self.errors = validation[0]
         self.warnings = validation[1]
         self.simulation = validation[2][0]

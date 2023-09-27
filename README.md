@@ -8,7 +8,7 @@ PLEASE NOTE: The command-line arguments for the standalone version of this progr
     -s (`str`): simularium_fp => desired path where to store the newly generated filepath. Will default to your OMEX archive.
 
 
-## Getting Started with Python(PyPI) (_*Recommended*_)
+## Getting Started with Python(PyPI) (_**Recommended**_)
 
 The easiest way to interact with `Biosimulators_simularium` is via the Python Package Index and a
 [virtual environment](https://docs.python.org/3/tutorial/venv.html). 

@@ -1,17 +1,23 @@
 import os
 import tempfile
 from typing import Tuple, List
-import smoldyn
+from smoldyn import Simulation as smoldynSim
 from smoldyn.biosimulators.combine import (  # noqa: E402
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
     write_smoldyn_simulation_configuration,
     init_smoldyn_simulation_from_configuration_file,
 )
-from biosimulators_simularium.converters.data_model import SmoldynDataConverter, SmoldynCombineArchive, ModelValidation
+from biosimulators_simularium.converters.data_model import SmoldynCombineArchive, ModelValidation
 
 
-def validate_model(filename, name=None, config=None) -> Tuple[List[str], List[str], Tuple[smoldyn.Simulation, List[str]]]:
+__all__ = [
+    'validate_model',
+    'generate_model_validation_object'
+]
+
+
+def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]:
     """ Check that a model is valid
 
     Args:

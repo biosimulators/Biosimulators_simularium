@@ -35,7 +35,7 @@ def make_files_dict(dirpath: str) -> Dict[str, str]:
     return d
 
 
-def remove_output_files(fp='biosimulators_simularium/test_files/archives/Andrews_ecoli_0523') -> None:
+def remove_output_files(fp='biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523') -> None:
     files = get_filepaths(fp)
     for f in files:
         if f.endswith('.txt') and 'model' not in f:

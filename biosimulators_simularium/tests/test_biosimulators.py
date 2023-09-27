@@ -3,8 +3,8 @@ from typing import Dict
 from biosimulators_utils.config import Config
 from biosimulators_utils.report.data_model import ReportFormat
 
-ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
-ECOLI_OMEX_DIRPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523.omex'
+ECOLI_ARCHIVE_DIRPATH = 'biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523'
+ECOLI_OMEX_DIRPATH = 'biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523.omex'
 SED_DOC_PATH = os.path.join(ECOLI_ARCHIVE_DIRPATH, 'simulation.sedml')
 SIMULARIUM_DIRPATH = 'biosimulators_simularium/generated_simularium_files'
 SIMULARIUM_FILENAME = 'ecoli_spatial_from_sedml_0'
@@ -31,7 +31,7 @@ def make_files_dict(fp) -> Dict[str, str]:
     return d
 
 
-def remove_output_files(fp='biosimulators_simularium/test_files/archives/Andrews_ecoli_0523') -> None:
+def remove_output_files(fp='biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523') -> None:
     if os.path.exists(fp):
         for root, _, files in os.walk(fp):
             for f in files:
@@ -45,8 +45,8 @@ def remove_file(fp) -> None:
 
 
 def main(rm_files=1) -> None:
-    model_out = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523/modelout.txt'
-    min_save = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523/MinSave.txt'
+    model_out = 'biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523/modelout.txt'
+    min_save = 'biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523/MinSave.txt'
 
     if rm_files:
         remove_file(model_out)
@@ -91,12 +91,12 @@ def main(rm_files=1) -> None:
     )'''
 
     '''result, log = generator.run_simulation_from_archive(
-        archive_fp='biosimulators_simularium/test_files/archives/custom.omex',
+        archive_fp='biosimulators_simularium/fixtures/archives/custom.omex',
     )'''
 
     # converter = SmoldynDataConverter(OUTPUTS_DIRPATH)
 
-    # r0, r1, r2 = validate_model('biosimulators_simularium/test_files/archives/Andrews_ecoli_0523/model.txt')
+    # r0, r1, r2 = validate_model('biosimulators_simularium/fixtures/archives/Andrews_ecoli_0523/model.txt')
     # print(r2)
 
     # input_file_data = converter.prepare_input_file_data(model_out)
