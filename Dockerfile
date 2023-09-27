@@ -17,10 +17,10 @@ LABEL \
     # about.license="MIT" \
     # about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
-# RUN apt-get update -y \
-#     && apt-get install -y build-essential \
-#     && apt-get autoremove -y \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y \
+    && apt-get install -y build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -28,6 +28,10 @@ COPY . /app
 
 RUN pip install --upgrade pip && pip install python-libcombine>=0.2.19
 RUN pip install .
-
 ENTRYPOINT ["biosimulators-simularium"]
 CMD []
+
+# RUN pip install --upgrade pip \
+#     && pip install setuptools wheel twine \
+#     && python /app/setup.py sdist bdist_wheel \
+#     && twine upload dist/*
