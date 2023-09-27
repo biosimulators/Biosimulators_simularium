@@ -22,7 +22,10 @@ def test_generate_simularium_file_from_object():
         print(e)
         return
 
-    archive = SmoldynCombineArchive(rootpath=TEST_ARCHIVE_ROOTPATH)
+    archive = SmoldynCombineArchive(
+        rootpath=TEST_ARCHIVE_ROOTPATH,
+        simularium_filename=TEST_SIMULARIUM_FILENAME
+    )
 
 
 def test_generate_simularium_file_from_function():
