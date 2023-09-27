@@ -95,6 +95,13 @@ class SmoldynCombineArchive:
             if model_filename in full_path:
                 return full_path
 
+    def set_model_output_filepath(self):
+        for root, _, files in os.walk(self.rootpath):
+            for f in files:
+                if f.endswith('.txt') and 'model' not in f and os.path.exists(f):
+                    f = os.path.join(root, f)
+                    os.rename(f, self.model_output_filename)
+
     def get_manifest_filepath(self) -> Union[List[str], str]:
         """Read SmoldynCombineArchive manifest files. Return all filepaths containing the word 'manifest'.
 
@@ -276,6 +283,14 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 archive (:obj:`SmoldynCombineArchive`): instance of a `SmoldynCombineArchive` object.
         """
         super().__init__(archive)
+        self.__set_model_output_filepath()
+
+    def __set_model_output_filepath(self):
+        for root, _, files in os.walk(self.archive.rootpath):
+            for f in files:
+                if f.endswith('.txt') and 'model' not in f and os.path.exists(f):
+                    f = os.path.join(root, f)
+                    os.rename(f, self.archive.model_output_filename)
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
         colnames = ['mol_name', 'x', 'y', 'z', 't']
