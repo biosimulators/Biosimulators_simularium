@@ -275,16 +275,21 @@ class BiosimulatorsDataConverter(ABC):
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
-    def __init__(self, archive: SmoldynCombineArchive):
+    def __init__(self, archive: SmoldynCombineArchive, generate_model_output: bool = True):
         """General class for converting Smoldyn output (modelout.txt) to .simularium. Checks the passed archive object
             directory for a `modelout.txt` file (standard Smoldyn naming convention) and runs the simulation by default if
-            not.
+            not. At the time of construction, checks for the existence of a simulation `out.txt` file and runs
+            `self.generate_model_output_file()` if such a file does not exist, based on `self.archive`. To turn
+            this off, pass `generate_data` as `False`.
 
             Args:
                 archive (:obj:`SmoldynCombineArchive`): instance of a `SmoldynCombineArchive` object.
+                generate_model_output(`bool`): Automatically generates and standardizes the name of a
+                    smoldyn model output file based on the `self.archive` parameter if True. Defaults to `True`.
         """
         super().__init__(archive)
-        self.__set_model_output_filepath()
+        if generate_model_output:
+            self.generate_model_output_file()
 
     def __set_model_output_filepath(self):
         for root, _, files in os.walk(self.archive.rootpath):
@@ -314,6 +319,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if not os.path.exists(model_output_filename):
             validation = generate_model_validation_object(archive)
             validation.simulation.runSim()
+        self.__set_model_output_filepath()
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
         colnames = ['mol_name', 'x', 'y', 'z', 't']

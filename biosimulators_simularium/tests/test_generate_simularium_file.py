@@ -32,13 +32,15 @@ def test_generate_simularium_file_from_object():
     )
 
     # generate a modelout file if one does not exist
-    if not p.exists(archive.model_output_filename):
+    '''if not p.exists(archive.model_output_filename):
         validation = generate_model_validation_object(archive)
-        validation.simulation.runSim()
+        validation.simulation.runSim()'''
+
+    converter = SmoldynDataConverter(archive)
 
     standardize_model_output_filename(archive)
     # create SmoldynDataConverter object and convert modelout to simularium via interface
-    converter = SmoldynDataConverter(archive)
+
     '''converter.generate_simularium_file()'''
 
 
