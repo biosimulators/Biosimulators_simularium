@@ -6,52 +6,68 @@
 """
 
 
+# pragma: no cover
+
+
 import os
-from enum import Enum
-from dataclasses import dataclass
+import zipfile
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
-import zarr
-from smoldyn import Simulation
-from smoldyn.biosimulators.data_model import SmoldynOutputFile
-from smoldyn.biosimulators.combine import (
-    init_smoldyn_simulation_from_configuration_file,
-    validate_variables,
-    disable_smoldyn_graphics_in_simulation_configuration,
-    read_smoldyn_simulation_configuration,
-    write_smoldyn_simulation_configuration,
-)
+import smoldyn
 from simulariumio import (
-    TrajectoryData,
     CameraData,
-    TrajectoryConverter,
-    AgentData,
     UnitData,
     MetaData,
     DisplayData,
     DISPLAY_TYPE,
-    ModelMetaData,
     BinaryWriter,
-    InputFileData,
 )
-from simulariumio.smoldyn.smoldyn_data import InputFileData, SmoldynData
+from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
-from simulariumio.data_objects.trajectory_data import TrajectoryData
+from simulariumio.data_objects.trajectory_data import TrajectoryData, AgentData
+from biosimulators_utils.combine.io import CombineArchiveReader
+from biosimulators_utils.archive.io import ArchiveReader
 
 
-ECOLI_ARCHIVE_ROOTPATH = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
+__all__ = [
+    'SmoldynCombineArchive',
+    'BiosimulatorsDataConverter',
+    'SmoldynDataConverter',
+]
 
 
-class CombineArchive:
+def extract_omex(zipped_path, output=None):
+    reader = ArchiveReader()
+    if output is None:
+        output = zipped_path.replace('.omex', '')
+    reader.run(zipped_path, output)
+
+
+def __extract_omex(omex_filename, output_folder):
+    with zipfile.ZipFile(omex_filename, 'r') as zip_ref:
+        zip_ref.extractall(output_folder)
+
+
+class ModelValidation:
+    def __init__(self, validation: Tuple[List[str], List[str], Tuple[smoldyn.Simulation, List[str]]]):
+        self.errors = validation[0]
+        self.warnings = validation[1]
+        self.simulation = validation[2][0]
+        self.config = validation[2][1]
+
+
+class SmoldynCombineArchive:
     def __init__(self,
                  rootpath: str,
                  outputs_dirpath: Optional[str] = None,
                  model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None,
                  name='my_combine_archive'):
+        """Object for handling the output of Smoldyn simulation data. An implementation of the abstract class
+            `SpatialCombineArchive`. """
         self.rootpath = rootpath
         self.outputs_dirpath = outputs_dirpath
         self.simularium_filename = simularium_filename or f'{name}_output_for_simularium'
@@ -79,61 +95,43 @@ class CombineArchive:
             if model_filename in full_path:
                 return full_path
 
+    def get_manifest_filepath(self) -> Union[List[str], str]:
+        """Read SmoldynCombineArchive manifest files. Return all filepaths containing the word 'manifest'.
 
-'''a = CombineArchive(rootpath=ECOLI_ARCHIVE_ROOTPATH)
+            Returns:
+                :obj:`str`: path if there is just one manifest file, otherwise `List[str]` of manifest filepaths.
+        """
+        manifest = []
+        for v in list(self.paths.values()):
+            if 'manifest' in v:
+                manifest.append(v)
+                self.paths['manifest'] = v
+        return manifest if len(manifest) > 1 else manifest[0]
 
-print('it is: ' + a.model_path)
-print(a.paths)'''
+    def verify_smoldyn_in_manifest(self) -> bool:
+        """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
+            such that the string manifest object tuples are evaluated for the presence of `smoldyn`.
 
-
-class OutputData(ABC):
-    def __init__(self, value, n_dim: int):
-        self.value = value
-        self.n_dim = n_dim
-
-
-class TranslatedData(ABC):
-    def __init__(self, data: OutputData, box_size: float):
-        self.data = data
-        self.c = self._set_converter(self.data)
-        self.box_size = box_size
-
-    @abstractmethod
-    def _set_converter(self, data):
-        pass
-
-
-class SmoldynOutputData(OutputData):
-    def __init__(self, value: SmoldynData, n_dim=3):
-        super().__init__(value, n_dim)
-
-
-class TranslatedSmoldynData(TranslatedData):
-    def __init__(self, data: SmoldynOutputData, box_size: float):
-        super().__init__(data, box_size)
-        self.c = self._set_converter(data)
-        self.box_size = box_size
-        translation_magnitude = -self.box_size / 2
-        self.filtered_data = self.c.filter_data([
-            TranslateFilter(
-                translation_per_type={},
-                default_translation=translation_magnitude * np.ones(data.n_dim)
-            ),
-        ])
-
-    def _set_converter(self, data: SmoldynOutputData):
-        return SmoldynConverter(data.value)
+            Returns:
+                `bool`: Whether there exists a smoldyn model in the archive based on the archive's manifest.
+        """
+        manifest = self.get_manifest_filepath()
+        reader = CombineArchiveReader()
+        manifest_contents = [c.to_tuple() for c in reader.read_manifest(manifest)]
+        model_info = manifest_contents[0][1]
+        return 'smoldyn' in model_info
 
 
 class BiosimulatorsDataConverter(ABC):
-    def __init__(self, archive: CombineArchive):
+    def __init__(self, archive: SmoldynCombineArchive):
         """This class serves as the abstract interface for a simulator-specific implementation
             of utilities through which the user may convert Biosimulators outputs to a valid simularium File.
 
                 Args:
-                    :param:`archive`:(`CombineArchive`): new instance of a `CombineArchive` object.
+                    :obj:`archive`:(`SmoldynCombineArchive`): instance of a `SmoldynCombineArchive` object.
         """
         self.archive = archive
+        self.has_smoldyn = self.archive.verify_smoldyn_in_manifest()
 
     @abstractmethod
     def generate_output_data_object(
@@ -148,7 +146,7 @@ class BiosimulatorsDataConverter(ABC):
         pass
 
     @abstractmethod
-    def translate_data_object(self, data_object: OutputData, box_size, n_dim) -> TrajectoryData:
+    def translate_data_object(self, data_object, box_size, n_dim) -> TrajectoryData:
         """Create a mirrored negative image of a distribution and apply it to 3dimensions if
             AND ONLY IF it contains all non-negative values.
         """
@@ -183,8 +181,10 @@ class BiosimulatorsDataConverter(ABC):
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
 
-    @staticmethod
-    def prepare_agent_data():
+    def prepare_agent_data(self) -> AgentData:
+        """Create a new instance of an `AgentData` object following the specifications of the simulation within the
+            relative combine archive.
+        """
         pass
 
     @staticmethod
@@ -199,9 +199,8 @@ class BiosimulatorsDataConverter(ABC):
             ) -> CameraData:
         return CameraData(position=position, look_at_position=look_position, up_vector=up_vector)
 
-    @classmethod
+    @staticmethod
     def generate_display_data_object(
-            cls,
             name: str,
             radius: float,
             display_type=DISPLAY_TYPE.SPHERE,
@@ -214,10 +213,7 @@ class BiosimulatorsDataConverter(ABC):
             color=obj_color
         )
 
-    @classmethod
-    def generate_display_data_object_dict(
-            cls,
-            agent_names: List[Tuple[str, str, float, str]]) -> Dict[str, DisplayData]:
+    def generate_display_data_object_dict(self, agent_names: List[Tuple[str, str, float, str]]) -> Dict[str, DisplayData]:
         """Generate a display object dict.
 
             Args:
@@ -229,7 +225,7 @@ class BiosimulatorsDataConverter(ABC):
         """
         data = {}
         for name in agent_names:
-            data[name[0]] = cls.generate_display_data_object(
+            data[name[0]] = self.generate_display_data_object(
                 name=name[0],
                 radius=name[2],
                 obj_color=name[3]
@@ -271,51 +267,53 @@ class BiosimulatorsDataConverter(ABC):
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
-    def __init__(self, archive: CombineArchive):
+    def __init__(self, archive: SmoldynCombineArchive):
         """General class for converting Smoldyn output (modelout.txt) to .simularium. Checks the passed archive object
             directory for a `modelout.txt` file (standard Smoldyn naming convention) and runs the simulation by default if
             not.
 
             Args:
-                archive (:obj:`CombineArchive`): new instance of a `CombineArchive` object.
+                archive (:obj:`SmoldynCombineArchive`): instance of a `SmoldynCombineArchive` object.
         """
         super().__init__(archive)
-        self.__disable_graphics()
-        if not os.path.exists(self.archive.model_output_filename):
-            self.__generate_model_output_file()
-
-    def __disable_graphics(self):
-        """Helper method to wrap smoldyn functions. Read the passed `CombineArchive.model_path` as a list, turn off the
-            graphics using Smoldyn, and rewrite the model file with turned off graphics. NOTE: This method
-            is required for automation on the command-line.
-        """
-        smoldyn_config = read_smoldyn_simulation_configuration(self.archive.model_path)
-        disable_smoldyn_graphics_in_simulation_configuration(smoldyn_config)
-        write_smoldyn_simulation_configuration(smoldyn_config, self.archive.model_path)
-
-    def __generate_model_output_file(self) -> None:
-        """Method required for checking the existence of a `modelout.txt` file and running the simulation
-            with graphics turned off if not.
-        """
-        simulation = init_smoldyn_simulation_from_configuration_file(self.archive.model_path)
-        return simulation.runSim()
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
         colnames = ['mol_name', 'x', 'y', 'z', 't']
         return pd.read_csv(self.archive.model_output_filename, sep=" ", header=None, skiprows=1, names=colnames)
 
+    def write_model_output_dataframe_to_csv(self, save_fp: str) -> None:
+        df = self.read_model_output_dataframe()
+        return df.to_csv(save_fp)
+
     def generate_output_data_object(
             self,
             file_data: InputFileData,
             display_data: Optional[Dict[str, DisplayData]] = None,
+            meta_data: Optional[MetaData] = None,
             spatial_units="nm",
             temporal_units="ns",
             ) -> SmoldynData:
+        """Generate a new instance of `SmoldynData`. If passing `meta_data`, please create a new `MetaData` instance
+            using the `self.generate_metadata_object` interface of this same class.
+
+        Args:
+            file_data: (:obj:`InputFileData`): `simulariumio.InputFileData` instance based on model output.
+            display_data: (:obj:`Dict[Dict[str, DisplayData]]`): `Optional`: if passing this parameter, please
+                use the `self.generate_display_object_dict` interface of this same class.
+            meta_data: (:obj:`Metadata`): new instance of `Metadata` object. If passing this parameter, please use the
+                `self.generate_metadata_object` interface method of this same class.
+            spatial_units: (:obj:`str`): spatial units by which to measure this simularium output. Defaults to `nm`.
+            temporal_units: (:obj:`str`): time units to base this simularium instance on. Defaults to `ns`.
+
+        Returns:
+            :obj:`SmoldynData`
+        """
         return SmoldynData(
             smoldyn_file=file_data,
             spatial_units=UnitData(spatial_units),
             time_units=UnitData(temporal_units),
             display_data=display_data,
+            meta_data=meta_data
         )
 
     def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3) -> TrajectoryData:
@@ -349,11 +347,3 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             or os.path.join(self.archive.rootpath, self.archive.simularium_filename)
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
-
-
-class SimulationSetupParams(str, Enum):
-    project_root = 'biosimulators_simularium'
-    model_fp = 'biosimulators_simularium/test_files/models/ecoli_model.txt'
-    ecoli_archive_dirpath = 'biosimulators_simularium/test_files/archives/Andrews_ecoli_0523'
-    sed_doc = os.path.join(ecoli_archive_dirpath, 'simulation.sedml')
-    outputs_dirpath = 'biosimulators_simularium/outputs'
