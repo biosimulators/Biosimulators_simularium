@@ -1,5 +1,7 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
     name='biosimulators-simularium',
@@ -9,7 +11,8 @@ setup(
     author='Alexander Patrie/BioSimulators Team',
     author_email='info@biosimulators.org',
     description='A Python tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format.',
-    long_description=open('README.md').read(),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     install_requires=[
         'zarr',
         'simulariumio',

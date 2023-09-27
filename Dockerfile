@@ -34,4 +34,5 @@ CMD []
 # RUN pip install --upgrade pip \
 #     && pip install setuptools wheel twine \
 #     && python /app/setup.py sdist bdist_wheel \
+#     && twine check dist/* \
 #     && twine upload dist/*
