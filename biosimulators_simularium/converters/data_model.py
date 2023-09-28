@@ -11,7 +11,7 @@
 
 import os
 import zipfile
-import tempfile
+from warnings import warn
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 import numpy as np
@@ -110,6 +110,7 @@ class SmoldynCombineArchive:
             reader = ArchiveReader()
             output = self.rootpath.replace('.omex', '')
             reader.run(self.rootpath, output)
+            self.rootpath = output
 
     def get_all_archive_filepaths(self) -> Dict[str, str]:
         paths = {}
@@ -296,7 +297,8 @@ class BiosimulatorsDataConverter(ABC):
                   simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
                     passed, will default to `self.archive.rootpath/self.archive.simularium_filename`
         """
-        BinaryWriter.save(data, simularium_filename, validate_ids=True)
+        return BinaryWriter.save(data, simularium_filename, validate_ids=True) \
+            if not os.path.exists(simularium_filename) else None
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
         """Generates a new instance of `simulariumio.data_model.InputFileData` based on
@@ -416,7 +418,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             n_dim=3,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
-            new_omex_filename: Optional[str] = None
+            new_omex_filename: Optional[str] = None,
+            overwrite=True
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
             file, the outputs will be re-bundled.
@@ -433,7 +436,20 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
                 new_omex_filename(:obj:`str`): `Optional`: Filename by which to save the newly generate .omex IF and
                     only IF `self.archive.rootpath` is an `.omex` file.
+                overwrite(:obj:`bool`): Whether to overwrite a simularium file of the same name as `simularium_filename`
+                    if one already exists in the COMBINE archive. Defaults to `True`.
         """
+        if not simularium_filename:
+            simularium_filename = os.path.join(self.archive.rootpath, self.archive.simularium_filename)
+
+        if not os.path.exists(simularium_filename):
+            warn('That file does not already exist')
+        else:
+            warn('That file already exists.')
+            if not overwrite:
+                warn('Overwrite is turned off an thus a new file will not be generated.')
+                return
+
         input_file = self.generate_input_file_data_object()
         data = self.generate_output_data_object(
             file_data=input_file,
@@ -442,8 +458,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             temporal_units=temporal_units
         )
         translated = self.translate_data_object(data, box_size, n_dim)
-        simularium_filename = simularium_filename \
-            or os.path.join(self.archive.rootpath, self.archive.simularium_filename)
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
