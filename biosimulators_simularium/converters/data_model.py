@@ -30,7 +30,7 @@ from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
 from simulariumio.data_objects.trajectory_data import TrajectoryData, AgentData
 from biosimulators_utils.combine.io import CombineArchiveReader
-from biosimulators_utils.archive.io import ArchiveReader
+from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 
 
@@ -98,14 +98,20 @@ class SmoldynCombineArchive:
         self.__handle_rootpath()
         self.outputs_dirpath = outputs_dirpath
         self.simularium_filename = simularium_filename or f'{name}_output_for_simularium'
-        self.paths = self.__get_all_archive_filepaths()
+        self.paths = self.get_all_archive_filepaths()
         self.model_path = self.set_model_filepath()
 
         self.model_output_filename = model_output_filename \
             or self.model_path.replace('.txt', '') + 'out.txt'
         self.paths['model_output_file'] = self.model_output_filename
 
-    def __get_all_archive_filepaths(self) -> Dict[str, str]:
+    def __handle_rootpath(self):
+        if self.rootpath.endswith('.omex'):
+            reader = ArchiveReader()
+            output = self.rootpath.replace('.omex', '')
+            reader.run(self.rootpath, output)
+
+    def get_all_archive_filepaths(self) -> Dict[str, str]:
         paths = {}
         if os.path.exists(self.rootpath):
             for root, _, files in os.walk(self.rootpath):
@@ -114,12 +120,6 @@ class SmoldynCombineArchive:
                     fp = os.path.join(root, f)
                     paths[f] = fp
         return paths
-
-    def __handle_rootpath(self):
-        if self.rootpath.endswith('.omex'):
-            reader = ArchiveReader()
-            output = self.rootpath.replace('.omex', '')
-            reader.run(self.rootpath, output)
 
     def set_model_filepath(self, model_filename: Optional[str] = None) -> Union[str, None]:
         model_filename = model_filename or 'model.txt'  # default Smoldyn model name
@@ -433,3 +433,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             or os.path.join(self.archive.rootpath, self.archive.simularium_filename)
         self.save_simularium_file(translated, simularium_filename)
         print('New Simularium file generated!!')
+        if '.omex' in self.archive.rootpath:
+            writer = ArchiveWriter()
+            paths = list(self.archive.get_all_archive_filepaths().values())
+            writer.run(paths, self.archive.rootpath)
+        print('Omex bundled!')
+
