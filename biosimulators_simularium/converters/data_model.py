@@ -24,7 +24,6 @@ from simulariumio import (
     DISPLAY_TYPE,
     BinaryWriter,
 )
-from simulariumio import DISPLAY_TYPE
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter

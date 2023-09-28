@@ -8,3 +8,4 @@ test_simulation_outputs/
 __pycache__
 build/
 dist/
+del.py

@@ -42,7 +42,7 @@ def test_generate_simularium_file_from_object():
         warnings.warn(str(e))
 
     # create SmoldynDataConverter object and convert modelout to simularium via interface
-    converter.generate_simularium_file()
+    converter.generate_simularium_file(spatial_units='nm', temporal_units='s')
 
 
 def test_generate_simularium_file_from_function():
