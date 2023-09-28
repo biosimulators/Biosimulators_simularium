@@ -296,11 +296,7 @@ class BiosimulatorsDataConverter(ABC):
                   simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
                     passed, will default to `self.archive.rootpath/self.archive.simularium_filename`
         """
-        BinaryWriter.save(
-            data,
-            simularium_filename,
-            validate_ids=True
-        )
+        BinaryWriter.save(data, simularium_filename, validate_ids=True)
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
         """Generates a new instance of `simulariumio.data_model.InputFileData` based on
