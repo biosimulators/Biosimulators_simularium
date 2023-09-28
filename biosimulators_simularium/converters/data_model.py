@@ -416,11 +416,26 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             self,
             box_size=1.,
             spatial_units="nm",
-            temporal_units="ns",
+            temporal_units="s",
             n_dim=3,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None
             ) -> None:
+        """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
+            file, the outputs will be re-bundled.
+
+            Args:
+                box_size(:obj:`float`): `Optional`: size by which to scale the simulation stage. Defaults to `1.`
+                spatial_units(:obj:`str`): `Optional`: units by which to measure the spatial aspect
+                    of the simulation. Defaults to `nm`.
+                temporal_units(:obj:`str`): `Optional`: units by which to measure the temporal aspect
+                    of the simulation. Defaults to `s`.
+                n_dim(:obj:`int`): `Optional`: n dimensions of the simulation output. Defaults to `3`.
+                simularium_filename(:obj:`str`): `Optional`: filename by which to save the simularium output. Defaults
+                    to `archive.simularium_filename`.
+                display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
+
+        """
         input_file = self.generate_input_file_data_object()
         data = self.generate_output_data_object(
             file_data=input_file,
