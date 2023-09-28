@@ -415,7 +415,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             temporal_units="s",
             n_dim=3,
             simularium_filename: Optional[str] = None,
-            display_data: Optional[Dict[str, DisplayData]] = None
+            display_data: Optional[Dict[str, DisplayData]] = None,
+            new_omex_filename: Optional[str] = None
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
             file, the outputs will be re-bundled.
@@ -430,7 +431,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 simularium_filename(:obj:`str`): `Optional`: filename by which to save the simularium output. Defaults
                     to `archive.simularium_filename`.
                 display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
-
+                new_omex_filename(:obj:`str`): `Optional`: Filename by which to save the newly generate .omex IF and
+                    only IF `self.archive.rootpath` is an `.omex` file.
         """
         input_file = self.generate_input_file_data_object()
         data = self.generate_output_data_object(

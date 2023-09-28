@@ -6,26 +6,35 @@ from biosimulators_simularium.converters.data_model import (
 )
 
 
-TEST_ARCHIVE_ROOTPATH = p.join(
+TEST_ARCHIVE_LOCATION = p.join(
     p.abspath(p.dirname(__file__)),
     'fixtures',
     'archives',
-    'minE_Andrews_052023',
 )
+TEST_ARCHIVE_ROOTPATH = p.join(TEST_ARCHIVE_LOCATION, 'minE_Andrews_052023')
+TEST_OMEX_FILEPATH = TEST_ARCHIVE_ROOTPATH + '.omex'
 TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')
 GENERATE_MODEL_OUTPUT = True
 
 
-def test_generate_simularium_file_from_object():
+def main():
+    # test generate simularium file from object using unzipped archive (dirpath)
+    test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
+
+    # test generate simularium file from object using OMEX file (filepath)
+    # test_generate_simularium_file_from_object(archive_fp=TEST_OMEX_FILEPATH)
+
+
+def test_generate_simularium_file_from_object(archive_fp):
     try:
-        assert p.exists(TEST_ARCHIVE_ROOTPATH)
+        assert p.exists(archive_fp)
     except AssertionError('That file does not exist') as e:
         print(e)
         return
 
     # construct an archive instance to base operations on
     archive = SmoldynCombineArchive(
-        rootpath=TEST_ARCHIVE_ROOTPATH,
+        rootpath=archive_fp,
         simularium_filename=TEST_SIMULARIUM_FILENAME
     )
 
@@ -49,12 +58,6 @@ def test_generate_simularium_file_from_function():
     pass
 
 
-TESTS = {
-    'test_generate_simularium_file_from_object': test_generate_simularium_file_from_object,
-    'test_generate_simularium_file_from_function': test_generate_simularium_file_from_function,
-}
-
-
 if __name__ == '__main__':
-    for k in TESTS.keys():
-        TESTS[k]()
+    main()
+
