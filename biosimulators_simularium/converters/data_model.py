@@ -11,6 +11,7 @@
 
 import os
 import zipfile
+import tempfile
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 import numpy as np
@@ -94,6 +95,7 @@ class SmoldynCombineArchive:
         """Object for handling the output of Smoldyn simulation data. An implementation of the abstract class
             `SpatialCombineArchive`. """
         self.rootpath = rootpath
+        self.__handle_rootpath()
         self.outputs_dirpath = outputs_dirpath
         self.simularium_filename = simularium_filename or f'{name}_output_for_simularium'
         self.paths = self.__get_all_archive_filepaths()
@@ -112,6 +114,12 @@ class SmoldynCombineArchive:
                     fp = os.path.join(root, f)
                     paths[f] = fp
         return paths
+
+    def __handle_rootpath(self):
+        if self.rootpath.endswith('.omex'):
+            reader = ArchiveReader()
+            output = self.rootpath.replace('.omex', '')
+            reader.run(self.rootpath, output)
 
     def set_model_filepath(self, model_filename: Optional[str] = None) -> Union[str, None]:
         model_filename = model_filename or 'model.txt'  # default Smoldyn model name
