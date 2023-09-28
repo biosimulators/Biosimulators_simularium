@@ -24,6 +24,7 @@ from simulariumio import (
     DISPLAY_TYPE,
     BinaryWriter,
 )
+from simulariumio import DISPLAY_TYPE
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
@@ -58,6 +59,30 @@ class ModelValidation:
         self.warnings = validation[1]
         self.simulation = validation[2][0]
         self.config = validation[2][1]
+
+
+class AgentDisplayData:
+    def __init__(self,
+                 name: Optional[str] = None,
+                 radius: Optional[float] = None,
+                 display_type=None,
+                 url: Optional[str] = None,
+                 color: Optional[str] = None):
+        """A class whose purpose is storing the configuration of a `simulariumio.DisplayData` object.
+
+            Args:
+                name(:obj:`str`): `Optional`: Defaults to None.
+                radius(:obj:`float`): `Optional`: Radius of the particular agent display. Defaults to None.
+                display_type(:obj:`Enum[str]`): `Optional`: One of the `simulariumio.DISPLAY_TYPE` types of geometry
+                    used for the agent display. Defaults to None.
+                url(:obj:`str`): `Optional`: Url from which the agent display is derived. Defaults to None.
+                color(:obj:`str`): `Optional`: Color of the agent display in hex form ie: `#NNNNNN`. Defaults to None.
+        """
+        self.name = name
+        self.radius = radius
+        self.display_type = display_type
+        self.url = url
+        self.color = color
 
 
 class SmoldynCombineArchive:

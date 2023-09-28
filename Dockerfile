@@ -1,6 +1,6 @@
 FROM python:3.10
 
-ARG VERSION="0.2.6"
+ARG VERSION="0.2.7"
 
 LABEL \
     org.opencontainers.image.authors="Alexander Patrie <apatrie@uchc.edu>, BioSimulators Team <info@biosimulators.org>" \
@@ -35,4 +35,6 @@ CMD []
 #     && pip install setuptools wheel twine \
 #     && python /app/setup.py sdist bdist_wheel \
 #     && twine check dist/* \
-#     && twine upload dist/*
+#     && twine upload dist/* \
+#     && rm -r dist \
+#     && rm -r build

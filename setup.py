@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='biosimulators-simularium',
-    version='0.2.6',
+    version='0.2.7',
     packages=find_packages(),
     url='https://github.com/biosimulators/Biosimulators_simularium',
     author='Alexander Patrie/BioSimulators Team',
