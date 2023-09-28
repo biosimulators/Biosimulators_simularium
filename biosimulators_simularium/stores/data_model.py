@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from abc import ABC, abstractmethod
 import sqlite3
 import zarr
@@ -6,7 +6,7 @@ import zarr
 
 class DataStore(ABC):
     def __init__(self, store_id):
-        pass
+        self.store_id = store_id
 
     @abstractmethod
     def read(self, source):
@@ -30,10 +30,36 @@ class ZarrDataStore(DataStore):
         pass
 
     @abstractmethod
-    def create_dataset(self):
+    def create_dataset(self, dataset_name, data_shape, chunk_shape):
+        """Construct and return a dataset derived from an empty store root via `self.create_in_memory_root`.
+
+                   Args:
+                       dataset_name(:obj:`str`): Name by which to store the dataset in memory. Used for later io ops.
+                       data_shape(:obj:`Tuple[int, int]`): Expected shape of the stored data. This is found typically in the form of
+                           `(time_steps, data_dimensions)` for our use case.
+                       chunk_shape(:obj:`Tuple[int, int]`): Shape by which to chunk the data for storage. This is found typically
+                           in the form of `(chunk_size, data_dimensions)` for our use case.
+
+                   Returns:
+                       `obj`: a new instance of `root.zeros`
+        """
         pass
 
-    def write(self, **params):
+    @abstractmethod
+    def analyze(self):
+        pass
+
+    @staticmethod
+    def create_in_memory_root() -> zarr.Group:
+        """Create an in-memory data store root and return it.
+
+            Returns:
+                :obj:`zarr.Group` : an empty in-memory store root.
+        """
+        return zarr.group()
+
+    @staticmethod
+    def write(**params):
         """Write data to zarr dataset. Kwarg params as follows:
 
             Kwargs:
@@ -49,18 +75,15 @@ class ZarrDataStore(DataStore):
         dataset[index] = value
         return dataset
 
-    @abstractmethod
-    def analyze(self):
-        pass
+    def write_to_disk(self, root: zarr.Group, store_name: Optional[str] = None) -> None:
+        """Save the entire zarr group (`root`) to disk by the name of `store_name`.
 
-    @staticmethod
-    def create_in_memory_root() -> zarr.Group:
-        """Create an in-memory data store root and return it.
-
-            Returns:
-                :obj:`zarr.Group` : an empty in-memory store root.
+            Args:
+                root(:obj:`zarr.Group`): root which you are saving.
+                store_name(:obj:`str`): Name by which to save the zarr group. Defaults to `self.store_id`.
         """
-        return zarr.group()
+        store_name = store_name or self.store_id
+        return zarr.save(store_name, root)
 
 
 class ZarrSpatialDataStore(ZarrDataStore):
@@ -79,10 +102,9 @@ class ZarrSpatialDataStore(ZarrDataStore):
 
             Args:
                 dataset_name(:obj:`str`): Name by which to store the dataset in memory. Used for later io ops.
-                data_shape(:obj:`Tuple[int, int]`): Expected shape of the stored data. This is found typically in the form of
-                    `(time_steps, data_dimensions)` for our use case.
-                chunk_shape(:obj:`Tuple[int, int]`): Shape by which to chunk the data for storage. This is found typically
-                    in the form of `(chunk_size, data_dimensions)` for our use case.
+                time_steps(:obj:`int`): Number of timesteps which exist in the simulation.
+                chunk_size(:obj:`int`): Shape for a particular data dimension.
+                data_dimensions: Shape of another dimension (could be tuple?)
 
             Returns:
                 `obj`: a new instance of `root.zeros`
@@ -91,8 +113,6 @@ class ZarrSpatialDataStore(ZarrDataStore):
         data_shape = (time_steps, data_dimensions)
         chunk_shape = (chunk_size, data_dimensions)
         return root.zeros(dataset_name, shape=data_shape, chunks=chunk_shape)
-
-
 
     def analyze(self):
         """Perform some sort of analytical operation on the zarr dataset. Currently not implemented."""
