@@ -442,10 +442,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if not simularium_filename:
             simularium_filename = os.path.join(self.archive.rootpath, self.archive.simularium_filename)
 
-        if not os.path.exists(simularium_filename):
-            warn('That file does not already exist')
-        else:
-            warn('That file already exists.')
+        if os.path.exists(simularium_filename):
+            warn('That file already exists in this COMBINE archive.')
             if not overwrite:
                 warn('Overwrite is turned off an thus a new file will not be generated.')
                 return
