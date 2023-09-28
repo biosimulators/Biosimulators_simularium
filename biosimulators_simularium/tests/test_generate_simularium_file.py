@@ -19,10 +19,20 @@ GENERATE_MODEL_OUTPUT = True
 
 def main():
     # test generate simularium file from object using unzipped archive (dirpath)
-    test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
+    try:
+        test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
+        print(f'Test: {test_generate_simularium_file_from_object} from unzipped dirpath is complete and successful!')
+    except Exception as e:
+        print(e)
+        print(f'Test: {test_generate_simularium_file_from_object} from unzipped dirpath was not successful!')
 
     # test generate simularium file from object using OMEX file (filepath)
-    # test_generate_simularium_file_from_object(archive_fp=TEST_OMEX_FILEPATH)
+    try:
+        test_generate_simularium_file_from_object(archive_fp=TEST_OMEX_FILEPATH)
+        print(f'Test: {test_generate_simularium_file_from_object} from omex is complete and successful!')
+    except Exception as e:
+        print(e)
+        print(f'Test: {test_generate_simularium_file_from_object} from omex was not successful!')
 
 
 def test_generate_simularium_file_from_object(archive_fp):
