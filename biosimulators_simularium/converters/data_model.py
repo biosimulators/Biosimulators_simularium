@@ -419,6 +419,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
             new_omex_filename: Optional[str] = None,
+            translate=True,
             overwrite=True
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
@@ -436,6 +437,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
                 new_omex_filename(:obj:`str`): `Optional`: Filename by which to save the newly generate .omex IF and
                     only IF `self.archive.rootpath` is an `.omex` file.
+                translate(:obj:`bool`): Whether to translate the simulation mirror data. Defaults to `True`.
                 overwrite(:obj:`bool`): Whether to overwrite a simularium file of the same name as `simularium_filename`
                     if one already exists in the COMBINE archive. Defaults to `True`.
         """
@@ -455,12 +457,15 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units=spatial_units,
             temporal_units=temporal_units
         )
-        translated = self.translate_data_object(data, box_size, n_dim)
-        self.save_simularium_file(translated, simularium_filename)
+
+        if translate:
+            data = self.translate_data_object(data, box_size, n_dim)
+
+        self.save_simularium_file(data, simularium_filename)
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()
             paths = list(self.archive.get_all_archive_filepaths().values())
             writer.run(paths, self.archive.rootpath)
-        print('Omex bundled!')
+            print('Omex bundled!')
 
