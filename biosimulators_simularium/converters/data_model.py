@@ -24,6 +24,7 @@ from simulariumio import (
     DisplayData,
     DISPLAY_TYPE,
     BinaryWriter,
+    JsonWriter
 )
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
@@ -95,7 +96,7 @@ class SmoldynCombineArchive:
         """Object for handling the output of Smoldyn simulation data. An implementation of the abstract class
             `SpatialCombineArchive`. """
         self.rootpath = rootpath
-        self.__handle_rootpath()
+        self.__parse_rootpath()
         self.outputs_dirpath = outputs_dirpath
         self.simularium_filename = simularium_filename or f'{name}_output_for_simularium'
         self.paths = self.get_all_archive_filepaths()
@@ -105,7 +106,10 @@ class SmoldynCombineArchive:
             or self.model_path.replace('.txt', '') + 'out.txt'
         self.paths['model_output_file'] = self.model_output_filename
 
-    def __handle_rootpath(self):
+    def __parse_rootpath(self):
+        """Private method for parsing whether `self.rootpath` is the path to a directory or single OMEX/COMBINE
+            zipped file. If .omex, then decompress the input path into an unzipped directory for working.
+        """
         if self.rootpath.endswith('.omex'):
             reader = ArchiveReader()
             output = self.rootpath.replace('.omex', '')
@@ -113,6 +117,11 @@ class SmoldynCombineArchive:
             self.rootpath = output
 
     def get_all_archive_filepaths(self) -> Dict[str, str]:
+        """Recursively read the contents of the directory found at `self.rootpath` and set their full paths.
+
+            Returns:
+                `Dict[str, str]`: Dict of form {'path_root': full_path}
+        """
         paths = {}
         if os.path.exists(self.rootpath):
             for root, _, files in os.walk(self.rootpath):
@@ -122,14 +131,25 @@ class SmoldynCombineArchive:
                     paths[f] = fp
         return paths
 
-    def set_model_filepath(self, model_filename: Optional[str] = None) -> Union[str, None]:
-        model_filename = model_filename or 'model.txt'  # default Smoldyn model name
+    def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt') -> Union[str, None]:
+        """Recursively read the full paths of all files in `self.paths` and return the full path of the file
+            containing the term 'model.txt', which is the naming convention.
+
+            Args:
+                model_filename: `Optional[str]`: index by which to label a file in directory as the model file.
+                    Defaults to `model_default`.
+                model_default: `str`: default model filename naming convention. Defaults to `'model.txt'`
+        """
+        model_filename = model_filename or model_default  # default Smoldyn model name
         for k in self.paths.keys():
             full_path = self.paths[k]
             if model_filename in full_path:
                 return full_path
 
-    def set_model_output_filepath(self):
+    def set_model_output_filepath(self) -> None:
+        """Recursively read the directory at `self.rootpath` and standardize the model output filename to become
+            `self.model_output_filename`.
+        """
         for root, _, files in os.walk(self.rootpath):
             for f in files:
                 if f.endswith('.txt') and 'model' not in f and os.path.exists(f):
@@ -233,14 +253,27 @@ class BiosimulatorsDataConverter(ABC):
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
 
-    def prepare_agent_data(self) -> AgentData:
-        """Create a new instance of an `AgentData` object following the specifications of the simulation within the
+    def generate_agent_data_object(self) -> AgentData:
+        """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
             relative combine archive.
+
+            Returns:
+                `AgentData` instance.
         """
         pass
 
     @staticmethod
     def generate_metadata_object(box_size: np.ndarray[int], camera_data: CameraData) -> MetaData:
+        """Factory for a new instance of `simulariumio.MetaData` based on the input params of this method.
+            Currently, `ModelMetaData` is not supported as a param.
+
+            Args:
+                box_size: ndarray containing the XYZ dims of the simulation bounding volume. Defaults to [100,100,100].
+                camera_data: new `CameraData` instance to control visuals.
+
+            Returns:
+                `MetaData` instance.
+        """
         return MetaData(box_size=box_size, camera_defaults=camera_data)
 
     @staticmethod
@@ -249,15 +282,38 @@ class BiosimulatorsDataConverter(ABC):
             look_position: np.ndarray,
             up_vector: np.ndarray
             ) -> CameraData:
+        """Factory for a new instance of `simulariumio.CameraData` based on the input params.
+            Wraps the simulariumio object.
+
+            Args:
+                position: 3D position of the camera itself Default: np.array([0.0, 0.0, 120.0]).
+                look_position: np.ndarray (shape = [3]) position the camera looks at Default: np.zeros(3).
+                up_vector: np.ndarray (shape = [3]) the vector that defines which direction is “up” in the
+                    camera’s view Default: np.array([0.0, 1.0, 0.0])
+
+            Returns:
+                `CameraData` instance.
+        """
         return CameraData(position=position, look_at_position=look_position, up_vector=up_vector)
 
     @staticmethod
     def generate_display_data_object(
             name: str,
             radius: float,
-            display_type=DISPLAY_TYPE.SPHERE,
+            display_type=None,
             obj_color: Optional[str] = None,
     ) -> DisplayData:
+        """Factory for creating a new instance of `simularimio.DisplayData` based on the params.
+
+            Args:
+                name: name of agent
+                radius: `float`
+                display_type: any one of the `simulariumio.DISPLAY_TYPE` properties. Defaults to None.
+                obj_color: `str`: hex color of the display agent.
+
+            Returns:
+                `DisplayData` instance.
+        """
         return DisplayData(
             name=name,
             radius=radius,
@@ -265,40 +321,66 @@ class BiosimulatorsDataConverter(ABC):
             color=obj_color
         )
 
-    def generate_display_data_object_dict(self, agent_names: List[Tuple[str, str, float, str]]) -> Dict[str, DisplayData]:
+    def generate_display_data_object_dict(
+            self,
+            agent_names: List[Tuple[str, str, float, str]]
+            ) -> Dict[str, DisplayData]:
         """Generate a display object dict.
 
             Args:
-                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining the Display Data configuration parameters.\n
-                The Tuple is expected to be as such: [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
+                    the Display Data configuration parameters.\n
+                The Tuple is expected to be as such:
+                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
 
             Returns:
                 `Dict[str, DisplayData]`
         """
-        data = {}
-        for name in agent_names:
-            data[name[0]] = self.generate_display_data_object(
-                name=name[0],
-                radius=name[2],
-                obj_color=name[3]
-            )
-        return data
+        raise NotImplementedError
 
     @staticmethod
-    def save_simularium_file(
+    def write_simularium_file(
             data: Union[SmoldynData, TrajectoryData],
-            simularium_filename,
+            simularium_filename: str,
+            save_format: str
             ) -> None:
         """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
             with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
 
             Args:
-                  data(:obj:`Union[SmoldynData, TrajectoryData]`): data object to save.
-                  simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
-                    passed, will default to `self.archive.rootpath/self.archive.simularium_filename`
+                data(:obj:`Union[SmoldynData, TrajectoryData]`): data object to save.
+                simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
+                    passed, will default to `self.archive.rootpath/self.archive.simularium_filename`.
+                save_format(:obj:`str`): format which to write the `data`. Options include `json, binary`.
         """
-        return BinaryWriter.save(data, simularium_filename, validate_ids=True) \
-            if not os.path.exists(simularium_filename) else None
+        save_format = save_format.lower()
+        if not os.path.exists(simularium_filename):
+            if 'binary' in save_format:
+                writer = BinaryWriter
+            elif 'json' in save_format:
+                writer = JsonWriter
+            else:
+                warn('You must provide a valid writer object.')
+                return
+            return writer.save(data, simularium_filename, validate_ids=True)
+
+    def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
+        """Write the contents of the simularium stream to a JSON Simularium file.
+
+            Args:
+                data: data to write.
+                simularium_filename: filepath at which to write the new simularium file.
+        """
+        return self.write_simularium_file(data=data, simularium_filename=simularium_filename, save_format='json')
+
+    def simularium_to_binary(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
+        """Write the contents of the simularium stream to a Binary Simularium file.
+
+            Args:
+                data: data to write.
+                simularium_filename: filepath at which to write the new simularium file.
+        """
+        return self.write_simularium_file(data=data, simularium_filename=simularium_filename, save_format='binary')
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
         """Generates a new instance of `simulariumio.data_model.InputFileData` based on
@@ -362,10 +444,22 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                     os.rename(f, archive.model_output_filename)
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
+        """Create a pandas dataframe from the contents of `self.archive.model_output_filename`. WARNING: this method
+            is currently experimental.
+
+            Returns:
+                `pd.DataFrame`: a pandas dataframe with the columns: ['mol_name', 'x', 'y', 'z', 't']
+        """
+        warn('WARNING: This method is experimental and may not function properly.')
         colnames = ['mol_name', 'x', 'y', 'z', 't']
         return pd.read_csv(self.archive.model_output_filename, sep=" ", header=None, skiprows=1, names=colnames)
 
     def write_model_output_dataframe_to_csv(self, save_fp: str) -> None:
+        """Write output dataframe to csv file.
+
+            Args:
+                save_fp:`str`: path at which to save the csv-converted pandas df.
+        """
         df = self.read_model_output_dataframe()
         return df.to_csv(save_fp)
 
@@ -401,6 +495,17 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         )
 
     def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3) -> TrajectoryData:
+        """Translate the data object's data if the coordinates are all positive to center the data in the
+            simularium viewer.
+
+            Args:
+                data_object: output data object to translate.
+                box_size: size of the simularium viewer box.
+                n_dim: n dimensions of the simulation output. Defaults to `3`.
+
+            Returns:
+                `TrajectoryData`: translated data object instance.
+        """
         c = SmoldynConverter(data_object)
         translation_magnitude = -box_size / 2
         return c.filter_data([
