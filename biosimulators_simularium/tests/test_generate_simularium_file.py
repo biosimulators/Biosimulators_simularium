@@ -20,7 +20,7 @@ TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')
 GENERATE_MODEL_OUTPUT = True
 
 
-def test_generate_simularium_file_from_object_with_custom_display(archive_fp, translate=True):
+def test_generate_minE_simularium_file(archive_fp, translate=True):
     # construct an archive instance to base operations on
     archive = SmoldynCombineArchive(
         rootpath=archive_fp,
@@ -115,7 +115,7 @@ def main():
     # )
 
     # test generate simularium file from object with custom display data (dirpath)
-    test_generate_simularium_file_from_object_with_custom_display(
+    test_generate_minE_simularium_file(
         archive_fp=TEST_ARCHIVE_ROOTPATH,
         translate=True
     )
