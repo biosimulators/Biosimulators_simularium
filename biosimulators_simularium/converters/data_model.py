@@ -63,6 +63,8 @@ class ModelValidation:
 
 
 class AgentDisplayData:
+    radius: Optional[float]
+
     def __init__(self,
                  name: Optional[str] = None,
                  radius: Optional[float] = None,
@@ -80,13 +82,19 @@ class AgentDisplayData:
                 color(:obj:`str`): `Optional`: Color of the agent display in hex form ie: `#NNNNNN`. Defaults to None.
         """
         self.name = name
-        self.radius = radius
+        self.radius = self.calculate_radius(radius=radius)
         self.display_type = display_type
         self.url = url
         self.color = color
 
+    @staticmethod
+    def calculate_radius(**parameters):
+        return parameters.get('radius')
+
 
 class SmoldynCombineArchive:
+    paths: Dict[str, str]
+
     def __init__(self,
                  rootpath: str,
                  outputs_dirpath: Optional[str] = None,
@@ -198,6 +206,8 @@ class SmoldynCombineArchive:
 
 
 class BiosimulatorsDataConverter(ABC):
+    has_smoldyn: bool
+
     def __init__(self, archive: SmoldynCombineArchive):
         """This class serves as the abstract interface for a simulator-specific implementation
             of utilities through which the user may convert Biosimulators outputs to a valid simularium File.
@@ -232,12 +242,30 @@ class BiosimulatorsDataConverter(ABC):
             self,
             simularium_filename: str,
             box_size: float,
+            translate: bool,
             spatial_units="nm",
             temporal_units="ns",
             n_dim=3,
-            display_data: Optional[Dict[str, DisplayData]] = None
+            display_data: Optional[Dict[str, DisplayData]] = None,
             ) -> None:
-        """Create a data_object, optionally translate it, convert to simularium, and save.
+        """Factory for a taking in new data_object, optionally translate it, convert to simularium, and save.
+        """
+        pass
+
+    @abstractmethod
+    def generate_converter(self):
+        """Factory for creating a new instance of a converter based on the Simulator of which output you are
+            attempting to visualize.
+        """
+        pass
+
+    @abstractmethod
+    def generate_agent_data_object(self) -> AgentData:
+        """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
+            relative combine archive.
+
+            Returns:
+                `AgentData` instance.
         """
         pass
 
@@ -255,15 +283,6 @@ class BiosimulatorsDataConverter(ABC):
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
-
-    def generate_agent_data_object(self) -> AgentData:
-        """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
-            relative combine archive.
-
-            Returns:
-                `AgentData` instance.
-        """
-        pass
 
     @staticmethod
     def generate_metadata_object(box_size: np.ndarray[int], camera_data: CameraData) -> MetaData:
@@ -324,29 +343,12 @@ class BiosimulatorsDataConverter(ABC):
             color=obj_color
         )
 
-    def generate_display_data_object_dict(
-            self,
-            agent_names: List[Tuple[str, str, float, str]]
-            ) -> Dict[str, DisplayData]:
-        """Generate a display object dict.
-
-            Args:
-                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
-                    the Display Data configuration parameters.\n
-                The Tuple is expected to be as such:
-                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
-
-            Returns:
-                `Dict[str, DisplayData]`
-        """
-        raise NotImplementedError
-
     @staticmethod
     def write_simularium_file(
             data: Union[SmoldynData, TrajectoryData],
             simularium_filename: str,
             save_format: str
-            ) -> None:
+    ) -> None:
         """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
             with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
 
@@ -366,6 +368,23 @@ class BiosimulatorsDataConverter(ABC):
                 warn('You must provide a valid writer object.')
                 return
             return writer.save(data, simularium_filename, validate_ids=True)
+
+    def generate_display_data_object_dict(
+            self,
+            agent_names: List[Tuple[str, str, float, str]]
+            ) -> Dict[str, DisplayData]:
+        """Generate a display object dict.
+
+            Args:
+                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
+                    the Display Data configuration parameters.\n
+                The Tuple is expected to be as such:
+                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+
+            Returns:
+                `Dict[str, DisplayData]`
+        """
+        raise NotImplementedError
 
     def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
         """Write the contents of the simularium stream to a JSON Simularium file.
@@ -524,11 +543,12 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units="nm",
             temporal_units="s",
             n_dim=3,
+            io_format="binary",
+            translate=True,
+            overwrite=True,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
-            new_omex_filename: Optional[str] = None,
-            translate=True,
-            overwrite=True
+            new_omex_filename: Optional[str] = None
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
             file, the outputs will be re-bundled.
@@ -545,6 +565,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
                 new_omex_filename(:obj:`str`): `Optional`: Filename by which to save the newly generate .omex IF and
                     only IF `self.archive.rootpath` is an `.omex` file.
+                io_format(:obj:`str`): format in which to write out the simularium file. Used as an input param to call
+                    `super.write_simularium_file`. Options include `'binary'` and `'json'`. Capitals may be used in
+                    this string. Defaults to `binary`.
                 translate(:obj:`bool`): Whether to translate the simulation mirror data. Defaults to `True`.
                 overwrite(:obj:`bool`): Whether to overwrite a simularium file of the same name as `simularium_filename`
                     if one already exists in the COMBINE archive. Defaults to `True`.
@@ -569,7 +592,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if translate:
             data = self.translate_data_object(data, box_size, n_dim)
 
-        self.simularium_to_binary(data, simularium_filename)
+        self.write_simularium_file(data, simularium_filename, io_format)
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()
