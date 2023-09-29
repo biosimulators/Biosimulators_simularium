@@ -63,8 +63,6 @@ class ModelValidation:
 
 
 class AgentDisplayData:
-    radius: Optional[float]
-
     def __init__(self,
                  name: Optional[str] = None,
                  radius: Optional[float] = None,
@@ -389,7 +387,7 @@ class BiosimulatorsDataConverter(ABC):
             data: Union[SmoldynData, TrajectoryData],
             simularium_filename: str,
             save_format: str
-    ) -> None:
+            ) -> None:
         """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
             with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
 
@@ -402,9 +400,9 @@ class BiosimulatorsDataConverter(ABC):
         save_format = save_format.lower()
         if not os.path.exists(simularium_filename):
             if 'binary' in save_format:
-                writer = BinaryWriter
+                writer = BinaryWriter()
             elif 'json' in save_format:
-                writer = JsonWriter
+                writer = JsonWriter()
             else:
                 warn('You must provide a valid writer object.')
                 return

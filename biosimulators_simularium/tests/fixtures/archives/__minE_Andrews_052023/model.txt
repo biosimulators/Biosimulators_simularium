@@ -15,7 +15,7 @@ define SIGMA_E		0.093	# MinE binding to surface-bound MinD (um^3/s)
 
 define UNBINDRAD	0.01	# MinD separation on surface (um)
 
-define R		1.0	# cell radius
+define R		0.5	# cell radius
 define L_PARAM		2	# half of cell length
 define L_PARAM2		1.5	# half of cell length minus radius
 
