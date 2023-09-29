@@ -112,8 +112,12 @@ class SmoldynCombineArchive:
         if self.rootpath.endswith('.omex'):
             reader = ArchiveReader()
             output = self.rootpath.replace('.omex', '')
-            reader.run(self.rootpath, output)
-            self.rootpath = output
+            try:
+                reader.run(self.rootpath, output)
+                print('Omex unzipped!...')
+                self.rootpath = output
+            except Exception as e:
+                warn(f'Omex could not be unzipped because: {e}')
 
     def get_all_archive_filepaths(self) -> Dict[str, str]:
         """Recursively read the contents of the directory found at `self.rootpath` and set their full paths.
@@ -565,7 +569,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if translate:
             data = self.translate_data_object(data, box_size, n_dim)
 
-        self.save_simularium_file(data, simularium_filename)
+        self.simularium_to_binary(data, simularium_filename)
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()
