@@ -18,7 +18,8 @@ __all__ = [
 
 
 def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]:
-    """ Check that a model is valid
+    """ Check that a model is valid. This method and documentation for this method has been copied directly from
+        `biosimulators_utils.model_lang.smoldyn.validation`.
 
     Args:
         filename (:obj:`str`): path to model
@@ -66,8 +67,8 @@ def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], L
 
 
 def generate_model_validation_object(archive: SmoldynCombineArchive) -> ModelValidation:
-    """Generate an instance of `ModelValidation` based on the output of `archive.model_path`
-        with above `validate_model` method.
+    """ Generate an instance of `ModelValidation` based on the output of `archive.model_path`
+            with above `validate_model` method.
 
     Args:
         archive: (:obj:`CombineArchive`): Instance of `CombineArchive` to generate model validation on.
@@ -78,3 +79,18 @@ def generate_model_validation_object(archive: SmoldynCombineArchive) -> ModelVal
     validation_info = validate_model(archive.model_path)
     validation = ModelValidation(validation_info)
     return validation
+
+
+def verify_simularium_in_archive(archive_rootpath: str) -> bool:
+    """ Returns whether there exists the presence of a simularium file in a given archive's rootpath.
+
+        Args:
+            archive_rootpath(:obj:`str`): path of the root relative to your COMBINE/OMEX archive.
+
+        Returns:
+            `bool`: The presence of a `.simularium` file in the archive's dir.
+    """
+    archive = SmoldynCombineArchive(rootpath=archive_rootpath)
+    return '.simularium' in list(archive.paths.keys())
+
+

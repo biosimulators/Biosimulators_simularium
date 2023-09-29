@@ -9,7 +9,6 @@ from biosimulators_simularium.converters.utils import generate_model_validation_
 
 __all__ = [
     'generate_new_simularium_file',
-    'verify_simularium_in_archive',
 ]
 
 
@@ -55,16 +54,4 @@ def generate_new_simularium_file(archive_rootpath: str,
 
     return converter.generate_simularium_file(simularium_filename=simularium_filename)
 
-
-def verify_simularium_in_archive(archive_rootpath: str) -> bool:
-    """Returns whether there exists the presence of a simularium file in a given archive's rootpath.
-
-        Args:
-            archive_rootpath(:obj:`str`): path of the root relative to your COMBINE/OMEX archive.
-
-        Returns:
-            `bool`: The presence of a `.simularium` file in the archive's dir.
-    """
-    archive = SmoldynCombineArchive(rootpath=archive_rootpath)
-    return '.simularium' in list(archive.paths.keys())
 
