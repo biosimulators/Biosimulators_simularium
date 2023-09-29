@@ -24,7 +24,8 @@ from simulariumio import (
     DisplayData,
     DISPLAY_TYPE,
     BinaryWriter,
-    JsonWriter
+    JsonWriter,
+    TrajectoryConverter
 )
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
@@ -99,7 +100,7 @@ class SmoldynCombineArchive:
                  outputs_dirpath: Optional[str] = None,
                  model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None,
-                 name='my_combine_archive'):
+                 name='smoldyn_combine_archive'):
         """Object for handling the output of Smoldyn simulation data."""
         self.rootpath = rootpath
         self.__parse_rootpath()
@@ -253,7 +254,7 @@ class BiosimulatorsDataConverter(ABC):
         pass
 
     @abstractmethod
-    def generate_translator(self, data: TrajectoryData):
+    def generate_converter(self, data: TrajectoryData):
         """Factory for creating a new instance of a translator/filter converter based on the Simulator,
             whose output you are attempting to visualize.
         """
@@ -386,7 +387,8 @@ class BiosimulatorsDataConverter(ABC):
     def write_simularium_file(
             data: Union[SmoldynData, TrajectoryData],
             simularium_filename: str,
-            save_format: str
+            save_format: str,
+            validation=True
             ) -> None:
         """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
             with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
@@ -396,6 +398,8 @@ class BiosimulatorsDataConverter(ABC):
                 simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
                     passed, will default to `self.archive.rootpath/self.archive.simularium_filename`.
                 save_format(:obj:`str`): format which to write the `data`. Options include `json, binary`.
+                validation(:obj:`bool`): whether to call the wrapped method using `validate_ids=True`. Defaults
+                    to `True`.
         """
         save_format = save_format.lower()
         if not os.path.exists(simularium_filename):
@@ -406,25 +410,37 @@ class BiosimulatorsDataConverter(ABC):
             else:
                 warn('You must provide a valid writer object.')
                 return
-            return writer.save(data, simularium_filename, validate_ids=True)
+            return writer.save(data, simularium_filename, validate_ids=validation)
 
-    def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
+    def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str, v=True) -> None:
         """Write the contents of the simularium stream to a JSON Simularium file.
 
             Args:
                 data: data to write.
                 simularium_filename: filepath at which to write the new simularium file.
+                v: whether to call the wrapped method with validate_ids=True. Defaults to `True`.
         """
-        return self.write_simularium_file(data=data, simularium_filename=simularium_filename, save_format='json')
+        return self.write_simularium_file(
+            data=data,
+            simularium_filename=simularium_filename,
+            save_format='json',
+            validation=v
+        )
 
-    def simularium_to_binary(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
+    def simularium_to_binary(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str, v=True) -> None:
         """Write the contents of the simularium stream to a Binary Simularium file.
 
             Args:
                 data: data to write.
                 simularium_filename: filepath at which to write the new simularium file.
+                v: whether to call the wrapped method with validate_ids=True. Defaults to `True`.
         """
-        return self.write_simularium_file(data=data, simularium_filename=simularium_filename, save_format='binary')
+        return self.write_simularium_file(
+            data=data,
+            simularium_filename=simularium_filename,
+            save_format='binary',
+            validation=v
+        )
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
@@ -533,7 +549,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             meta_data=meta_data
         )
 
-    def generate_translator(self, data: SmoldynData) -> SmoldynConverter:
+    def generate_converter(self, data: SmoldynData) -> SmoldynConverter:
         """Implementation of parent-level factory which exposes an object for translating `SmoldynData` instance.
 
             Args:
@@ -546,7 +562,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def translate_data_object(
             self,
-            data_object: SmoldynData,
+            c: SmoldynConverter,
             box_size: float,
             n_dim=3,
             translation_magnitude: Optional[Union[int, float]] = None
@@ -555,7 +571,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             simularium viewer.
 
             Args:
-                data_object: output data object to translate.
+                c: Instance of `SmoldynConverter` loaded with `SmoldynData`.
                 box_size: size of the simularium viewer box.
                 n_dim: n dimensions of the simulation output. Defaults to `3`.
                 translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
@@ -563,7 +579,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             Returns:
                 `TrajectoryData`: translated data object instance.
         """
-        c = self.generate_translator(data_object)
         translation_magnitude = translation_magnitude or -box_size / 2
         return c.filter_data([
             TranslateFilter(
@@ -581,9 +596,10 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             io_format="binary",
             translate=True,
             overwrite=True,
+            validate_ids=True,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
-            new_omex_filename: Optional[str] = None
+            new_omex_filename: Optional[str] = None,
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
             file, the outputs will be re-bundled.
@@ -606,6 +622,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 translate(:obj:`bool`): Whether to translate the simulation mirror data. Defaults to `True`.
                 overwrite(:obj:`bool`): Whether to overwrite a simularium file of the same name as `simularium_filename`
                     if one already exists in the COMBINE archive. Defaults to `True`.
+                validate_ids(:obj:`bool`): Whether to call the write method using `validation=True`. Defaults to True.
         """
         if not simularium_filename:
             simularium_filename = os.path.join(self.archive.rootpath, self.archive.simularium_filename)
@@ -624,10 +641,13 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             temporal_units=temporal_units
         )
 
-        if translate:
-            data = self.translate_data_object(data, box_size, n_dim)
+        c = self.generate_converter(data)
 
-        self.write_simularium_file(data, simularium_filename, io_format)
+        if translate:
+            data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
+
+        self.write_simularium_file(data, simularium_filename, io_format, validation=validate_ids)
+        # c.save(output_path=simularium_filename)
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()

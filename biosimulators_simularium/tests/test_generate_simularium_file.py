@@ -1,10 +1,11 @@
 from os import path as p
+import os
 import warnings
-from simulariumio import DISPLAY_TYPE
+from simulariumio import DISPLAY_TYPE, AgentData
 from biosimulators_simularium.converters.data_model import (
     SmoldynCombineArchive,
     SmoldynDataConverter,
-    AgentDisplayData
+    AgentDisplayData,
 )
 
 
@@ -20,7 +21,7 @@ TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')
 GENERATE_MODEL_OUTPUT = True
 
 
-def test_generate_minE_simularium_file(archive_fp, translate=True):
+def test_generate_minE_simularium_file(archive_fp, translate=False, v=True, f='JSON'):
     # construct an archive instance to base operations on
     archive = SmoldynCombineArchive(
         rootpath=archive_fp,
@@ -69,7 +70,9 @@ def test_generate_minE_simularium_file(archive_fp, translate=True):
     converter.generate_simularium_file(
         temporal_units='ns',
         display_data=display,
-        translate=translate
+        translate=translate,
+        validate_ids=v,
+        io_format=f
     )
 
 
@@ -105,6 +108,7 @@ def test_generate_simularium_file_from_function():
 
 
 def main():
+    """
     # test generate simularium file from object using unzipped archive (dirpath)
     # test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
 
@@ -113,11 +117,13 @@ def main():
     #     archive_fp=TEST_OMEX_FILEPATH,
     #     new_omex=NEW_TEST_OMEX_FILEPATH
     # )
+    """
 
-    # test generate simularium file from object with custom display data (dirpath)
+    # test generate simularium file from object with custom display data (dirpath). Write to Binary.
     test_generate_minE_simularium_file(
         archive_fp=TEST_ARCHIVE_ROOTPATH,
-        translate=True
+        v=False,
+        translate=True,
     )
 
 
