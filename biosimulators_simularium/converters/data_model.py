@@ -218,6 +218,7 @@ class BiosimulatorsDataConverter(ABC):
         self.archive = archive
         self.has_smoldyn = self.archive.verify_smoldyn_in_manifest()
 
+    # Factory Methods
     @abstractmethod
     def generate_output_data_object(
             self,
@@ -226,13 +227,13 @@ class BiosimulatorsDataConverter(ABC):
             spatial_units="nm",
             temporal_units="ns",
             ):
-        """Generate a data object to fit the simulariumio.TrajectoryData interface.
+        """Factory to generate a data object to fit the simulariumio.TrajectoryData interface.
         """
         pass
 
     @abstractmethod
     def translate_data_object(self, data_object, box_size, n_dim) -> TrajectoryData:
-        """Create a mirrored negative image of a distribution and apply it to 3dimensions if
+        """Factory to create a mirrored negative image of a distribution and apply it to 3dimensions if
             AND ONLY IF it contains all non-negative values.
         """
         pass
@@ -253,9 +254,9 @@ class BiosimulatorsDataConverter(ABC):
         pass
 
     @abstractmethod
-    def generate_converter(self):
-        """Factory for creating a new instance of a converter based on the Simulator of which output you are
-            attempting to visualize.
+    def generate_translator(self, data: TrajectoryData):
+        """Factory for creating a new instance of a translator/filter converter based on the Simulator,
+            whose output you are attempting to visualize.
         """
         pass
 
@@ -343,6 +344,38 @@ class BiosimulatorsDataConverter(ABC):
             color=obj_color
         )
 
+    def generate_display_data_object_dict(
+            self,
+            agent_names: List[Tuple[str, str, float, str]]
+            ) -> Dict[str, DisplayData]:
+        """Factory to generate a display object dict.
+
+            Args:
+                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
+                    the Display Data configuration parameters.\n
+                The Tuple is expected to be as such:
+                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+
+            Returns:
+                `Dict[str, DisplayData]`
+        """
+        raise NotImplementedError
+
+    def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
+        """Factory that generates a new instance of `simulariumio.data_model.InputFileData` based on
+            `self.archive.model_output_filename` (which itself is derived from the model file) if no `model_output_file`
+            is passed.
+
+            Args:
+                  model_output_file(:obj:`str`): `Optional`: file on which to base the `InputFileData` instance.
+            Returns:
+                  (:obj:`InputFileData`): simulariumio input file data object based on `self.archive.model_output_filename`
+
+        """
+        model_output_file = model_output_file or self.archive.model_output_filename
+        return InputFileData(model_output_file)
+
+    # IO Methods
     @staticmethod
     def write_simularium_file(
             data: Union[SmoldynData, TrajectoryData],
@@ -369,23 +402,6 @@ class BiosimulatorsDataConverter(ABC):
                 return
             return writer.save(data, simularium_filename, validate_ids=True)
 
-    def generate_display_data_object_dict(
-            self,
-            agent_names: List[Tuple[str, str, float, str]]
-            ) -> Dict[str, DisplayData]:
-        """Generate a display object dict.
-
-            Args:
-                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
-                    the Display Data configuration parameters.\n
-                The Tuple is expected to be as such:
-                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
-
-            Returns:
-                `Dict[str, DisplayData]`
-        """
-        raise NotImplementedError
-
     def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str) -> None:
         """Write the contents of the simularium stream to a JSON Simularium file.
 
@@ -403,20 +419,6 @@ class BiosimulatorsDataConverter(ABC):
                 simularium_filename: filepath at which to write the new simularium file.
         """
         return self.write_simularium_file(data=data, simularium_filename=simularium_filename, save_format='binary')
-
-    def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
-        """Generates a new instance of `simulariumio.data_model.InputFileData` based on
-            `self.archive.model_output_filename` (which itself is derived from the model file) if no `model_output_file`
-            is passed.
-
-            Args:
-                  model_output_file(:obj:`str`): `Optional`: file on which to base the `InputFileData` instance.
-            Returns:
-                  (:obj:`InputFileData`): simulariumio input file data object based on `self.archive.model_output_filename`
-
-        """
-        model_output_file = model_output_file or self.archive.model_output_filename
-        return InputFileData(model_output_file)
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
@@ -536,6 +538,17 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 default_translation=translation_magnitude * np.ones(n_dim)
             ),
         ])
+
+    def generate_translator(self, data: SmoldynData) -> SmoldynConverter:
+        """Implementation of parent-level factory which exposes an object for translating `SmoldynData` instance.
+
+            Args:
+                data(`SmoldynData`): Data to be translated.
+
+            Returns:
+                `SmoldynConverter` instance based on the data.
+        """
+        return SmoldynConverter(data)
 
     def generate_simularium_file(
             self,
