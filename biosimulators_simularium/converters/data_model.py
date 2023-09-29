@@ -93,8 +93,7 @@ class SmoldynCombineArchive:
                  model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None,
                  name='my_combine_archive'):
-        """Object for handling the output of Smoldyn simulation data. An implementation of the abstract class
-            `SpatialCombineArchive`. """
+        """Object for handling the output of Smoldyn simulation data."""
         self.rootpath = rootpath
         self.__parse_rootpath()
         self.outputs_dirpath = outputs_dirpath
