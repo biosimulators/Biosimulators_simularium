@@ -22,13 +22,13 @@ GENERATE_MODEL_OUTPUT = True
 
 def main():
     # test generate simularium file from object using unzipped archive (dirpath)
-    test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
+    # test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
 
     # test generate simularium file from object using OMEX file (filepath)
-    test_generate_simularium_file_from_object(
-        archive_fp=TEST_OMEX_FILEPATH,
-        new_omex=NEW_TEST_OMEX_FILEPATH
-    )
+    # test_generate_simularium_file_from_object(
+    #     archive_fp=TEST_OMEX_FILEPATH,
+    #     new_omex=NEW_TEST_OMEX_FILEPATH
+    # )
 
     # test generate simularium file from object with custom display data (dirpath)
     test_generate_simularium_file_from_object_with_custom_display(
@@ -50,20 +50,44 @@ def test_generate_simularium_file_from_object_with_custom_display(archive_fp, tr
         generate_model_output=GENERATE_MODEL_OUTPUT
     )
 
-    # construct an agent data dict from simulation agents
-    agent_names = [
-        'MinD_ATP(solution)',
-        'MinD_ATP(front)',
-        'MinD_ADP(solution)',
-        'MinE(solution)',
-        'MinDMinE(front)',
+    # construct a list of AgentDisplayData objects from simulation agents
+    agents = [
+        AgentDisplayData(
+            name='MinD_ATP(solution)',
+            radius=2.0,
+            display_type=DISPLAY_TYPE.SPHERE
+        ),
+        AgentDisplayData(
+            name='MinD_ATP(front)',
+            radius=4.0,
+            display_type=DISPLAY_TYPE.SPHERE
+        ),
+        AgentDisplayData(
+            name='MinD_ADP(solution)',
+            radius=2.0,
+            display_type=DISPLAY_TYPE.SPHERE
+        ),
+        AgentDisplayData(
+            name='MinE(solution)',
+            radius=2.0,
+            display_type=DISPLAY_TYPE.SPHERE
+        ),
+        AgentDisplayData(
+            name='MinDMinE(front)',
+            radius=4.0,
+            display_type=DISPLAY_TYPE.SPHERE
+        ),
     ]
-    display = {}
-    for agent in agent_names:
-        display[agent] = DisplayData(display_type=DISPLAY_TYPE.SPHERE, radius=0.45, name=agent)
+
+    # generate a display data object mapping
+    display = converter.generate_display_data_object_dict(agents)
 
     # convert the file
-    converter.generate_simularium_file(temporal_units='s', display_data=display, translate=translate)
+    converter.generate_simularium_file(
+        temporal_units='ns',
+        display_data=display,
+        translate=translate
+    )
 
 
 def test_generate_simularium_file_from_object(archive_fp, new_omex=None):

@@ -83,7 +83,8 @@ class AgentDisplayData:
         """
         self.name = name
         self.radius = self.calculate_radius(radius=radius)
-        self.display_type = display_type
+        if display_type is not None:
+            self.display_type = display_type
         self.url = url
         self.color = color
 
@@ -444,6 +445,15 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         super().__init__(archive)
         if generate_model_output:
             self.generate_model_output_file()
+
+    def generate_agent_data_object(self) -> AgentData:
+        """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
+            relative combine archive.
+
+            Returns:
+                `AgentData` instance.
+        """
+        pass
 
     def generate_model_output_file(self,
                                    model_output_filename: Optional[str] = None,
