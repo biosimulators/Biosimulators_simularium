@@ -518,27 +518,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             meta_data=meta_data
         )
 
-    def translate_data_object(self, data_object: SmoldynData, box_size: float, n_dim=3) -> TrajectoryData:
-        """Translate the data object's data if the coordinates are all positive to center the data in the
-            simularium viewer.
-
-            Args:
-                data_object: output data object to translate.
-                box_size: size of the simularium viewer box.
-                n_dim: n dimensions of the simulation output. Defaults to `3`.
-
-            Returns:
-                `TrajectoryData`: translated data object instance.
-        """
-        c = SmoldynConverter(data_object)
-        translation_magnitude = -box_size / 2
-        return c.filter_data([
-            TranslateFilter(
-                translation_per_type={},
-                default_translation=translation_magnitude * np.ones(n_dim)
-            ),
-        ])
-
     def generate_translator(self, data: SmoldynData) -> SmoldynConverter:
         """Implementation of parent-level factory which exposes an object for translating `SmoldynData` instance.
 
@@ -549,6 +528,34 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 `SmoldynConverter` instance based on the data.
         """
         return SmoldynConverter(data)
+
+    def translate_data_object(
+            self,
+            data_object: SmoldynData,
+            box_size: float,
+            n_dim=3,
+            translation_magnitude: Optional[Union[int, float]] = None
+        ) -> TrajectoryData:
+        """Translate the data object's data if the coordinates are all positive to center the data in the
+            simularium viewer.
+
+            Args:
+                data_object: output data object to translate.
+                box_size: size of the simularium viewer box.
+                n_dim: n dimensions of the simulation output. Defaults to `3`.
+                translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
+
+            Returns:
+                `TrajectoryData`: translated data object instance.
+        """
+        c = self.generate_translator(data_object)
+        translation_magnitude = translation_magnitude or -box_size / 2
+        return c.filter_data([
+            TranslateFilter(
+                translation_per_type={},
+                default_translation=translation_magnitude * np.ones(n_dim)
+            ),
+        ])
 
     def generate_simularium_file(
             self,
