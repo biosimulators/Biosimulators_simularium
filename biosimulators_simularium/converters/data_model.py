@@ -344,22 +344,29 @@ class BiosimulatorsDataConverter(ABC):
             color=obj_color
         )
 
-    def generate_display_data_object_dict(
-            self,
-            agent_names: List[Tuple[str, str, float, str]]
-            ) -> Dict[str, DisplayData]:
+    @staticmethod
+    def generate_display_data_object_dict(agent_displays: List[AgentDisplayData]) -> Dict[str, DisplayData]:
         """Factory to generate a display object dict.
 
             Args:
-                agent_names: `List[Tuple[str, str, float]]` -> a list of tuples defining
-                    the Display Data configuration parameters.\n
-                The Tuple is expected to be as such:
-                    [(`agent_name: str`, `display_name: str`, `radius: float`, `color`: `str`)]
+                agent_displays: `List[AgentDisplayData]`: A list of `AgentDisplayData` instances which describe the
+                    visualized agents.
 
             Returns:
                 `Dict[str, DisplayData]`
         """
-        raise NotImplementedError
+        displays = {}
+        for agent_display in agent_displays:
+            key = agent_display.name
+            display = DisplayData(
+                name=agent_display.name,
+                radius=agent_display.radius,
+                display_type=agent_display.display_type,
+                url=agent_display.url,
+                color=agent_display.color
+            )
+            displays[key] = display
+        return displays
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
         """Factory that generates a new instance of `simulariumio.data_model.InputFileData` based on
