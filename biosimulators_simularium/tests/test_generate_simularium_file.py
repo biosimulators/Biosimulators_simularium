@@ -1,6 +1,6 @@
 from os import path as p
 import warnings
-from simulariumio import DISPLAY_TYPE, DisplayData
+from simulariumio import DISPLAY_TYPE
 from biosimulators_simularium.converters.data_model import (
     SmoldynCombineArchive,
     SmoldynDataConverter,
@@ -18,23 +18,6 @@ TEST_OMEX_FILEPATH = TEST_ARCHIVE_ROOTPATH.replace('__', '') + '.omex'
 NEW_TEST_OMEX_FILEPATH = p.join(TEST_ARCHIVE_LOCATION, 'myNewlyGeneratedCOMBINE')
 TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')
 GENERATE_MODEL_OUTPUT = True
-
-
-def main():
-    # test generate simularium file from object using unzipped archive (dirpath)
-    # test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
-
-    # test generate simularium file from object using OMEX file (filepath)
-    # test_generate_simularium_file_from_object(
-    #     archive_fp=TEST_OMEX_FILEPATH,
-    #     new_omex=NEW_TEST_OMEX_FILEPATH
-    # )
-
-    # test generate simularium file from object with custom display data (dirpath)
-    test_generate_simularium_file_from_object_with_custom_display(
-        archive_fp=TEST_ARCHIVE_ROOTPATH,
-        translate=True
-    )
 
 
 def test_generate_simularium_file_from_object_with_custom_display(archive_fp, translate=True):
@@ -119,6 +102,23 @@ def test_generate_simularium_file_from_object(archive_fp, new_omex=None):
 
 def test_generate_simularium_file_from_function():
     pass
+
+
+def main():
+    # test generate simularium file from object using unzipped archive (dirpath)
+    # test_generate_simularium_file_from_object(archive_fp=TEST_ARCHIVE_ROOTPATH)
+
+    # test generate simularium file from object using OMEX file (filepath)
+    # test_generate_simularium_file_from_object(
+    #     archive_fp=TEST_OMEX_FILEPATH,
+    #     new_omex=NEW_TEST_OMEX_FILEPATH
+    # )
+
+    # test generate simularium file from object with custom display data (dirpath)
+    test_generate_simularium_file_from_object_with_custom_display(
+        archive_fp=TEST_ARCHIVE_ROOTPATH,
+        translate=True
+    )
 
 
 if __name__ == '__main__':
