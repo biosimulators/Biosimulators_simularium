@@ -25,12 +25,13 @@ from simulariumio import (
     DISPLAY_TYPE,
     BinaryWriter,
     JsonWriter,
-    TrajectoryConverter
+    TrajectoryConverter,
+    TrajectoryData,
+    AgentData
 )
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
-from simulariumio.data_objects.trajectory_data import TrajectoryData, AgentData
 from biosimulators_utils.combine.io import CombineArchiveReader
 from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
@@ -260,15 +261,37 @@ class BiosimulatorsDataConverter(ABC):
         """
         pass
 
-    @abstractmethod
-    def generate_agent_data_object(self) -> AgentData:
+    @staticmethod
+    def generate_agent_data_object(
+            timestep: int,
+            total_steps: int,
+            n_agents: int,
+            box_size: float,
+            min_radius: int,
+            max_radius: int,
+            display_data_dict: Dict[str, DisplayData],
+            type_names: List[List[str]],
+            positions=None,
+            radii=None,
+            ) -> AgentData:
         """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
             relative combine archive.
 
             Returns:
                 `AgentData` instance.
         """
-        pass
+        positions = positions or np.random.uniform(size=(total_steps, n_agents, 3)) * box_size - box_size * 0.5
+        radii = (max_radius - min_radius) * np.random.uniform(size=(total_steps, n_agents)) + min_radius
+        return AgentData(
+            times=timestep * np.array(list(range(total_steps))),
+            n_agents=np.array(total_steps * [n_agents]),
+            viz_types=np.array(total_steps * [n_agents * [1000.0]]),  # default viz type = 1000
+            unique_ids=np.array(total_steps * [list(range(n_agents))]),
+            types=type_names,
+            positions=positions,
+            radii=radii,
+            display_data=display_data_dict
+        )
 
     @staticmethod
     def prepare_simularium_fp(**simularium_config) -> str:
@@ -459,15 +482,6 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         super().__init__(archive)
         if generate_model_output:
             self.generate_model_output_file()
-
-    def generate_agent_data_object(self) -> AgentData:
-        """Factory for a new instance of an `AgentData` object following the specifications of the simulation within the
-            relative combine archive.
-
-            Returns:
-                `AgentData` instance.
-        """
-        pass
 
     def generate_model_output_file(self,
                                    model_output_filename: Optional[str] = None,

@@ -1,0 +1,3 @@
+zarr
+simulariumio
+biosimulators-utils[smoldyn]
