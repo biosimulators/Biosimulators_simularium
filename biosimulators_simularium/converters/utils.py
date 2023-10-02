@@ -133,7 +133,6 @@ def calculate_times(timestep: int, total_steps: int) -> np.ndarray:
 
 def read_lines(modelout_fp: str):
     with open(modelout_fp, 'r') as fp:
-        all = []
         return fp.readlines()
 
 

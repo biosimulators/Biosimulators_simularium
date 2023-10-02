@@ -3,6 +3,7 @@
 *.DS_Store
 *.idea
 *.empty
+*.ipynb
 test_simulation_outputs/
 .smoldyn-2.72-mac/
 __pycache__

@@ -32,7 +32,8 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
-from biosimulators_utils.combine.io import CombineArchiveReader
+from biosimulators_utils.combine.data_model import CombineArchiveContent
+from biosimulators_utils.combine.io import CombineArchiveReader, CombineArchiveWriter
 from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 
@@ -179,7 +180,25 @@ class SmoldynCombineArchive:
             if 'manifest' in v:
                 manifest.append(v)
                 self.paths['manifest'] = v
-        return manifest if len(manifest) > 1 else manifest[0]
+        return list(set(manifest))
+
+    def read_manifest_contents(self):
+        manifest_fp = self.get_manifest_filepath()
+        reader = CombineArchiveReader()
+        return reader.read_manifest(filename=manifest_fp)
+
+    @staticmethod
+    def generate_new_archive_content(fp: str):
+        return CombineArchiveContent(fp)
+
+    def add_simularium_file_to_manifest(self, simularium_fp: Optional[str] = None):
+        contents = self.read_manifest_contents()
+        simularium_fp = simularium_fp or self.simularium_filename
+        new_content = self.generate_new_archive_content(simularium_fp)
+        contents.append(new_content)
+        writer = CombineArchiveWriter()
+        manifest_fp = self.get_manifest_filepath()
+        writer.write_manifest(contents=contents, filename=manifest_fp)
 
     def verify_smoldyn_in_manifest(self) -> bool:
         """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
@@ -188,9 +207,7 @@ class SmoldynCombineArchive:
             Returns:
                 `bool`: Whether there exists a smoldyn model in the archive based on the archive's manifest.
         """
-        manifest = self.get_manifest_filepath()
-        reader = CombineArchiveReader()
-        manifest_contents = [c.to_tuple() for c in reader.read_manifest(manifest)]
+        manifest_contents = [c.to_tuple() for c in self.read_manifest_contents()]
         model_info = manifest_contents[0][1]
         return 'smoldyn' in model_info
 
