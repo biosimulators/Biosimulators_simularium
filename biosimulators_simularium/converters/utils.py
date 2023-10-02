@@ -1,6 +1,7 @@
 import os
 import tempfile
-from typing import Tuple, List
+from typing import Tuple, List, Set
+import numpy as np
 from smoldyn import Simulation as smoldynSim
 from smoldyn.biosimulators.combine import (  # noqa: E402
     read_smoldyn_simulation_configuration,
@@ -94,3 +95,175 @@ def verify_simularium_in_archive(archive_rootpath: str) -> bool:
     return '.simularium' in list(archive.paths.keys())
 
 
+def extract_simulation_from_validation(model_fp: str) -> smoldynSim:
+    validation = validate_model(model_fp)
+    return validation[2][0]
+
+
+def extract_config_from_validation(model_fp: str) -> List[str]:
+    validation = validate_model(model_fp)
+    return validation[2][1]
+
+
+def get_n_agents(model_fp: str):
+    config = extract_config_from_validation(model_fp)
+    numbers = []
+    for line in config:
+        if is_digit(line):
+            numbers.append(line)
+    return numbers
+
+
+def calculate_n_steps(time_stop, time_start, time_step) -> int:
+    return int((time_stop - time_start) / time_step)
+
+
+def calculate_total_steps_from_model(model_fp: str):
+    details = {}
+    model_config = extract_config_from_validation(model_fp)
+    for line in model_config:
+        if 'TIME_STOP' in line:
+            details['time_stop'] = line
+    return
+
+
+def calculate_times(timestep: int, total_steps: int) -> np.ndarray:
+    return timestep * np.array(list(range(total_steps)))
+
+
+def read_lines(modelout_fp: str):
+    with open(modelout_fp, 'r') as fp:
+        all = []
+        return fp.readlines()
+
+
+def extract_unique_colnames_from_modelout(modelout_fp: str):
+    type_names = []
+    lines = read_lines(modelout_fp)
+    for line in lines:
+        parts = line.split()
+        type_names.append(parts[0])
+    return list(set(type_names))
+
+
+def is_digit(item):
+    return item.replace('.', '', 1).isdigit()
+
+
+def extract_timestamps(modelout_fp: str):
+    names = extract_unique_colnames_from_modelout(modelout_fp)
+    return np.array(sorted([float(item) for item in names if is_digit(item)]))
+
+
+def extract_agent_type_names(modelout_fp: str) -> List[str]:
+    names = extract_unique_colnames_from_modelout(modelout_fp)
+    return [item for item in names if not is_digit(item)]
+
+
+def standardize_model_output_fn(working_dirpath: str):
+    """Read in the root of a directory for a file containing the word 'out' and rename
+        it to reflect a standard name.
+
+        working_dirpath(`str`): path of the directory root relative to where the output file is.
+    """
+    for root, _, files in os.walk(working_dirpath):
+        for f in files:
+            if 'out' in f[-7:]:
+                extension = f[-4:]
+                new_prefix = 'modelout'
+                fp = os.path.join(root, new_prefix + extension)
+                os.rename(os.path.join(root, f), fp)
+
+
+def get_modelout_fp(working_dir):
+    for f in os.listdir(working_dir):
+        fp = os.path.join(working_dir, f)
+        if 'out' in fp:
+            return fp
+
+
+def generate_formatted_typename_list(model_filepath: str, num_steps: int):
+    formatted_types = []
+    type_names = extract_agent_type_names(model_filepath)
+    for t in range(num_steps):
+        formatted_types.append(type_names)
+    return formatted_types
+
+
+def get_mol_data(modelout_fp: str):
+    mol_data = []
+    lines = read_lines(modelout_fp)
+    for line in lines:
+        line = line.split()
+        if len(line) > 2:
+            end = len(line) + 1
+            start = 1
+            mapped_floats = list(map(float, line[start:end]))
+            mol_data.append(mapped_floats)
+    return mol_data
+
+
+def extract_coordinates(mol_data: List[float]) -> np.ndarray:
+    coordinates = []
+    for datum in mol_data:
+        triple = np.array(datum[0:len(datum) - 1])
+        coordinates.append(triple)
+    return np.array(coordinates)
+
+
+def __parse_modelout_file(file_path):
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+    all_data = []
+    current_timestep_data = []
+    for line in lines:
+        parts = line.split()
+        # If the line has 2 elements, it's a timestep indicator
+        if len(parts) == 2:
+            # If there's data in the current timestep, save it
+            if current_timestep_data:
+                all_data.append(current_timestep_data)
+                print(f"Timestep data length: {len(current_timestep_data)}")  # Let's inspect the length
+                current_timestep_data = []
+        # Otherwise, it's molecular data
+        elif len(parts) > 2:
+            coordinates = list(map(float, parts[1:4]))  # Extract x, y, z coordinates
+            current_timestep_data.append(coordinates)
+
+    # Append any remaining timestep data
+    if current_timestep_data:
+        all_data.append(current_timestep_data)
+        print(f"Last timestep data length: {len(current_timestep_data)}")  # Let's inspect the length
+    # At this point, let's not convert to numpy array yet, first, let's identify the issue
+    return all_data
+
+
+def count_agents_per_timestep(modelout_fp: str):
+    with open(modelout_fp, 'r') as f:
+        lines = f.readlines()
+    timestep_counts = {}
+    current_timestep = None
+    count = 0
+    for line in lines:
+        line = line.strip()
+
+        # Assuming a timestep line is a single number, like "2" or "2 2"
+        if line.isdigit() or all(x.isdigit() for x in line.split()):
+            # If we already have a current timestep, record its count and reset
+            if current_timestep is not None:
+                timestep_counts[current_timestep] = count
+                count = 0
+            current_timestep = line
+        else:
+            # Increment the agent count for the current timestep
+            count += 1
+
+    # After the loop, we should add the count for the last timestep
+    if current_timestep is not None:
+        timestep_counts[current_timestep] = count
+    return timestep_counts
+
+
+def calculate_n_agents(modelout_fp: str) -> int:
+    agent_counts = count_agents_per_timestep(modelout_fp)
+    return sum(list(agent_counts.values()))
