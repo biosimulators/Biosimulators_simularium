@@ -1,6 +1,6 @@
 FROM python:3.10
 
-ARG VERSION="0.2.9"
+ARG VERSION="0.3.0"
 
 LABEL \
     org.opencontainers.image.authors="Alexander Patrie <apatrie@uchc.edu>, BioSimulators Team <info@biosimulators.org>" \
@@ -37,4 +37,5 @@ CMD []
 #     && twine check dist/* \
 #     && twine upload dist/* \
 #     && rm -r dist \
-#     && rm -r build
+#     && rm -r build \
+#     && rm -r biosimulators_simularium.egg-info

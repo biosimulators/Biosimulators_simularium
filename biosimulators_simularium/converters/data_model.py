@@ -200,9 +200,10 @@ class SmoldynCombineArchive:
         try:
             manifest_fp = self.get_manifest_filepath()
             writer.write_manifest(contents=contents, filename=manifest_fp)
-            warn('Simularium File added to archive manifest contents!')
+            print('Simularium File added to archive manifest contents!')
         except Exception as e:
             print(e)
+            warn(f'The simularium file found at {simularium_fp} could not be added to manifest.')
             return
 
     def verify_smoldyn_in_manifest(self) -> bool:
