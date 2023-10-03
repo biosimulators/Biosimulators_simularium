@@ -75,15 +75,34 @@ class SpatialCombineArchive(ABC):
         return list(set(manifest))[0]
 
     def read_manifest_contents(self):
+        """Reads the contents of the manifest file within `self.rootpath`.
+            Read the return value of `self.get_manifest_filepath()` as the input for `CombineArchiveReader.run().
+        """
         manifest_fp = self.get_manifest_filepath()
         reader = CombineArchiveReader()
         return reader.read_manifest(filename=manifest_fp)
 
     @staticmethod
-    def generate_new_archive_content(fp: str):
+    def generate_new_archive_content(fp: str) -> CombineArchiveContent:
+        """Factory for generating a new instance of `CombineArchiveContent` using just fp.
+
+            Args:
+                fp: filepath of the content you wish to add to the combine archive.
+
+            Returns:
+                `CombineArchiveContent` based on the passed `fp`.
+        """
         return CombineArchiveContent(fp)
 
-    def add_simularium_file_to_manifest(self, simularium_fp: Optional[str] = None):
+    def add_simularium_file_to_manifest(self, simularium_fp: Optional[str] = None) -> None:
+        """Read the contents of the manifest file found at `self.rootpath`, create a new instance of
+            `CombineArchiveContent` using a set simularium_fp, append the new content to the original,
+            and re-write the archive to reflect the newly added content.
+
+            Args:
+                  simularium_fp:`Optional`: path to the newly generated simularium file. Defaults
+                    to `self.simularium_filename`.
+        """
         contents = self.read_manifest_contents()
         simularium_fp = simularium_fp or self.simularium_filename
         new_content = self.generate_new_archive_content(simularium_fp)
@@ -137,11 +156,10 @@ class SpatialCombineArchive(ABC):
 class SmoldynCombineArchive(SpatialCombineArchive):
     def __init__(self,
                  rootpath: str,
-                 outputs_dirpath: Optional[str] = None,
                  model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None,
                  name='smoldyn_combine_archive'):
-        """Object for handling the output of Smoldyn simulation data."""
+        """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`"""
         super().__init__(rootpath, simularium_filename, name)
         self.model_path = self.set_model_filepath()
         self.model_output_filename = model_output_filename \
@@ -151,6 +169,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
     def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt') -> Union[str, None]:
         """Recursively read the full paths of all files in `self.paths` and return the full path of the file
             containing the term 'model.txt', which is the naming convention.
+            Implementation of ancestral abstract method.
 
             Args:
                 model_filename: `Optional[str]`: index by which to label a file in directory as the model file.
@@ -179,6 +198,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
     def generate_model_validation_object(self) -> ModelValidation:
         """Generate an instance of `ModelValidation` based on the output of `self.model_path`
             with `biosimulators-utils.model_lang.smoldyn.validate_model` method.
+            Implementation of ancestral abstract method.
 
         Returns:
             :obj:`ModelValidation`
