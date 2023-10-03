@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from biosimulators_simularium._version import __version__
+from biosimulators_simularium._VERSION import __version__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
