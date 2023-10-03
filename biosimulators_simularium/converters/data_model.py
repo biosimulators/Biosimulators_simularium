@@ -678,9 +678,11 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             temporal_units=temporal_units
         )
 
-        c = self.generate_converter(data)
         if translate:
+            c = self.generate_converter(data)
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
+
+        # write the simularium file
         self.write_simularium_file(
             data=data,
             simularium_filename=simularium_filename,
