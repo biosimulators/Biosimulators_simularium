@@ -1,7 +1,6 @@
 """Methods for writing and reading simularium files within COMBINE/OMEX archives."""
 
 
-import os
 from typing import Optional
 from biosimulators_simularium.converters.data_model import SmoldynCombineArchive, SmoldynDataConverter
 from biosimulators_simularium.converters.utils import generate_model_validation_object
@@ -17,7 +16,7 @@ def generate_new_simularium_file(
         archive_rootpath: str,
         simularium_filename: Optional[str] = None,
         save_output_df: bool = False,
-        fmt: str = 'smoldyn'
+        __fmt: str = 'smoldyn'
         ) -> None:
     """Generate a new `.simularium` file based on the `model.txt` within the passed-archive rootpath using the above
         validation method. Raises a `ValueError` if there are errors present.
@@ -28,15 +27,12 @@ def generate_new_simularium_file(
             in the `archive_rootpath`. Defaults to `None`.
         save_output_df (:obj:`bool`): Whether to save the modelout.txt contents as a pandas df in csv form. Defaults
             to `False`.
-        fmt (:obj:`str`): format by which to convert and save the simularium file. Currently, only 'smoldyn' is
+        __fmt (:obj:`str`): format by which to convert and save the simularium file. Currently, only 'smoldyn' is
             supported. Defaults to `smoldyn`.
-
-    Returns:
-        None
     """
 
     # verify smoldyn combine archive
-    if 'smoldyn' in fmt.lower():
+    if 'smoldyn' in __fmt.lower():
         archive = SmoldynCombineArchive(rootpath=archive_rootpath, simularium_filename=simularium_filename)
 
         # store and parse model data
