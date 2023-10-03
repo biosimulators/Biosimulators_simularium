@@ -13,10 +13,12 @@ __all__ = [
 
 
 # pragma: no cover
-def generate_new_simularium_file(archive_rootpath: str,
-                                 simularium_filename: Optional[str] = None,
-                                 save_output_df: bool = False,
-                                 fmt='smoldyn') -> None:
+def generate_new_simularium_file(
+        archive_rootpath: str,
+        simularium_filename: Optional[str] = None,
+        save_output_df: bool = False,
+        fmt: str = 'smoldyn'
+        ) -> None:
     """Generate a new `.simularium` file based on the `model.txt` within the passed-archive rootpath using the above
         validation method. Raises a `ValueError` if there are errors present.
 
