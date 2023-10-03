@@ -45,8 +45,7 @@ class SpatialCombineArchive(ABC):
 
     def __init__(self,
                  rootpath: str,
-                 simularium_filename=None,
-                 unzipped_output_location=None):
+                 simularium_filename=None):
         """ABC Object for storing and setting/getting files pertaining to simularium file conversion.
 
             Args:
