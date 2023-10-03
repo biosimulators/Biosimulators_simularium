@@ -12,7 +12,7 @@ from smoldyn.biosimulators.combine import (  # noqa: E402
     write_smoldyn_simulation_configuration,
     init_smoldyn_simulation_from_configuration_file,
 )
-from biosimulators_simularium.archives.data_model import SmoldynCombineArchive, ModelValidation
+from biosimulators_simularium.archives.data_model import SpatialCombineArchive, ModelValidation, SmoldynCombineArchive
 
 
 __all__ = [
@@ -70,12 +70,12 @@ def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], L
     return (errors, warnings, (model, config))
 
 
-def generate_model_validation_object(archive: SmoldynCombineArchive) -> ModelValidation:
+def generate_model_validation_object(archive: SpatialCombineArchive) -> ModelValidation:
     """ Generate an instance of `ModelValidation` based on the output of `archive.model_path`
             with above `validate_model` method.
 
     Args:
-        archive: (:obj:`CombineArchive`): Instance of `CombineArchive` to generate model validation on.
+        archive: (:obj:`SpatialCombineArchive`): Instance of `SpatialCombineArchive` to generate model validation on.
 
     Returns:
         :obj:`ModelValidation`
@@ -85,8 +85,12 @@ def generate_model_validation_object(archive: SmoldynCombineArchive) -> ModelVal
     return validation
 
 
-def verify_simularium_in_archive(archive_rootpath: str) -> bool:
-    """ Returns whether there exists the presence of a simularium file in a given archive's rootpath.
+def verify_simularium_in_archive(archive: SpatialCombineArchive) -> bool:
+    return '.simularium' in list(archive.paths.keys())
+
+
+def verify_simularium_in_smoldyn_archive(archive_rootpath: str) -> bool:
+    """ Returns whether there exists the presence of a simularium file in a given smoldyn archive's rootpath.
 
         Args:
             archive_rootpath(:obj:`str`): path of the root relative to your COMBINE/OMEX archive.
@@ -95,7 +99,7 @@ def verify_simularium_in_archive(archive_rootpath: str) -> bool:
             `bool`: The presence of a `.simularium` file in the archive's dir.
     """
     archive = SmoldynCombineArchive(rootpath=archive_rootpath)
-    return '.simularium' in list(archive.paths.keys())
+    return verify_simularium_in_archive(archive)
 
 
 def extract_simulation_from_validation(model_fp: str) -> smoldynSim:

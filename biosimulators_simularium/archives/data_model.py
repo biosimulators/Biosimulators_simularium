@@ -2,30 +2,44 @@
     are directly related to purely spatial simulations.
 
 :Author: Alexander Patrie <apatrie@uchc.edu>
-:Date: 2020-12-06
-:Copyright: 2020, Center for Reproducible Biomedical Modeling
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
 :License: MIT
 """
 
 
 import os
 import zipfile
+from dataclasses import dataclass
 from warnings import warn
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
+from smoldyn import Simulation as smoldynSim
 from biosimulators_utils.combine.data_model import CombineArchiveContent
 from biosimulators_utils.combine.io import CombineArchiveReader, CombineArchiveWriter
 from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
-from biosimulators_simularium.generators.data_model import ModelValidation
 
 
 # use this to toggle quicktest
 TEST = False
 
 
-# TODO: Add more robust rezipping
+@dataclass
+class ModelValidation:
+    errors: List[List[str]]
+    warnings: List[str]
+    simulation: smoldynSim
+    config: List[str]
 
+    def __init__(self, validation: Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]):
+        self.errors = validation[0]
+        self.warnings = validation[1]
+        self.simulation = validation[2][0]
+        self.config = validation[2][1]
+
+
+# TODO: Add more robust rezipping
 class SpatialCombineArchive(ABC):
     paths: Dict[str, str]
 

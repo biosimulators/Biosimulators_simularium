@@ -1,8 +1,16 @@
-"""Using the Biosimulators side of Smoldyn to generate a modelout.txt Smoldyn file for a specified OMEX/COMBINE archive which then
-    is used to generate a .simularium file for the given simulation. That .simularium file is then stored along with the log.yml and
-    report.{FORMAT} relative to the simulation. Remember: each simulation, while not inherently published, has the potential for publication
-    based purely on the simulation's ability to provide a valid OMEX/COMBINE archive. There exists (or should exist) an additional layer
-    of abstraction to then validate and verify the contents therein.
+"""
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+
+
+Using the Biosimulators side of Smoldyn to generate a modelout.txt Smoldyn file for a specified OMEX/COMBINE archive
+which then is used to generate a .simularium file for the given simulation. That .simularium file is then stored along
+with the log.yml and report.{FORMAT} relative to the simulation. Remember: each simulation, while not inherently
+published, has the potential for publication based purely on the simulation's ability to provide a valid OMEX/COMBINE
+archive. There exists (or should exist) an additional layer of abstraction to then validate and
+verify the contents therein.
 """
 
 
