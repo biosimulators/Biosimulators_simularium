@@ -15,13 +15,13 @@ from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 from biosimulators_utils.combine.data_model import CombineArchiveContent
 from biosimulators_utils.combine.io import CombineArchiveReader, CombineArchiveWriter
-from biosimulators_utils.archive.io import ArchiveReader
+from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 from biosimulators_simularium.generators.data_model import ModelValidation
 
 
 # use this to toggle quicktest
-TEST = True
+TEST = False
 
 
 class SpatialCombineArchive(ABC):
@@ -29,7 +29,8 @@ class SpatialCombineArchive(ABC):
 
     def __init__(self,
                  rootpath: str,
-                 simularium_filename=None):
+                 simularium_filename=None,
+                 unzipped_output_location=None):
         """ABC Object for storing and setting/getting files pertaining to simularium file conversion.
 
             Args:
@@ -52,14 +53,32 @@ class SpatialCombineArchive(ABC):
             zipped file. If .omex, then decompress the input path into an unzipped directory for working.
         """
         if self.rootpath.endswith('.omex'):
-            reader = ArchiveReader()
-            try:
-                output = self.rootpath.replace('.omex', '_UNZIPPED')  # TODO: make tempdir here instead
-                reader.run(self.rootpath, output)
-                print('Omex unzipped!...')
-                self.rootpath = output
-            except Exception as e:
-                warn(f'Omex could not be unzipped because: {e}')
+            self.unzip()
+
+    def unzip(self, unzipped_output_location: str = None):
+        reader = ArchiveReader()
+        try:
+            if not unzipped_output_location:
+                unzipped_output_location = self.rootpath.replace(
+                    '.omex',
+                    '_UNZIPPED'
+                )  # TODO: make tempdir here instead
+            reader.run(self.rootpath, unzipped_output_location)
+            print('Omex successfully unzipped!...')
+            self.rootpath = unzipped_output_location
+        except Exception as e:
+            warn(f'Omex could not be unzipped because: {e}')
+
+    def rezip(self, paths_to_write: Optional[List[str]] = None, destination: Optional[str] = None):
+        if '.omex' in self.rootpath:
+            writer = ArchiveWriter()
+            if not paths_to_write:
+                paths_to_write = list(self.get_all_archive_filepaths().values())
+                print(f'HERE THEY ARE: {paths_to_write}')
+            if not destination:
+                destination = self.rootpath
+            writer.run(archive=paths_to_write, archive_filename=destination)
+            print(f'Omex successfully bundled with the following paths: {paths_to_write}!')
 
     def get_all_archive_filepaths(self) -> Dict[str, str]:
         """Recursively read the contents of the directory found at `self.rootpath` and set their full paths.
@@ -180,8 +199,6 @@ class SmoldynCombineArchive(SpatialCombineArchive):
                 model_output_filename: filename ONLY not filepath of the model file you are working with. Defaults to
                     `modelout.txt`.
                 simularium_filename:
-
-
         """
         super().__init__(rootpath, simularium_filename)
         self.set_model_filepath()
@@ -229,7 +246,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
         return validation
 
 
-def test_smoldyn_archive_with_omex(test: bool):
+def test_unzip_smoldyn_archive_with_omex(test: bool):
     """If `TEST`, test the `SmoldynCombineArchive` constructor by passing an `.omex` file as `rootpath`."""
     if test:
         omex_archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
@@ -240,7 +257,31 @@ def test_smoldyn_archive_with_omex(test: bool):
         print(f'model path: {archive.model_path}')
         print(f'model output: {archive.model_output_filename}')
         print(f'all paths: {archive.paths}')
+        print(f'Test complete!!!')
+        print(f'\n\n\n')
+        return archive
+
+
+def test_rezip_smoldyn_archive_with_omex(test: bool):
+    """If `TEST`, test the `SmoldynCombineArchive` constructor by passing an `.omex` file as `rootpath`."""
+    if test:
+        # set paths and unzip the archive
+        omex_archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/__minE_Andrews_052023'
+        simularium_fp = os.path.join(omex_archive_rootpath, 'test_smoldyn_from_omex')
+        archive = SmoldynCombineArchive(rootpath=omex_archive_rootpath, simularium_filename=simularium_fp)
+        print(f'rootpath: {archive.rootpath}')
+        print(f'model path: {archive.model_path}')
+        print(f'model output: {archive.model_output_filename}')
+        print(f'all paths: {archive.paths}')
+        print(f'Test complete!!!')
+        print(f'\n\n\n')
+
+        # rezip
+        new_destination = os.path.join('/Users/alex/Desktop', 'NEWLY_ZIPPED.omex')
+        archive.rezip(destination=new_destination)
+        print('Archive zipped!!!')
 
 
 if __name__ == '__main__':
-    test_smoldyn_archive_with_omex(TEST)
+    test_unzip_smoldyn_archive_with_omex(TEST)
+    test_rezip_smoldyn_archive_with_omex(TEST)
