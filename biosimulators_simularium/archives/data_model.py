@@ -29,21 +29,22 @@ class SpatialCombineArchive(ABC):
 
     def __init__(self,
                  rootpath: str,
-                 simularium_filename: Optional[str] = None,
-                 name='new_spatial_archive'):
+                 simularium_filename=None):
         """ABC Object for storing and setting/getting files pertaining to simularium file conversion.
 
             Args:
                 rootpath: root of the unzipped archive. Consider this your working dirpath.
-                simularium_filename:`Optional`: path which to assign to the newly generated simularium file.
-                    Defaults to `{name}_output_for_simularium`.
+                simularium_filename:`Optional`: full path which to assign to the newly generated simularium file.
+                If using this value, it EXPECTS a full path. Defaults to `{name}_output_for_simularium`.
                 name: Commonplace name for the archive to be used if no `simularium_filename` is passed. Defaults to
                     `new_spatial_archive`.
         """
         super().__init__()
         self.rootpath = rootpath
+        if not simularium_filename:
+            simularium_filename = 'spatial_combine_archive'
+            self.simularium_filename = os.path.join(self.rootpath, simularium_filename)
         self.__parse_rootpath()
-        self.simularium_filename = simularium_filename or name + '_output_for_simularium'
         self.paths = self.get_all_archive_filepaths()
 
     def __parse_rootpath(self):
@@ -52,8 +53,8 @@ class SpatialCombineArchive(ABC):
         """
         if self.rootpath.endswith('.omex'):
             reader = ArchiveReader()
-            output = self.rootpath.replace('.omex', '_UNZIPPED')  # TODO: make tempdir here instead
             try:
+                output = self.rootpath.replace('.omex', '_UNZIPPED')  # TODO: make tempdir here instead
                 reader.run(self.rootpath, output)
                 print('Omex unzipped!...')
                 self.rootpath = output
@@ -170,17 +171,24 @@ class SpatialCombineArchive(ABC):
 class SmoldynCombineArchive(SpatialCombineArchive):
     def __init__(self,
                  rootpath: str,
-                 model_output_filename: Optional[str] = None,
-                 simularium_filename: Optional[str] = None,
-                 name='smoldyn_combine_archive'):
-        """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`"""
-        super().__init__(rootpath, simularium_filename, name)
-        self.model_path = self.set_model_filepath()
-        self.model_output_filename = model_output_filename \
-            or self.model_path.replace('.txt', '') + 'out.txt'
+                 model_output_filename='modelout.txt',
+                 simularium_filename='smoldyn_combine_archive'):
+        """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`.
+
+            Args:
+                rootpath: fp to the root of the archive 'working dir'.
+                model_output_filename: filename ONLY not filepath of the model file you are working with. Defaults to
+                    `modelout.txt`.
+                simularium_filename:
+
+
+        """
+        super().__init__(rootpath, simularium_filename)
+        self.set_model_filepath()
+        self.model_output_filename = os.path.join(self.rootpath, model_output_filename)
         self.paths['model_output_file'] = self.model_output_filename
 
-    def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt') -> Union[str, None]:
+    def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt'):
         """Recursively read the full paths of all files in `self.paths` and return the full path of the file
             containing the term 'model.txt', which is the naming convention.
             Implementation of ancestral abstract method.
@@ -190,13 +198,12 @@ class SmoldynCombineArchive(SpatialCombineArchive):
                     Defaults to `model_default`.
                 model_default: `str`: default model filename naming convention. Defaults to `'model.txt'`
         """
-        model_filename = model_filename or model_default  # default Smoldyn model name
+        if not model_filename:
+            model_filename = os.path.join(self.rootpath, model_default)  # default Smoldyn model name
         for k in self.paths.keys():
             full_path = self.paths[k]
             if model_filename in full_path:
-                return full_path
-            else:
-                return None
+                self.model_path = model_filename
 
     def set_model_output_filepath(self) -> None:
         """Recursively search the directory at `self.rootpath` for a smoldyn
@@ -229,9 +236,10 @@ def test_smoldyn_archive_with_omex(test: bool):
         omex_archive_fp = omex_archive_rootpath + '.omex'
         simularium_fp = os.path.join(omex_archive_rootpath, 'test_smoldyn_from_omex')
         archive = SmoldynCombineArchive(rootpath=omex_archive_fp, simularium_filename=simularium_fp)
-        print(archive.rootpath)
-        print(archive.model_path)
-        print(archive.model_output_filename)
+        print(f'rootpath: {archive.rootpath}')
+        print(f'model path: {archive.model_path}')
+        print(f'model output: {archive.model_output_filename}')
+        print(f'all paths: {archive.paths}')
 
 
 if __name__ == '__main__':
