@@ -10,6 +10,7 @@ from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 from biosimulators_simularium.generators.data_model import ModelValidation
 
 
+# use this to toggle quicktest
 TEST = False
 
 
@@ -211,12 +212,17 @@ class SmoldynCombineArchive(SpatialCombineArchive):
         return validation
 
 
-def test_smoldyn_archive_with_omex():
+def test_smoldyn_archive_with_omex(test: bool):
     """If `TEST`, test the `SmoldynCombineArchive` constructor by passing an `.omex` file as `rootpath`."""
-    omex_archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
-    omex_archive_fp = omex_archive_rootpath + '.omex'
-    simularium_fp = os.path.join(omex_archive_rootpath, 'test_smoldyn_from_omex')
-    archive = SmoldynCombineArchive(rootpath=omex_archive_fp, simularium_filename=simularium_fp)
+    if test:
+        omex_archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
+        omex_archive_fp = omex_archive_rootpath + '.omex'
+        simularium_fp = os.path.join(omex_archive_rootpath, 'test_smoldyn_from_omex')
+        archive = SmoldynCombineArchive(rootpath=omex_archive_fp, simularium_filename=simularium_fp)
+        print(archive.rootpath)
+        print(archive.model_path)
+        print(archive.model_output_filename)
 
 
-
+if __name__ == '__main__':
+    test_smoldyn_archive_with_omex(TEST)
