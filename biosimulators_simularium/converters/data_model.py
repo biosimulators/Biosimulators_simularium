@@ -180,7 +180,7 @@ class SmoldynCombineArchive:
             if 'manifest' in v:
                 manifest.append(v)
                 self.paths['manifest'] = v
-        return list(set(manifest))
+        return list(set(manifest))[0]
 
     def read_manifest_contents(self):
         manifest_fp = self.get_manifest_filepath()
@@ -197,8 +197,13 @@ class SmoldynCombineArchive:
         new_content = self.generate_new_archive_content(simularium_fp)
         contents.append(new_content)
         writer = CombineArchiveWriter()
-        manifest_fp = self.get_manifest_filepath()
-        writer.write_manifest(contents=contents, filename=manifest_fp)
+        try:
+            manifest_fp = self.get_manifest_filepath()
+            writer.write_manifest(contents=contents, filename=manifest_fp)
+            warn('Simularium File added to archive manifest contents!')
+        except Exception as e:
+            print(e)
+            return
 
     def verify_smoldyn_in_manifest(self) -> bool:
         """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
@@ -450,7 +455,7 @@ class BiosimulatorsDataConverter(ABC):
             else:
                 warn('You must provide a valid writer object.')
                 return
-            return writer.save(data, simularium_filename, validate_ids=validation)
+            return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validation)
 
     def simularium_to_json(self, data: Union[SmoldynData, TrajectoryData], simularium_filename: str, v=True) -> None:
         """Write the contents of the simularium stream to a JSON Simularium file.
@@ -656,7 +661,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 validate_ids(:obj:`bool`): Whether to call the write method using `validation=True`. Defaults to True.
         """
         if not simularium_filename:
-            simularium_filename = os.path.join(self.archive.rootpath, self.archive.simularium_filename)
+            simularium_filename = self.archive.simularium_filename
 
         if os.path.exists(simularium_filename):
             warn('That file already exists in this COMBINE archive.')
@@ -677,8 +682,12 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if translate:
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
 
-        self.write_simularium_file(data, simularium_filename, io_format, validation=validate_ids)
-        # c.save(output_path=simularium_filename)
+        self.write_simularium_file(
+            data=data,
+            simularium_filename=simularium_filename,
+            save_format=io_format,
+            validation=validate_ids
+        )
         print('New Simularium file generated!!')
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()
