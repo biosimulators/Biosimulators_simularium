@@ -1,6 +1,6 @@
 FROM python:3.10
 
-ARG VERSION="0.2.7"
+ARG VERSION="0.2.9"
 
 LABEL \
     org.opencontainers.image.authors="Alexander Patrie <apatrie@uchc.edu>, BioSimulators Team <info@biosimulators.org>" \

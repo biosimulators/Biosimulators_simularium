@@ -678,10 +678,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         )
 
         c = self.generate_converter(data)
-
         if translate:
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
-
         self.write_simularium_file(
             data=data,
             simularium_filename=simularium_filename,
@@ -689,6 +687,11 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             validation=validate_ids
         )
         print('New Simularium file generated!!')
+
+        # add new file to manifest
+        self.archive.add_simularium_file_to_manifest(simularium_fp=simularium_filename)
+
+        # re-zip the archive if it was passed as an omex file
         if '.omex' in self.archive.rootpath:
             writer = ArchiveWriter()
             paths = list(self.archive.get_all_archive_filepaths().values())

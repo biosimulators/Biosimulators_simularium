@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+from biosimulators_simularium._version import __version__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name='biosimulators-simularium',
-    version='0.2.7',
+    version=__version__,
     packages=find_packages(),
     url='https://github.com/biosimulators/Biosimulators_simularium',
     author='Alexander Patrie/BioSimulators Team',
