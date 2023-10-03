@@ -1,4 +1,10 @@
-"""Utility functions related to `biosimulators_simularium.converters`."""
+"""Utility functions related to `biosimulators_simularium.converters`.
+
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+"""
 
 
 import os

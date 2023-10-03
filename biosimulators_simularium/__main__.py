@@ -1,3 +1,11 @@
+"""
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+"""
+
+
 import os
 import argparse
 from biosimulators_simularium.converters.io import generate_new_simularium_file

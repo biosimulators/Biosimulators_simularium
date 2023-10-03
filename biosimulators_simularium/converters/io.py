@@ -1,4 +1,10 @@
-"""Methods for writing and reading simularium files within COMBINE/OMEX archives."""
+"""Methods for writing and reading simularium files within COMBINE/OMEX archives.
+
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+"""
 
 
 from typing import Optional

@@ -1,3 +1,11 @@
+"""
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+"""
+
+
 import os
 from typing import List, Optional, Tuple, Union
 from abc import ABC, abstractmethod
