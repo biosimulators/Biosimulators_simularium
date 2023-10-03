@@ -24,6 +24,8 @@ from biosimulators_simularium.generators.data_model import ModelValidation
 TEST = False
 
 
+# TODO: Add more robust rezipping
+
 class SpatialCombineArchive(ABC):
     paths: Dict[str, str]
 
