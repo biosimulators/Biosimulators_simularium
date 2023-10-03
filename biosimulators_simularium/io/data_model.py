@@ -49,6 +49,7 @@ class BinaryFileWriter(FileWriter):
             return val
 
 
+# noinspection PyMethodOverriding
 class ZarrWriter(FileWriter):
     def __init__(self):
         super().__init__()
@@ -76,20 +77,29 @@ class ZarrWriter(FileWriter):
     def get_slice(arr: zarr.Array, xA: int, xZ: int, yA: int, yZ: int):
         return arr[xA:xZ, yA:yZ]
 
+    @staticmethod
+    def convert_text_file_to_zarr(dtype_list: List[Tuple[str, str]],
+                                  text_filename: str,
+                                  target_varname: str,
+                                  zarr_filename_to_save: str) -> None:
+        """Convert the contents of a text file to a zarr formatted file using the mapped types from
+            `dtype_list`.
 
-def convert_text_file_to_zarr():
-    dType = [('molecule', 'U20'), ('x', 'f8'), ('y', 'f8'), ('z', 'f8'), ('time_step', 'i4')]
-
-    data_list = []
-
-    with open('your_file.txt', 'r') as f:
-        for line in f:
-            parts = line.strip().split()
-            if len(parts) == 5 and parts[0] == 'MinD_ATP(front)':
-                data_list.append((parts[0], float(parts[1]), float(parts[2]), float(parts[3]), int(parts[4])))
-
-    data_array = np.array(data_list, dtype=dType)
-
-    z = zarr.array(data_array, chunks=(1000,))
-    zarr.save('your_file.zarr', z)
+            Args:
+                  dtype_list:`List[Tuple[str, str]]`: A list of string tuples whose length are two. The expected
+                    format is `(colname, dtype)`. For example:
+                      dType = [('molecule', 'U20'), ('x', 'f8'), ('y', 'f8'), ('z', 'f8'), ('time_step', 'i4')]
+                  text_filename: fp of the text file you are converting.
+                  target_varname: Variable name to target for example: `'MinD_ATP(front)'`.
+                  zarr_filename_to_save: fp of the newly converted zarr file.
+        """
+        data_list = []
+        with open(text_filename, 'r') as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) == 5 and parts[0] == target_varname:
+                    data_list.append((parts[0], float(parts[1]), float(parts[2]), float(parts[3]), int(parts[4])))
+        data_array = np.array(data_list, dtype=dtype_list)
+        z = zarr.array(data_array, chunks=(1000,))
+        zarr.save(zarr_filename_to_save, z)
 
