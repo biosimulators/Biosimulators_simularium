@@ -143,6 +143,23 @@ class SpatialCombineArchive(ABC):
         """
         return CombineArchiveContent(fp)
 
+    def add_file_to_manifest(self, contents_fp: str) -> None:
+        contents = self.read_manifest_contents()
+        new_content = self.generate_new_archive_content(contents_fp)
+        contents.append(new_content)
+        writer = CombineArchiveWriter()
+        try:
+            manifest_fp = self.get_manifest_filepath()
+            writer.write_manifest(contents=contents, filename=manifest_fp)
+            print('File added to archive manifest contents!')
+        except Exception as e:
+            print(e)
+            warn(f'The simularium file found at {contents_fp} could not be added to manifest.')
+            return
+
+    def add_modelout_file_to_manifest(self, model_fp) -> None:
+        return self.add_file_to_manifest(model_fp)
+
     def add_simularium_file_to_manifest(self, simularium_fp: Optional[str] = None) -> None:
         """Read the contents of the manifest file found at `self.rootpath`, create a new instance of
             `CombineArchiveContent` using a set simularium_fp, append the new content to the original,
@@ -152,19 +169,13 @@ class SpatialCombineArchive(ABC):
                   simularium_fp:`Optional`: path to the newly generated simularium file. Defaults
                     to `self.simularium_filename`.
         """
-        contents = self.read_manifest_contents()
-        simularium_fp = simularium_fp or self.simularium_filename
-        new_content = self.generate_new_archive_content(simularium_fp)
-        contents.append(new_content)
-        writer = CombineArchiveWriter()
         try:
-            manifest_fp = self.get_manifest_filepath()
-            writer.write_manifest(contents=contents, filename=manifest_fp)
+            if not simularium_fp:
+                simularium_fp = self.simularium_filename
+            self.add_file_to_manifest(simularium_fp)
             print('Simularium File added to archive manifest contents!')
-        except Exception as e:
-            print(e)
-            warn(f'The simularium file found at {simularium_fp} could not be added to manifest.')
-            return
+        except Exception:
+            raise IOError(f'The simularium file found at {simularium_fp} could not be added to manifest.')
 
     def verify_smoldyn_in_manifest(self) -> bool:
         """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
