@@ -1,3 +1,6 @@
+"""Utility functions related to `biosimulators_simularium.converters`."""
+
+
 import os
 import tempfile
 from typing import Tuple, List, Set
@@ -9,7 +12,7 @@ from smoldyn.biosimulators.combine import (  # noqa: E402
     write_smoldyn_simulation_configuration,
     init_smoldyn_simulation_from_configuration_file,
 )
-from biosimulators_simularium.converters.data_model import SmoldynCombineArchive, ModelValidation
+from biosimulators_simularium.archives.data_model import SmoldynCombineArchive, ModelValidation
 
 
 __all__ = [

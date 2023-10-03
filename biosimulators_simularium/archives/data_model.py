@@ -1,3 +1,13 @@
+"""Objects for the storage, retrieval, and calculation of data pertaining to OMEX/Combine archives whose contents
+    are directly related to purely spatial simulations.
+
+:Author: Alexander Patrie <apatrie@uchc.edu>
+:Date: 2020-12-06
+:Copyright: 2020, Center for Reproducible Biomedical Modeling
+:License: MIT
+"""
+
+
 import os
 import zipfile
 from warnings import warn
@@ -11,7 +21,7 @@ from biosimulators_simularium.generators.data_model import ModelValidation
 
 
 # use this to toggle quicktest
-TEST = False
+TEST = True
 
 
 class SpatialCombineArchive(ABC):
