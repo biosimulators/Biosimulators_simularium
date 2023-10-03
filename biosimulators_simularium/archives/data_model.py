@@ -10,6 +10,9 @@ from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 from biosimulators_simularium.generators.data_model import ModelValidation
 
 
+TEST = False
+
+
 class SpatialCombineArchive(ABC):
     paths: Dict[str, str]
 
@@ -38,7 +41,7 @@ class SpatialCombineArchive(ABC):
         """
         if self.rootpath.endswith('.omex'):
             reader = ArchiveReader()
-            output = self.rootpath.replace('.omex', '')
+            output = self.rootpath.replace('.omex', '_UNZIPPED')  # TODO: make tempdir here instead
             try:
                 reader.run(self.rootpath, output)
                 print('Omex unzipped!...')
@@ -206,3 +209,14 @@ class SmoldynCombineArchive(SpatialCombineArchive):
         validation_info = validate_model(self.model_path)
         validation = ModelValidation(validation_info)
         return validation
+
+
+def test_smoldyn_archive_with_omex():
+    """If `TEST`, test the `SmoldynCombineArchive` constructor by passing an `.omex` file as `rootpath`."""
+    omex_archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
+    omex_archive_fp = omex_archive_rootpath + '.omex'
+    simularium_fp = os.path.join(omex_archive_rootpath, 'test_smoldyn_from_omex')
+    archive = SmoldynCombineArchive(rootpath=omex_archive_fp, simularium_filename=simularium_fp)
+
+
+
