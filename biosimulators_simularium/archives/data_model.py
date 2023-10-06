@@ -9,26 +9,23 @@
 
 
 import os
+import re
 import zipfile
+from zipfile import ZipFile as Zip
 import enum
 from dataclasses import dataclass
 from warnings import warn
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 from smoldyn import Simulation as smoldynSim
-from biosimulators_utils.model_lang.smoldyn.validation import validate_model
-
+from biosimulators_simularium.converters.utils import validate_model
 from biosimulators_simularium.utils.core import (
     are_lists_equal,
     none_sorted,
     flatten_nested_list_of_strings
 )
+from biosimulators_simularium.config import Config, get_config
 from biosimulators_simularium.warnings import warn, BioSimulatorsWarning
-from zipfile import ZipFile as Zip
-import libcombine
-import os
-import re
-import zipfile
 
 
 # TODO: COPY THE BIOSIMULATORS_UTILS METHODS DIRECTLY INTO THIS FILE
