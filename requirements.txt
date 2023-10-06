@@ -1,4 +1,10 @@
-zarr
+# Visualization Library
 simulariumio
+
+# Simulations
 python-libcombine
 kisao
+smoldyn
+
+# Data Store
+zarr

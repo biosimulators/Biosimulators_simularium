@@ -40,7 +40,6 @@ from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
 from biosimulators_simularium.archives.data_model import (
-    ArchiveReader,
     ArchiveWriter,
     SpatialCombineArchive,
     SmoldynCombineArchive

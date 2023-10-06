@@ -854,8 +854,8 @@ class ModelValidation:
         self.config = validation[2][1]
 
 
-# TODO: Add more robust rezipping
 class SpatialCombineArchive(ABC):
+    # TODO: Add more robust rezipping
     paths: Dict[str, str]
 
     def __init__(self,
