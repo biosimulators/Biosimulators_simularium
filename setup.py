@@ -21,7 +21,9 @@ setup(
         'zarr',
         'simulariumio',
         'python-libcombine',
-        'kisao'
+        'kisao',
+        'smoldyn',
+        'termcolor'
     ],
     entry_points={
             'console_scripts': [

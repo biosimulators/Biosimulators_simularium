@@ -5,6 +5,7 @@ simulariumio
 python-libcombine
 kisao
 smoldyn
+termcolor
 
 # Data Store
 zarr
