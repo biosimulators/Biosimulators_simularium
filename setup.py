@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
+# noinspection PyProtectedMember
 from biosimulators_simularium._VERSION import __version__
+
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
+
 
 setup(
     name='biosimulators-simularium',
@@ -17,7 +20,7 @@ setup(
     install_requires=[
         'zarr',
         'simulariumio',
-        'biosimulators-utils[smoldyn]'
+        'python-libcombine'
     ],
     entry_points={
             'console_scripts': [
