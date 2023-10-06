@@ -25,7 +25,7 @@ from biosimulators_simularium.utils.core import (
     flatten_nested_list_of_strings
 )
 from biosimulators_simularium.config import Config, get_config
-from biosimulators_simularium.warnings import warn, BioSimulatorsWarning
+from biosimulators_simularium.biosimulators_warning import warn, BioSimulatorsWarning
 
 
 # TODO: COPY THE BIOSIMULATORS_UTILS METHODS DIRECTLY INTO THIS FILE

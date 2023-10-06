@@ -1,5 +1,5 @@
-import warnings
 import termcolor
+from warnings import warn as _warn
 from biosimulators_simularium.config import Colors
 
 
@@ -18,4 +18,4 @@ def warn(message, category):
         message (:obj:`str`): message
         category (:obj:`type`): category
     """
-    warnings.warn(termcolor.colored(message, Colors.warning.value), category)
+    _warn(termcolor.colored(message, Colors.warning.value), category)
