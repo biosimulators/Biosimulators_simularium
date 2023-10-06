@@ -1,22 +1,15 @@
 import enum
-
-
-__all__ = ['Colors']
-
-
-from .omex_meta.data_model import OmexMetadataInputFormat, OmexMetadataOutputFormat, OmexMetadataSchema
-from .report.data_model import ReportFormat  # noqa: F401
-from .viz.data_model import VizFormat  # noqa: F401
-from kisao import AlgorithmSubstitutionPolicy  # noqa: F401
-import appdirs
-import enum
 import os
+from kisao import AlgorithmSubstitutionPolicy  # noqa: F401
+from biosimulators_simularium.formats import ReportFormat, VizFormat
 
-__all__ = ['Config', 'get_config', 'Colors', 'get_app_dirs']
 
-DEFAULT_OMEX_METADATA_INPUT_FORMAT = OmexMetadataInputFormat.rdfxml
-DEFAULT_OMEX_METADATA_OUTPUT_FORMAT = OmexMetadataOutputFormat.rdfxml_abbrev
-DEFAULT_OMEX_METADATA_SCHEMA = OmexMetadataSchema.biosimulations
+__all__ = ['Config', 'get_config', 'Colors']
+
+
+DEFAULT_OMEX_METADATA_INPUT_FORMAT = 'rdfxml'
+DEFAULT_OMEX_METADATA_OUTPUT_FORMAT = 'rdfxml-abbrev'
+DEFAULT_OMEX_METADATA_SCHEMA = 'BioSimulations'
 DEFAULT_ALGORITHM_SUBSTITUTION_POLICY = AlgorithmSubstitutionPolicy.SIMILAR_VARIABLES
 DEFAULT_H5_REPORTS_PATH = 'reports.h5'
 DEFAULT_REPORTS_PATH = 'reports.zip'
@@ -26,6 +19,7 @@ DEFAULT_BIOSIMULATORS_API_ENDPOINT = 'https://api.biosimulators.org/'
 DEFAULT_BIOSIMULATIONS_API_ENDPOINT = 'https://api.biosimulations.org/'
 DEFAULT_BIOSIMULATIONS_API_AUTH_ENDPOINT = 'https://auth.biosimulations.org/oauth/token'
 DEFAULT_BIOSIMULATIONS_API_AUDIENCE = 'api.biosimulations.org'
+DEFAULT_SPATIAL = False
 
 
 class Config(object):
@@ -65,6 +59,7 @@ class Config(object):
         DEBUG (:obj:`bool`): whether to raise exceptions rather than capturing them
     """
 
+    # noinspection PyDefaultArgument
     def __init__(self,
                  OMEX_METADATA_INPUT_FORMAT=DEFAULT_OMEX_METADATA_INPUT_FORMAT,
                  OMEX_METADATA_OUTPUT_FORMAT=DEFAULT_OMEX_METADATA_OUTPUT_FORMAT,
@@ -94,7 +89,8 @@ class Config(object):
                  BIOSIMULATIONS_API_AUTH_ENDPOINT=DEFAULT_BIOSIMULATIONS_API_AUTH_ENDPOINT,
                  BIOSIMULATIONS_API_AUDIENCE=DEFAULT_BIOSIMULATIONS_API_AUDIENCE,
                  VERBOSE=False,
-                 DEBUG=False):
+                 DEBUG=False,
+                 SPATIAL=DEFAULT_SPATIAL):
         """
         Args:
             OMEX_METADATA_INPUT_FORMAT (:obj:`OmexMetadataInputFormat`, optional): format to validate OMEX Metadata files against
@@ -160,6 +156,8 @@ class Config(object):
         self.BIOSIMULATIONS_API_AUDIENCE = BIOSIMULATIONS_API_AUDIENCE
         self.VERBOSE = VERBOSE
         self.DEBUG = DEBUG
+        self.SPATIAL = SPATIAL
+        self.SUPPORTED_SPATIAL_SIMULATOR = 'smoldyn'
 
 
 def get_config():
@@ -181,12 +179,12 @@ def get_config():
         viz_formats = []
 
     return Config(
-        OMEX_METADATA_INPUT_FORMAT=OmexMetadataInputFormat(os.environ.get(
-            'OMEX_METADATA_INPUT_FORMAT', DEFAULT_OMEX_METADATA_INPUT_FORMAT)),
-        OMEX_METADATA_OUTPUT_FORMAT=OmexMetadataOutputFormat(os.environ.get(
-            'OMEX_METADATA_OUTPUT_FORMAT', DEFAULT_OMEX_METADATA_OUTPUT_FORMAT)),
-        OMEX_METADATA_SCHEMA=OmexMetadataSchema(os.environ.get(
-            'OMEX_METADATA_SCHEMA', DEFAULT_OMEX_METADATA_SCHEMA)),
+        OMEX_METADATA_INPUT_FORMAT=os.environ.get(
+            'OMEX_METADATA_INPUT_FORMAT', DEFAULT_OMEX_METADATA_INPUT_FORMAT),
+        OMEX_METADATA_OUTPUT_FORMAT=os.environ.get(
+            'OMEX_METADATA_OUTPUT_FORMAT', DEFAULT_OMEX_METADATA_OUTPUT_FORMAT),
+        OMEX_METADATA_SCHEMA=os.environ.get(
+            'OMEX_METADATA_SCHEMA', DEFAULT_OMEX_METADATA_SCHEMA),
         VALIDATE_OMEX_MANIFESTS=os.environ.get('VALIDATE_OMEX_MANIFESTS', '1').lower() in ['1', 'true'],
         VALIDATE_SEDML=os.environ.get('VALIDATE_SEDML', '1').lower() in ['1', 'true'],
         VALIDATE_SEDML_MODELS=os.environ.get('VALIDATE_SEDML_MODELS', '1').lower() in ['1', 'true'],
@@ -214,6 +212,7 @@ def get_config():
         BIOSIMULATIONS_API_AUDIENCE=os.environ.get('BIOSIMULATIONS_API_AUDIENCE', DEFAULT_BIOSIMULATIONS_API_AUDIENCE),
         VERBOSE=os.environ.get('VERBOSE', '1').lower() in ['1', 'true'],
         DEBUG=os.environ.get('DEBUG', '0').lower() in ['1', 'true'],
+        SPATIAL=os.environ.get('SPATIAL', '0').lower() in ['1', 'true']
     )
 
 

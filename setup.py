@@ -20,7 +20,8 @@ setup(
     install_requires=[
         'zarr',
         'simulariumio',
-        'python-libcombine'
+        'python-libcombine',
+        'kisao'
     ],
     entry_points={
             'console_scripts': [
