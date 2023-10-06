@@ -8,7 +8,8 @@
 
 
 from typing import Optional
-from biosimulators_simularium.converters.data_model import SmoldynCombineArchive, SmoldynDataConverter
+from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
+from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.converters.utils import generate_model_validation_object
 
 
@@ -64,13 +65,3 @@ def generate_new_simularium_file(
         )
     else:
         raise ValueError('The only currently available format is "smoldyn".')
-
-
-
-
-
-
-
-
-
-

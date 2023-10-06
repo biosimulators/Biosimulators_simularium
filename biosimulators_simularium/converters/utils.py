@@ -10,7 +10,7 @@
 import os
 import tempfile
 import re
-from typing import Tuple, List, Set
+from typing import Tuple, List, Union
 import numpy as np
 from smoldyn import Simulation as smoldynSim
 from biosimulators_simularium.archives.data_model import SpatialCombineArchive, ModelValidation, SmoldynCombineArchive
@@ -71,7 +71,9 @@ def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], L
     return (errors, warnings, (model, config))
 
 
-def generate_model_validation_object(archive: SpatialCombineArchive) -> ModelValidation:
+def generate_model_validation_object(
+        archive: Union[SpatialCombineArchive, SmoldynCombineArchive]
+) -> ModelValidation:
     """ Generate an instance of `ModelValidation` based on the output of `archive.model_path`
             with above `validate_model` method.
 
