@@ -862,10 +862,10 @@ class SpatialCombineArchive(ABC):
         """
         super().__init__()
         self.rootpath = rootpath
+        self.__parse_rootpath()
         if simularium_filename is None:
             simularium_filename = 'spatial_combine_archive'
         self.simularium_filename = os.path.join(self.rootpath, simularium_filename)
-        self.__parse_rootpath()
         self.paths = self.get_all_archive_filepaths()
 
     def __parse_rootpath(self):
