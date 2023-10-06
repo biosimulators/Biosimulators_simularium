@@ -39,8 +39,12 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
 from simulariumio.filters import TranslateFilter
-from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
-from biosimulators_simularium.archives.data_model import SpatialCombineArchive, SmoldynCombineArchive
+from biosimulators_simularium.archives.data_model import (
+    ArchiveReader,
+    ArchiveWriter,
+    SpatialCombineArchive,
+    SmoldynCombineArchive
+)
 
 
 __all__ = [
