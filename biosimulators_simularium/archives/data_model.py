@@ -28,7 +28,14 @@ from biosimulators_simularium.config import Config, get_config
 from biosimulators_simularium.biosimulators_warning import warn, BioSimulatorsWarning
 
 
-# TODO: COPY THE BIOSIMULATORS_UTILS METHODS DIRECTLY INTO THIS FILE
+__all__ = [
+    'Archive',
+    'ArchiveFile',
+    'ArchiveReader',
+    'ArchiveWriter',
+    'SpatialCombineArchive',
+    'SmoldynCombineArchive'
+]
 
 
 class Archive(object):
@@ -843,7 +850,7 @@ class SpatialCombineArchive(ABC):
 
     def __init__(self,
                  rootpath: str,
-                 simularium_filename=None):
+                 simularium_filename: Optional[str] = None):
         """ABC Object for storing and setting/getting files pertaining to simularium file conversion.
 
             Args:
@@ -855,9 +862,9 @@ class SpatialCombineArchive(ABC):
         """
         super().__init__()
         self.rootpath = rootpath
-        if not simularium_filename:
+        if simularium_filename is None:
             simularium_filename = 'spatial_combine_archive'
-            self.simularium_filename = os.path.join(self.rootpath, simularium_filename)
+        self.simularium_filename = os.path.join(self.rootpath, simularium_filename)
         self.__parse_rootpath()
         self.paths = self.get_all_archive_filepaths()
 
@@ -1015,7 +1022,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
     def __init__(self,
                  rootpath: str,
                  model_output_filename='modelout.txt',
-                 simularium_filename='smoldyn_combine_archive'):
+                 simularium_filename: Optional[str] = None):
         """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`.
 
             Args:

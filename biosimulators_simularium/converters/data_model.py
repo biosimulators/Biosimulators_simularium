@@ -458,7 +458,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units="nm",
             temporal_units="s",
             n_dim=3,
-            io_format="binary",
+            io_format="JSON",
             translate=True,
             overwrite=True,
             validate_ids=True,
