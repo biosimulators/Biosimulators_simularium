@@ -20,7 +20,7 @@ verify the contents therein.
 import os
 import zipfile
 from warnings import warn
-from typing import Optional, Tuple, Dict, List, Union
+from typing import Optional, Dict, List, Union
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd

@@ -1,6 +1,6 @@
 """Utility functions related to `biosimulators_simularium.converters`.
 
-:Author: Alexander Patrie <apatrie@uchc.edu>
+:Author: Alexander Patrie <apatrie@uchc.edu> / Jonathan Karr
 :Date: 2023-09-16
 :Copyright: 2023, UConn Health
 :License: MIT
@@ -10,16 +10,34 @@
 import os
 import tempfile
 import re
-from typing import Tuple, List, Union
+from dataclasses import dataclass
+from typing import Tuple, List
 import numpy as np
 from smoldyn import Simulation as smoldynSim
-from biosimulators_simularium.archives.data_model import SpatialCombineArchive, ModelValidation, SmoldynCombineArchive
 
 
 __all__ = [
+    'ModelValidation',
     'validate_model',
-    'generate_model_validation_object'
+    'generate_model_validation_object',
+    'read_smoldyn_simulation_configuration',
+    'disable_smoldyn_graphics_in_simulation_configuration',
+    'write_smoldyn_simulation_configuration'
 ]
+
+
+@dataclass
+class ModelValidation:
+    errors: List[List[str]]
+    warnings: List[str]
+    simulation: smoldynSim
+    config: List[str]
+
+    def __init__(self, validation: Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]):
+        self.errors = validation[0]
+        self.warnings = validation[1]
+        self.simulation = validation[2][0]
+        self.config = validation[2][1]
 
 
 def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]:
@@ -72,7 +90,7 @@ def validate_model(filename, name=None, config=None) -> Tuple[List[List[str]], L
 
 
 def generate_model_validation_object(
-        archive: Union[SpatialCombineArchive, SmoldynCombineArchive]
+        archive
 ) -> ModelValidation:
     """ Generate an instance of `ModelValidation` based on the output of `archive.model_path`
             with above `validate_model` method.
@@ -147,21 +165,8 @@ def init_smoldyn_simulation_from_configuration_file(filename):
     return smoldyn_simulation
 
 
-def verify_simularium_in_archive(archive: SpatialCombineArchive) -> bool:
+def verify_simularium_in_archive(archive) -> bool:
     return '.simularium' in list(archive.paths.keys())
-
-
-def verify_simularium_in_smoldyn_archive(archive_rootpath: str) -> bool:
-    """ Returns whether there exists the presence of a simularium file in a given smoldyn archive's rootpath.
-
-        Args:
-            archive_rootpath(:obj:`str`): path of the root relative to your COMBINE/OMEX archive.
-
-        Returns:
-            `bool`: The presence of a `.simularium` file in the archive's dir.
-    """
-    archive = SmoldynCombineArchive(rootpath=archive_rootpath)
-    return verify_simularium_in_archive(archive)
 
 
 def extract_simulation_from_validation(model_fp: str) -> smoldynSim:

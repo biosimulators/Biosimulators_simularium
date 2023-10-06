@@ -1,7 +1,8 @@
 """Objects for the storage, retrieval, and calculation of data pertaining to OMEX/Combine archives whose contents
-    are directly related to purely spatial simulations.
+    are directly related to purely spatial simulations. Several objects are copied directly from biosimulators-utils
+    for ease of development, as they exist within the same organization.
 
-:Author: Alexander Patrie <apatrie@uchc.edu>
+:Author: Alexander Patrie <apatrie@uchc.edu> / Jonathan Karr
 :Date: 2023-09-16
 :Copyright: 2023, UConn Health
 :License: MIT
@@ -13,12 +14,11 @@ import re
 import zipfile
 from zipfile import ZipFile as Zip
 import enum
-from dataclasses import dataclass
 from warnings import warn
 from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
-from smoldyn import Simulation as smoldynSim
-from biosimulators_simularium.converters.utils import validate_model
+import libcombine
+from biosimulators_simularium.converters.utils import validate_model, ModelValidation
 from biosimulators_simularium.utils.core import (
     are_lists_equal,
     none_sorted,
@@ -835,20 +835,6 @@ def get_combine_errors_warnings(manifest):
             warnings.append([error.getMessage()])
 
     return (errors, warnings)
-
-
-@dataclass
-class ModelValidation:
-    errors: List[List[str]]
-    warnings: List[str]
-    simulation: smoldynSim
-    config: List[str]
-
-    def __init__(self, validation: Tuple[List[List[str]], List, Tuple[smoldynSim, List[str]]]):
-        self.errors = validation[0]
-        self.warnings = validation[1]
-        self.simulation = validation[2][0]
-        self.config = validation[2][1]
 
 
 class SpatialCombineArchive(ABC):
