@@ -10,6 +10,6 @@ archive = SmoldynCombineArchive(rootpath=test_archive_root, simularium_filename=
 
 converter = SmoldynDataConverter(archive=archive)
 
-# converter.generate_simularium_file(io_format='JSON')
+converter.generate_simularium_file(io_format='JSON')
 
 print(converter.archive.simularium_filename)
