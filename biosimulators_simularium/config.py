@@ -1,3 +1,13 @@
+"""This file is copied directly from `biosimulators_utils.config.py` and has been modified only to hardcode the
+DEFAULT parameters to not include objects from biosimulators_utils, but rather the str values themselves.
+
+:Author: Alexander Patrie <apatrie@uchc.edu> / Jonathan Karr
+:Date: 2023-09-16
+:Copyright: 2023, UConn Health
+:License: MIT
+"""
+
+
 import enum
 import os
 from kisao import AlgorithmSubstitutionPolicy  # noqa: F401

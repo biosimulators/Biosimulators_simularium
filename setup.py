@@ -17,14 +17,14 @@ setup(
     description='A Python tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format.',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=[
-        'zarr',
-        'simulariumio',
-        'python-libcombine',
-        'kisao',
-        'smoldyn',
-        'termcolor'
-    ],
+    # install_requires=[
+    #     'zarr',
+    #     'simulariumio',
+    #     'python-libcombine',
+    #     'kisao',
+    #     'smoldyn',
+    #     'termcolor'
+    # ],
     entry_points={
             'console_scripts': [
                 'biosimulators-simularium = biosimulators_simularium.__main__:main',
