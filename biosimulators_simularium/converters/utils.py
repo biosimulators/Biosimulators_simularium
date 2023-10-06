@@ -9,15 +9,10 @@
 
 import os
 import tempfile
+import re
 from typing import Tuple, List, Set
 import numpy as np
 from smoldyn import Simulation as smoldynSim
-from smoldyn.biosimulators.combine import (  # noqa: E402
-    read_smoldyn_simulation_configuration,
-    disable_smoldyn_graphics_in_simulation_configuration,
-    write_smoldyn_simulation_configuration,
-    init_smoldyn_simulation_from_configuration_file,
-)
 from biosimulators_simularium.archives.data_model import SpatialCombineArchive, ModelValidation, SmoldynCombineArchive
 
 
@@ -89,6 +84,65 @@ def generate_model_validation_object(archive: SpatialCombineArchive) -> ModelVal
     validation_info = validate_model(archive.model_path)
     validation = ModelValidation(validation_info)
     return validation
+
+
+def read_smoldyn_simulation_configuration(filename):
+    ''' Read a configuration for a Smoldyn simulation
+
+    Args:
+        filename (:obj:`str`): path to model file
+
+    Returns:
+        :obj:`list` of :obj:`str`: simulation configuration
+    '''
+    with open(filename, 'r') as file:
+        return [line.strip('\n') for line in file]
+
+
+def write_smoldyn_simulation_configuration(configuration, filename):
+    ''' Write a configuration for Smoldyn simulation to a file
+
+    Args:
+        configuration
+        filename (:obj:`str`): path to save configuration
+    '''
+    with open(filename, 'w') as file:
+        for line in configuration:
+            file.write(line)
+            file.write('\n')
+
+
+def disable_smoldyn_graphics_in_simulation_configuration(configuration):
+    ''' Turn off graphics in the configuration of a Smoldyn simulation
+
+    Args:
+        configuration (:obj:`list` of :obj:`str`): simulation configuration
+    '''
+    for i_line, line in enumerate(configuration):
+        if line.startswith('graphics '):
+            configuration[i_line] = re.sub(r'^graphics +[a-z_]+', 'graphics none', line)
+
+
+def init_smoldyn_simulation_from_configuration_file(filename):
+    ''' Initialize a simulation for a Smoldyn model from a file
+
+    Args:
+        filename (:obj:`str`): path to model file
+
+    Returns:
+        :obj:`smoldyn.Simulation`: simulation
+    '''
+    if not os.path.isfile(filename):
+        raise FileNotFoundError('Model source `{}` is not a file.'.format(filename))
+
+    smoldyn_simulation = smoldynSim.fromFile(filename)
+    if not smoldyn_simulation.getSimPtr():
+        error_code, error_msg = smoldynSim.getError()
+        msg = 'Model source `{}` is not a valid Smoldyn file.\n\n  {}: {}'.format(
+            filename, error_code.name[0].upper() + error_code.name[1:], error_msg.replace('\n', '\n  '))
+        raise ValueError(msg)
+
+    return smoldyn_simulation
 
 
 def verify_simularium_in_archive(archive: SpatialCombineArchive) -> bool:

@@ -21,6 +21,9 @@ from biosimulators_utils.archive.io import ArchiveReader, ArchiveWriter
 from biosimulators_utils.model_lang.smoldyn.validation import validate_model
 
 
+# TODO: COPY THE BIOSIMULATORS_UTILS METHODS DIRECTLY INTO THIS FILE
+
+
 # use this to toggle quicktest
 TEST = False
 
