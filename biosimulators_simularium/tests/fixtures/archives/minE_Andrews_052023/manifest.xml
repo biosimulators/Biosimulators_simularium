@@ -2,5 +2,5 @@
 <omexManifest xmlns="http://identifiers.org/combine.specifications/omex-manifest">
   <content location="model.txt" format="http://purl.org/NET/mediatypes/text/smoldyn+plain" master="false"/>
   <content location="simulation.sedml" format="http://identifiers.org/combine.specifications/sed-ml" master="true"/>
-  <content location="biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023/freshly_generated_test_simularium_file" master="false"/>
+  <content location="biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023/newest_minE_simularium_test" master="false"/>
 </omexManifest>

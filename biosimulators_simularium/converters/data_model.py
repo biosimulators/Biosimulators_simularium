@@ -34,7 +34,8 @@ from simulariumio import (
     JsonWriter,
     TrajectoryConverter,
     TrajectoryData,
-    AgentData
+    AgentData,
+    ModelMetaData
 )
 from simulariumio.smoldyn.smoldyn_data import InputFileData
 from simulariumio.smoldyn import SmoldynConverter, SmoldynData
@@ -68,7 +69,7 @@ class BiosimulatorsDataConverter(ABC):
                     :obj:`archive`:(`SpatialCombineArchive`): instance of an archive to base conv and save on.
         """
         self.archive = archive
-        self.has_smoldyn = self.archive.verify_smoldyn_in_manifest()
+        self.has_smoldyn = self.archive.verify_spatial_simulator_in_manifest()
 
     # Factory Methods
     @abstractmethod
@@ -159,19 +160,31 @@ class BiosimulatorsDataConverter(ABC):
             os.mkdir(dirpath)
         return os.path.join(dirpath, simularium_config.get('simularium_fname'))
 
-    @staticmethod
-    def generate_metadata_object(box_size: np.ndarray[int], camera_data: CameraData) -> MetaData:
+    def generate_metadata_object(
+            self,
+            box_size: float,
+            scale_factor=10.0,
+            trajectory_title: Optional[str] = None
+            ) -> MetaData:
         """Factory for a new instance of `simulariumio.MetaData` based on the input params of this method.
             Currently, `ModelMetaData` is not supported as a param.
 
             Args:
-                box_size: ndarray containing the XYZ dims of the simulation bounding volume. Defaults to [100,100,100].
-                camera_data: new `CameraData` instance to control visuals.
+                box_size: float which gets parsed into a
+                    ndarray containing the XYZ dims of the simulation bounding volume. Defaults to [100,100,100].
+                scale_factor: float by which agent radii and cartesian positions are scaled and parsed.
+                    Defaults to `10.0`.
+                trajectory_title: str by which the trajectory will be titled. Defaults to "some parameter set".
 
             Returns:
                 `MetaData` instance.
         """
-        return MetaData(box_size=box_size, camera_defaults=camera_data)
+        trajectory_title = trajectory_title or self.archive.simularium_filename
+        return MetaData(
+            box_size=np.array([box_size, box_size, box_size]),
+            trajectory_title=trajectory_title,
+            scale_factor=scale_factor
+        )
 
     @staticmethod
     def generate_camera_data_object(
@@ -197,8 +210,7 @@ class BiosimulatorsDataConverter(ABC):
     def generate_display_data_object(
             name: str,
             radius: float,
-            display_type=None,
-            obj_color: Optional[str] = None,
+            display_type,
     ) -> DisplayData:
         """Factory for creating a new instance of `simularimio.DisplayData` based on the params.
 
@@ -206,7 +218,6 @@ class BiosimulatorsDataConverter(ABC):
                 name: name of agent
                 radius: `float`
                 display_type: any one of the `simulariumio.DISPLAY_TYPE` properties. Defaults to None.
-                obj_color: `str`: hex color of the display agent.
 
             Returns:
                 `DisplayData` instance.
@@ -214,33 +225,26 @@ class BiosimulatorsDataConverter(ABC):
         return DisplayData(
             name=name,
             radius=radius,
-            display_type=display_type,
-            color=obj_color
+            display_type=display_type
         )
 
-    @staticmethod
-    def generate_display_data_object_dict(agent_displays: List) -> Dict[str, DisplayData]:
-        """Factory to generate a display object dict.
+    def generate_display_data_dict(self, agents: List[str]) -> Dict[str, DisplayData]:
+        """ Generate a display data dictionary based on a list of string agent names.
 
             Args:
-                agent_displays: `List[AgentDisplayData]`: A list of `AgentDisplayData` instances which describe the
-                    visualized agents.
+                agents: `List[str]`: list of agents by which to store data in the dict.
 
             Returns:
-                `Dict[str, DisplayData]`
+                `Dict[str, simulariumio.DisplayData]`
         """
-        displays = {}
-        for agent_display in agent_displays:
-            key = agent_display.name
-            display = DisplayData(
-                name=agent_display.name,
-                radius=agent_display.radius,
-                display_type=agent_display.display_type,
-                url=agent_display.url,
-                color=agent_display.color
+        display_data_dict = {}
+        for agent_name in agents:
+            display_data_dict[agent_name] = self.generate_display_data_object(
+                name=agent_name,
+                radius=0.01,
+                display_type=DISPLAY_TYPE.SPHERE
             )
-            displays[key] = display
-        return displays
+        return display_data_dict
 
     def generate_input_file_data_object(self, model_output_file: Optional[str] = None) -> InputFileData:
         """Factory that generates a new instance of `simulariumio.data_model.InputFileData` based on
@@ -464,6 +468,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             validate_ids=True,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
+            metadata_object: Optional[MetaData] = None,
             new_omex_filename: Optional[str] = None,
             ) -> None:
         """Generate a new simularium file based on `self.archive.rootpath`. If `self.archive.rootpath` is an `.omex`
@@ -479,6 +484,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 simularium_filename(:obj:`str`): `Optional`: filename by which to save the simularium output. Defaults
                     to `archive.simularium_filename`.
                 display_data(:obj:`Dict[str, DisplayData]`): `Optional`: Dictionary of DisplayData objects.
+                metadata_object(:obj:`Metadata`): `Optional`: Metadata object with scale factor for
+                    viz. Defaults to None.
                 new_omex_filename(:obj:`str`): `Optional`: Filename by which to save the newly generate .omex IF and
                     only IF `self.archive.rootpath` is an `.omex` file.
                 io_format(:obj:`str`): format in which to write out the simularium file. Used as an input param to call
@@ -503,7 +510,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             file_data=input_file,
             display_data=display_data,
             spatial_units=spatial_units,
-            temporal_units=temporal_units
+            temporal_units=temporal_units,
+            meta_data=metadata_object
         )
 
         if translate:

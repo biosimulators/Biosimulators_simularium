@@ -103,7 +103,7 @@ def main(rm_files=1) -> None:
     # data_object = converter.prepare_smoldyn_data_for_conversion(file_data=input_file_data)
 
     # trans = converter.translate_data(data_object, 100.)
-    # converter.convert_to_simularium(data_object, 'biosimulators_simularium/__minE_Andrews_052023')
+    # converter.convert_to_simularium(data_object, 'biosimulators_simularium/minE_Andrews_052023')
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ TEST_ARCHIVE_LOCATION = p.join(
     'fixtures',
     'archives',
 )
-TEST_ARCHIVE_ROOTPATH = p.join(TEST_ARCHIVE_LOCATION, '__minE_Andrews_052023')
+TEST_ARCHIVE_ROOTPATH = p.join(TEST_ARCHIVE_LOCATION, 'minE_Andrews_052023')
 TEST_OMEX_FILEPATH = TEST_ARCHIVE_ROOTPATH.replace('__', '') + '.omex'
 NEW_TEST_OMEX_FILEPATH = p.join(TEST_ARCHIVE_LOCATION, 'myNewlyGeneratedCOMBINE')
 TEST_SIMULARIUM_FILENAME = p.join(TEST_ARCHIVE_ROOTPATH, 'generated_from_test')

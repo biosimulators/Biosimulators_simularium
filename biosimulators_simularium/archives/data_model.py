@@ -934,7 +934,7 @@ class SpatialCombineArchive(ABC):
         """
         manifest_fp = self.get_manifest_filepath()
         reader = CombineArchiveReader()
-        return reader.read_manifest(filename=manifest_fp)
+        return reader.read_manifest(filename=manifest_fp, archive_filename=self.rootpath)
 
     @staticmethod
     def generate_new_archive_content(fp: str) -> CombineArchiveContent:
@@ -982,7 +982,7 @@ class SpatialCombineArchive(ABC):
         except Exception:
             raise IOError(f'The simularium file found at {simularium_fp} could not be added to manifest.')
 
-    def verify_smoldyn_in_manifest(self) -> bool:
+    def verify_spatial_simulator_in_manifest(self, sim='smoldyn') -> bool:
         """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
             such that the string manifest object tuples are evaluated for the presence of `smoldyn`.
 
