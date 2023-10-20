@@ -458,6 +458,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
+            agents: List[str],
             box_size=1.,
             spatial_units="nm",
             temporal_units="s",
@@ -475,6 +476,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             file, the outputs will be re-bundled.
 
             Args:
+                agents(:obj:`List[str]`): a list of agents names by which to base this visualization's
+                    metadata on.
                 box_size(:obj:`float`): `Optional`: size by which to scale the simulation stage. Defaults to `1.`
                 spatial_units(:obj:`str`): `Optional`: units by which to measure the spatial aspect
                     of the simulation. Defaults to `nm`.
@@ -496,16 +499,25 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                     if one already exists in the COMBINE archive. Defaults to `True`.
                 validate_ids(:obj:`bool`): Whether to call the write method using `validation=True`. Defaults to True.
         """
+        # set simularium filename/path
         if not simularium_filename:
             simularium_filename = self.archive.simularium_filename
 
+        # warn in regard to overwrite
         if os.path.exists(simularium_filename):
             warn('That file already exists in this COMBINE archive.')
             if not overwrite:
                 warn('Overwrite is turned off an thus a new file will not be generated.')
                 return
 
+        # generate input file object
         input_file = self.generate_input_file_data_object()
+
+        # set display data and metadata
+        display_data = display_data or self.generate_display_data_dict(agents)
+        metadata_object = metadata_object or self.generate_metadata_object(box_size=box_size)
+
+        # construct SmoldynData object
         data = self.generate_output_data_object(
             file_data=input_file,
             display_data=display_data,
@@ -514,6 +526,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             meta_data=metadata_object
         )
 
+        # translate if true
         if translate:
             c = self.generate_converter(data)
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
