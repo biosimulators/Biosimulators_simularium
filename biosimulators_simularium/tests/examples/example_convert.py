@@ -14,11 +14,11 @@ converter = SmoldynDataConverter(archive=archive)
 
 
 agents = [
-    'MinD_ATP(front)',
-    'MinE(solution)',
-    'MinD_ADP(solution)',
-    'MinDMinE(front)',
-    'MinD_ATP(solution)'
+    ('MinD_ATP(front)', 0.01),
+    ('MinE(solution)', 0.01),
+    ('MinD_ADP(solution)', 0.01),
+    ('MinDMinE(front)', 0.01),
+    ('MinD_ATP(solution)', 0.01)
 ]
 
 '''box_size = 100.0

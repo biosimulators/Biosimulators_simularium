@@ -20,7 +20,7 @@ verify the contents therein.
 import os
 import zipfile
 from warnings import warn
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Tuple
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
@@ -228,7 +228,7 @@ class BiosimulatorsDataConverter(ABC):
             display_type=display_type
         )
 
-    def generate_display_data_dict(self, agents: List[str]) -> Dict[str, DisplayData]:
+    def generate_display_data_dict(self, agents: List[Tuple[str, float]]) -> Dict[str, DisplayData]:
         """ Generate a display data dictionary based on a list of string agent names.
 
             Args:
@@ -239,9 +239,11 @@ class BiosimulatorsDataConverter(ABC):
         """
         display_data_dict = {}
         for agent_name in agents:
-            display_data_dict[agent_name] = self.generate_display_data_object(
-                name=agent_name,
-                radius=0.01,
+            name = agent_name[0]
+            rad = agent_name[1]
+            display_data_dict[name] = self.generate_display_data_object(
+                name=name,
+                radius=rad,
                 display_type=DISPLAY_TYPE.SPHERE
             )
         return display_data_dict
@@ -415,7 +417,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             spatial_units=UnitData(spatial_units),
             time_units=UnitData(temporal_units),
             display_data=display_data,
-            meta_data=meta_data
+            meta_data=meta_data,
+            center=True
         )
 
     def generate_converter(self, data: SmoldynData) -> SmoldynConverter:
@@ -458,8 +461,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: List[str],
-            box_size=1.,
+            agents: List[Tuple[str, float]],
+            box_size=10.,
             spatial_units="nm",
             temporal_units="s",
             n_dim=3,
@@ -476,8 +479,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             file, the outputs will be re-bundled.
 
             Args:
-                agents(:obj:`List[str]`): a list of agents names by which to base this visualization's
-                    metadata on.
+                agents(:obj:`List[Tuple[str, float]]`): a list of tuples representing agent names and agent radii
+                    by which to base this visualization's metadata on.
                 box_size(:obj:`float`): `Optional`: size by which to scale the simulation stage. Defaults to `1.`
                 spatial_units(:obj:`str`): `Optional`: units by which to measure the spatial aspect
                     of the simulation. Defaults to `nm`.
