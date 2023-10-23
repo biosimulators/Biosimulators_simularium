@@ -982,7 +982,7 @@ class SpatialCombineArchive(ABC):
         except Exception:
             raise IOError(f'The simularium file found at {simularium_fp} could not be added to manifest.')
 
-    def verify_spatial_simulator_in_manifest(self, sim='smoldyn') -> bool:
+    def verify_spatial_simulator_in_manifest(self, sim='smoldyn') -> Union[bool, None]:
         """Pass the return value of `self.get_manifest_filepath()` into a new instance of `CombineArchiveReader`
             such that the string manifest object tuples are evaluated for the presence of `smoldyn`.
 
@@ -990,8 +990,11 @@ class SpatialCombineArchive(ABC):
                 `bool`: Whether there exists a smoldyn model in the archive based on the archive's manifest.
         """
         manifest_contents = [c.to_tuple() for c in self.read_manifest_contents()]
-        model_info = manifest_contents[0][1]
-        return 'smoldyn' in model_info
+        if len(manifest_contents):
+            model_info = manifest_contents[0][1]
+            return 'smoldyn' in model_info
+        else:
+            return None
 
     @abstractmethod
     def set_model_filepath(self,

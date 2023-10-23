@@ -59,6 +59,12 @@ def __extract_omex(omex_filename, output_folder):
 
 
 class BiosimulatorsDataConverter(ABC):
+    """
+        Params:
+            has_smoldyn: `bool`: if the archive passed has a smoldyn model. For now, we assume that they will all
+                be Smoldyn archives as this is the only spatial simulator that is supported by both
+                simulariumio and BioSimulators.
+    """
     has_smoldyn: bool
 
     def __init__(self, archive: SpatialCombineArchive):
@@ -69,7 +75,7 @@ class BiosimulatorsDataConverter(ABC):
                     :obj:`archive`:(`SpatialCombineArchive`): instance of an archive to base conv and save on.
         """
         self.archive = archive
-        self.has_smoldyn = self.archive.verify_spatial_simulator_in_manifest()
+        self.has_smoldyn = self.archive.verify_spatial_simulator_in_manifest() or True
 
     # Factory Methods
     @abstractmethod
@@ -502,6 +508,12 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                     if one already exists in the COMBINE archive. Defaults to `True`.
                 validate_ids(:obj:`bool`): Whether to call the write method using `validation=True`. Defaults to True.
         """
+        # enforce 3 dimensions
+        try:
+            assert n_dim == 3
+        except AssertionError as e:
+            raise AssertionError('Currently only 3 dimensions are currently supported.')
+
         # set simularium filename/path
         if not simularium_filename:
             simularium_filename = self.archive.simularium_filename

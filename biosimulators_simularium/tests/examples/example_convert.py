@@ -21,10 +21,5 @@ agents = [
     ('MinD_ATP(solution)', 0.01)
 ]
 
-'''box_size = 100.0
-display_dict = converter.generate_display_data_dict(agents)
-metadata_object = converter.generate_metadata_object(box_size=box_size
-converter.generate_simularium_file(io_format='JSON', metadata_object=metadata_object, display_data=display_dict)'''
 
-
-converter.generate_simularium_file(io_format='JSON', agents=agents)
+converter.generate_simularium_file(io_format='JSON', agents=agents, box_size=10.0)
