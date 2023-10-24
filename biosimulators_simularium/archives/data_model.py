@@ -934,7 +934,7 @@ class SpatialCombineArchive(ABC):
         """
         manifest_fp = self.get_manifest_filepath()
         reader = CombineArchiveReader()
-        return reader.read_manifest(filename=manifest_fp, archive_filename=self.rootpath)
+        return reader.read_manifest(filename=manifest_fp)
 
     @staticmethod
     def generate_new_archive_content(fp: str) -> CombineArchiveContent:

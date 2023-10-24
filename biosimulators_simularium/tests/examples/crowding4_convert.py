@@ -8,7 +8,10 @@ from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 
 crowding_archive_path = os.path.join('biosimulators_simularium', 'tests', 'fixtures', 'archives', 'crowding4')
 
-archive = SmoldynCombineArchive(rootpath=crowding_archive_path, simularium_filename='crowding4')
+archive = SmoldynCombineArchive(
+    rootpath=crowding_archive_path,
+    simularium_filename='crowding4'
+)
 
 validation = validate_model(archive.model_path)
 
@@ -26,7 +29,8 @@ converter = SmoldynDataConverter(archive)
 
 agents = [
     ('red(up)', 0.2, '#eb1414'),
-    ('green(up)', 0.2, '#5dcf30'),
+    ('green(up)', 0.5, '#5dcf30'),
 ]
 
-converter.generate_simularium_file(agents=agents, io_format='JSON')
+converter.generate_simularium_file(agents=agents, io_format='JSON', box_size=20.0)
+
