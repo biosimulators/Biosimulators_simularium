@@ -977,7 +977,7 @@ class SpatialCombineArchive(ABC):
         try:
             if not simularium_fp:
                 simularium_fp = self.simularium_filename
-            self.add_file_to_manifest(simularium_fp)
+            self.add_file_to_manifest(simularium_fp + '.simularium')
             print('Simularium File added to archive manifest contents!')
         except Exception:
             raise IOError(f'The simularium file found at {simularium_fp} could not be added to manifest.')

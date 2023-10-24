@@ -19,10 +19,10 @@ boundaries z 0 20
 frame_thickness 0
 
 time_start 0
-time_stop 100
+time_stop 500
 time_step 0.005
 
-define TIME_STOP 100
+define TIME_STOP 500
 
 species red green
 
