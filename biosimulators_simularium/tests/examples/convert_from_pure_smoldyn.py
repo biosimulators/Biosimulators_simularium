@@ -25,8 +25,8 @@ def parse_simulation(validation: Tuple):
 converter = SmoldynDataConverter(archive)
 
 agents = [
-    ('red(up)', 0.2),
-    ('green(up)', 0.2),
+    ('red(up)', 0.2, '#eb1414'),
+    ('green(up)', 0.2, '#5dcf30'),
 ]
 
 converter.generate_simularium_file(agents=agents, io_format='JSON')

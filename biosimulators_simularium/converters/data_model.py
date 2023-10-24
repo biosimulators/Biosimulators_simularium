@@ -217,6 +217,7 @@ class BiosimulatorsDataConverter(ABC):
             name: str,
             radius: float,
             display_type,
+            color: str
     ) -> DisplayData:
         """Factory for creating a new instance of `simularimio.DisplayData` based on the params.
 
@@ -224,6 +225,7 @@ class BiosimulatorsDataConverter(ABC):
                 name: name of agent
                 radius: `float`
                 display_type: any one of the `simulariumio.DISPLAY_TYPE` properties. Defaults to None.
+                color: `str`: hex color by which to shade the agent's display data.
 
             Returns:
                 `DisplayData` instance.
@@ -231,14 +233,16 @@ class BiosimulatorsDataConverter(ABC):
         return DisplayData(
             name=name,
             radius=radius,
-            display_type=display_type
+            display_type=display_type,
+            color=color
         )
 
-    def generate_display_data_dict(self, agents: List[Tuple[str, float]]) -> Dict[str, DisplayData]:
+    def generate_display_data_dict(self, agents: List[Tuple[str, float, str]]) -> Dict[str, DisplayData]:
         """ Generate a display data dictionary based on a list of string agent names.
 
             Args:
-                agents: `List[str]`: list of agents by which to store data in the dict.
+                agents: `List[Tuple[str, float, str]`. A list of agents in the form of a tuple where:
+                    (agent_name, agent_radius, agent_hexcolor)
 
             Returns:
                 `Dict[str, simulariumio.DisplayData]`
@@ -250,7 +254,8 @@ class BiosimulatorsDataConverter(ABC):
             display_data_dict[name] = self.generate_display_data_object(
                 name=name,
                 radius=rad,
-                display_type=DISPLAY_TYPE.SPHERE
+                display_type=DISPLAY_TYPE.SPHERE,
+                color=agent_name[2]
             )
         return display_data_dict
 
@@ -467,7 +472,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: List[Tuple[str, float]],
+            agents: List[Tuple[str, float, str]],
             box_size=10.,
             spatial_units="nm",
             temporal_units="s",
@@ -485,8 +490,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             file, the outputs will be re-bundled.
 
             Args:
-                agents(:obj:`List[Tuple[str, float]]`): a list of tuples representing agent names and agent radii
-                    by which to base this visualization's metadata on.
+                agents(:obj:`List[Tuple[str, float, str]]`): a list of tuples representing agent names and agent radii and
+                    agent hexcolor by which to base this visualization's metadata on.
                 box_size(:obj:`float`): `Optional`: size by which to scale the simulation stage. Defaults to `1.`
                 spatial_units(:obj:`str`): `Optional`: units by which to measure the spatial aspect
                     of the simulation. Defaults to `nm`.
