@@ -28,7 +28,7 @@ def build_archive(archive_path: str, content: List[Tuple[str, str, bool]]) -> No
     for i, c in enumerate(content):
         add_content(archive_contents, c)
         print(f'Step number: {i}: archive_contents')
-    return CombineArchiveWriter().write_manifest(archive_contents, archive_path)
+    CombineArchiveWriter().write_manifest(archive_contents, archive_path)
 
 
 def create_archive_dir(archive_path: str):

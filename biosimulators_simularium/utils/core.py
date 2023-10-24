@@ -3,6 +3,7 @@
 
 
 import os
+from enum import Enum
 from typing import Dict, List
 from biosimulators_simularium.utils.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
 from biosimulators_simularium.utils.platform_parser import SmoldynPlatformParser
@@ -21,7 +22,12 @@ __all__ = [
     'coordinates_to_id',
     'id_to_coordinates',
     'parse_platform',
+    'ContentFormat'
 ]
+
+
+class ContentFormat(Enum):
+    SMOLDYN = "http://purl.org/NET/mediatypes/text/smoldyn+plain"
 
 
 def flatten_nested_list_of_strings(nested_list, prefix='- ', indent=' ' * 2):
@@ -205,5 +211,4 @@ def extract_path_sections(fp: str) -> List[str]:
     return parts
 
 
-def smoldyn_format():
-    return "http://purl.org/NET/mediatypes/text/smoldyn+plain"
+
