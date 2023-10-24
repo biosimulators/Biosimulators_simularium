@@ -203,3 +203,7 @@ def extract_path_sections(fp: str) -> List[str]:
                 parts.insert(0, path)
             break
     return parts
+
+
+def smoldyn_format():
+    return "http://purl.org/NET/mediatypes/text/smoldyn+plain"

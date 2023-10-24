@@ -14,7 +14,7 @@ from typing import List, Tuple
 from biosimulators_simularium.archives.data_model import CombineArchiveContent, CombineArchiveWriter
 
 
-def build_archive(archive_path: str, content: List[Tuple]) -> None:
+def build_archive(archive_path: str, content: List[Tuple[str, str, bool]]) -> None:
     """Build and write an archive specified at the `archive_path`.
 
         Args:
