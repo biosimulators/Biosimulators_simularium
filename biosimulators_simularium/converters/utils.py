@@ -340,3 +340,45 @@ def count_agents_per_timestep(modelout_fp: str):
 def calculate_n_agents(modelout_fp: str) -> int:
     agent_counts = count_agents_per_timestep(modelout_fp)
     return sum(list(agent_counts.values()))
+
+
+def parse_agent_names_from_model_file(model_fp):
+    # Function to check if a substring is a number (integer or decimal)
+    def is_number(substring):
+        try:
+            float(substring)  # for handling numbers with decimals
+            return True
+        except ValueError:
+            return False
+
+    def get_names(model_fp):
+        validation = validate_model(model_fp)
+        sim_info = validation[2]
+        agent_names = []
+        for info in sim_info:
+            if isinstance(info, list):
+                for line in info:
+                    if line.startswith('difc'):
+                        agent_names.append(line)
+        names = [item.replace('difc ', '') for item in agent_names]
+        return names
+
+    def standardize_names(names):
+        agent_list = []
+        # \b is a word boundary in regex, ensuring we're removing "words" that are entirely made up of digits (possibly with a decimal point)
+        pattern = re.compile(
+            r'\b\d+(\.\d+)?\b')
+
+        for item in names:
+            # Use regex sub() method to replace numbers with an empty string
+            new_string = pattern.sub('', item)
+
+            # Strip extra whitespace that may have been left behind after removing numbers
+            new_string = new_string.strip()
+
+            agent_list.append(new_string)
+        return agent_list
+
+    names = get_names(model_fp)
+    return standardize_names(names)
+
