@@ -473,14 +473,15 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
     def generate_simularium_file(
             self,
             agents: List[Tuple[str, float, str]],
-            box_size=10.,
-            spatial_units="nm",
-            temporal_units="s",
-            n_dim=3,
-            io_format="JSON",
-            translate=True,
-            overwrite=True,
-            validate_ids=True,
+            box_size: float = 10.0,
+            spatial_units: str = "nm",
+            temporal_units: str = "s",
+            n_dim: int = 3,
+            io_format: str = "JSON",
+            translate: bool = True,
+            overwrite: bool = True,
+            validate_ids: bool = True,
+            scale: float = 10.0,
             simularium_filename: Optional[str] = None,
             display_data: Optional[Dict[str, DisplayData]] = None,
             metadata_object: Optional[MetaData] = None,
@@ -512,6 +513,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                 overwrite(:obj:`bool`): Whether to overwrite a simularium file of the same name as `simularium_filename`
                     if one already exists in the COMBINE archive. Defaults to `True`.
                 validate_ids(:obj:`bool`): Whether to call the write method using `validation=True`. Defaults to True.
+                scale(:obj:`float`): Scale by which to apply to the `Metadata.scale_factor`. Defaults to `10.0`.
         """
         # enforce 3 dimensions
         try:
@@ -535,7 +537,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
         # set display data and metadata
         display_data = display_data or self.generate_display_data_dict(agents)
-        metadata_object = metadata_object or self.generate_metadata_object(box_size=box_size)
+        metadata_object = metadata_object or self.generate_metadata_object(box_size=box_size, scale_factor=scale)
 
         # construct SmoldynData object
         data = self.generate_output_data_object(
