@@ -16,14 +16,23 @@ def main():
     simularium_fname = 'polymer_mid_binary_save'
 
     archive = SmoldynCombineArchive(rootpath=archive_root, simularium_filename=simularium_fname)
+    '''if os.path.exists(archive.model_output_filename):
+        os.remove(archive.model_output_filename)
+    if os.path.exists(os.path.join(archive.rootpath, archive.simularium_filename)):
+        os.remove(archive.simularium_filename)
+'''
     agents = [
-        ('A', 2.0, HEX_COLORS.get('red'))
+        ('A(solution)', 0.1, HEX_COLORS.get('red'))
     ]
 
     converter = SmoldynDataConverter(archive)
-    converter.generate_simularium_file(agents, scale=10.0, box_size=10.0, io_format='binary')
+    converter.generate_simularium_file(scale=10.0, box_size=20.0, io_format='binary')
 
 
 if __name__ == '__main__':
     main()
 
+NEXT: Andrews_2012/Bar30.txt with ellipse_12_12.txt
+
+If you want a Python file,
+Andrews_2021/cluster.py

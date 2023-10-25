@@ -472,7 +472,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: List[Tuple[str, float, str]],
+            agents: Optional[List[Tuple[str, float, str]]] = None,
             box_size: float = 10.0,
             spatial_units: str = "nm",
             temporal_units: str = "s",
@@ -536,7 +536,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         input_file = self.generate_input_file_data_object()
 
         # set display data and metadata
-        display_data = display_data or self.generate_display_data_dict(agents)
+        if agents:
+            display_data = self.generate_display_data_dict(agents)
         metadata_object = metadata_object or self.generate_metadata_object(box_size=box_size, scale_factor=scale)
 
         # construct SmoldynData object
@@ -552,6 +553,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if translate:
             c = self.generate_converter(data)
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
+            '''display = data.agent_data.display_data
+            for key in display:
+                display[key].radius = 0.01'''
 
         # write the simularium file
         self.write_simularium_file(
