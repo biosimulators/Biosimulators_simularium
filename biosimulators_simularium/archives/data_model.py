@@ -926,7 +926,7 @@ class SpatialCombineArchive(ABC):
             if 'manifest' in v:
                 manifest.append(v)
                 self.paths['manifest'] = v
-        return list(set(manifest))[0]
+                return v
 
     def read_manifest_contents(self):
         """Reads the contents of the manifest file within `self.rootpath`.
