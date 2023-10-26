@@ -172,4 +172,9 @@ cmd i 0 TIMEEND 2 molcount OUTFILE2
 cmd i 0 TIMEEND 2 molmoments GPCRalpha(up) OUTFILE1
 */
 
+# Added output commands(Alex)
+output_files FILEROOTout.txt
+cmd i 0 TIMEEND 2 executiontime FILEROOTout.txt
+cmd i 0 TIMEEND 2 listmols FILEROOTout.txt
+
 end_file

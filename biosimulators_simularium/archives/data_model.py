@@ -1025,7 +1025,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
     def __init__(self,
                  rootpath: str,
                  model_filename='model.txt',
-                 model_output_filename='modelout.txt',
+                 model_output_filename: Optional[str] = None,
                  simularium_filename: Optional[str] = None):
         """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`.
 
@@ -1039,8 +1039,9 @@ class SmoldynCombineArchive(SpatialCombineArchive):
         """
         super().__init__(rootpath, simularium_filename)
         self.set_model_filepath(model_default=model_filename)
-        self.model_output_filename = os.path.join(self.rootpath, model_output_filename)
-        self.paths['model_output_file'] = self.model_output_filename
+        output_filename = self._set_model_output_filename(model_filename, model_output_filename)
+        self.model_output_path = os.path.join(self.rootpath, output_filename)
+        self.paths['model_output_file'] = self.model_output_path
 
     def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt'):
         """Recursively read the full paths of all files in `self.paths` and return the full path of the file
@@ -1058,6 +1059,13 @@ class SmoldynCombineArchive(SpatialCombineArchive):
             full_path = self.paths[k]
             if model_filename in full_path:
                 self.model_path = model_filename
+
+    @staticmethod
+    def _set_model_output_filename(model_fn: str, output_fn: Optional[str] = None) -> str:
+        if not output_fn:
+            return model_fn + 'out.txt'
+        else:
+            return output_fn
 
     def set_model_output_filepath(self) -> None:
         """Recursively search the directory at `self.rootpath` for a smoldyn
