@@ -1063,7 +1063,8 @@ class SmoldynCombineArchive(SpatialCombineArchive):
     @staticmethod
     def _set_model_output_filename(model_fn: str, output_fn: Optional[str] = None) -> str:
         if not output_fn:
-            return model_fn + 'out.txt'
+            fn = model_fn.replace('.txt', 'out.txt')
+            return fn
         else:
             return output_fn
 
