@@ -553,9 +553,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         if translate:
             c = self.generate_converter(data)
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
-            '''display = data.agent_data.display_data
-            for key in display:
-                display[key].radius = 0.01'''
+
+        # concat the proper suffix to simularium file based on the io format (for clarity)
+        simularium_filename += f'{io_format}_save'
 
         # write the simularium file
         self.write_simularium_file(
