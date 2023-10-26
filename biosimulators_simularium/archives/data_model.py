@@ -1024,18 +1024,21 @@ class SpatialCombineArchive(ABC):
 class SmoldynCombineArchive(SpatialCombineArchive):
     def __init__(self,
                  rootpath: str,
+                 model_filename='model.txt',
                  model_output_filename='modelout.txt',
                  simularium_filename: Optional[str] = None):
         """Object for handling the output of Smoldyn simulation data. Implementation child of `SpatialCombineArchive`.
 
             Args:
                 rootpath: fp to the root of the archive 'working dir'.
-                model_output_filename: filename ONLY not filepath of the model file you are working with. Defaults to
+                model_filename: filename ONLY not filepath of the model file you are working with. Defaults to
+                    `model.txt`.
+                model_output_filename: filename ONLY not filepath of the model output file you are working with. Defaults to
                     `modelout.txt`.
                 simularium_filename:
         """
         super().__init__(rootpath, simularium_filename)
-        self.set_model_filepath()
+        self.set_model_filepath(model_default=model_filename)
         self.model_output_filename = os.path.join(self.rootpath, model_output_filename)
         self.paths['model_output_file'] = self.model_output_filename
 
