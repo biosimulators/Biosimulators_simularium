@@ -1040,8 +1040,8 @@ class SmoldynCombineArchive(SpatialCombineArchive):
         super().__init__(rootpath, simularium_filename)
         self.set_model_filepath(model_default=model_filename)
         output_filename = self._set_model_output_filename(model_filename, model_output_filename)
-        self.model_output_path = os.path.join(self.rootpath, output_filename)
-        self.paths['model_output_file'] = self.model_output_path
+        self.model_output_filename = os.path.join(self.rootpath, output_filename)
+        self.paths['model_output_file'] = self.model_output_filename
 
     def set_model_filepath(self, model_filename: Optional[str] = None, model_default='model.txt'):
         """Recursively read the full paths of all files in `self.paths` and return the full path of the file

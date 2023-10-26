@@ -367,8 +367,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             Returns:
                 None
         """
-        model_output_filename = model_output_filename or self.archive.model_output_path
         archive = smoldyn_archive or self.archive
+        model_output_filename = model_output_filename or self.archive.model_output_filename
         if not os.path.exists(model_output_filename):
             validation = archive.generate_model_validation_object()
             validation.simulation.runSim()
@@ -378,7 +378,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             for f in files:
                 if f.endswith('.txt') and 'model' not in f:
                     f = os.path.join(root, f)
-                    os.rename(f, archive.model_output_path)
+                    os.rename(f, archive.model_output_filename)
 
     def read_model_output_dataframe(self) -> pd.DataFrame:
         """Create a pandas dataframe from the contents of `self.archive.model_output_filename`. WARNING: this method
@@ -389,7 +389,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         """
         warn('WARNING: This method is experimental and may not function properly.')
         colnames = ['mol_name', 'x', 'y', 'z', 't']
-        return pd.read_csv(self.archive.model_output_path, sep=" ", header=None, skiprows=1, names=colnames)
+        return pd.read_csv(self.archive.model_output_filename, sep=" ", header=None, skiprows=1, names=colnames)
 
     def write_model_output_dataframe_to_csv(self, save_fp: str) -> None:
         """Write output dataframe to csv file.

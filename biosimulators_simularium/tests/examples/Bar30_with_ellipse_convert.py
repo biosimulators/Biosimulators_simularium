@@ -7,7 +7,7 @@ from biosimulators_simularium.utils.core import HEX_COLORS
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/Bar30_with_ellipse'
-test_model_filename = 'Bar30'
+test_model_filename = 'Bar30.txt'
 
 
 archive = SmoldynCombineArchive(
