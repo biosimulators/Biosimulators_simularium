@@ -32,7 +32,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-NEXT: Andrews_2012/Bar30.txt with ellipse_12_12.txt
-
-If you want a Python file,
-Andrews_2021/cluster.py
