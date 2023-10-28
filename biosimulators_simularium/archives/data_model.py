@@ -864,8 +864,10 @@ class SpatialCombineArchive(ABC):
         self.rootpath = rootpath
         self.__parse_rootpath()
         if simularium_filename is None:
-            simularium_filename = 'spatial_combine_archive'
-        self.simularium_filename = os.path.join(self.rootpath, simularium_filename)
+            self.simularium_file = 'spatial_combine_archive'
+        else:
+            self.simularium_file = simularium_filename
+        self.simularium_filename = os.path.join(self.rootpath, self.simularium_file)
         self.paths = self.get_all_archive_filepaths()
 
     def __parse_rootpath(self):
@@ -976,7 +978,7 @@ class SpatialCombineArchive(ABC):
         """
         try:
             if not simularium_fp:
-                simularium_fp = self.simularium_filename
+                simularium_fp = self.simularium_file
             self.add_file_to_manifest(simularium_fp + '.simularium')
             print('Simularium File added to archive manifest contents!')
         except Exception:

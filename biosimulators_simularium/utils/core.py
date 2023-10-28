@@ -3,6 +3,7 @@
 
 
 import os
+from typing import Union
 from enum import Enum
 from typing import Dict, List
 from biosimulators_simularium.utils.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
@@ -210,6 +211,11 @@ def extract_path_sections(fp: str) -> List[str]:
                 parts.insert(0, path)
             break
     return parts
+
+
+def num_steps(timeEnd, timeStart, timeStep) -> Union[int, float]:
+    """Return the number of steps to record for the simulation given end, start, and step size."""
+    return (timeEnd - timeStart) / timeStep
 
 
 HEX_COLORS = {

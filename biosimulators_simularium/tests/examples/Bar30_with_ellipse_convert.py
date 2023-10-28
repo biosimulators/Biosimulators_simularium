@@ -1,4 +1,4 @@
-"""Testing `Bar30.txt` to simularium ONLY"""
+"""Testing `model.txt` to simularium ONLY"""
 
 
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
@@ -7,7 +7,7 @@ from biosimulators_simularium.utils.core import HEX_COLORS
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/Bar30_with_ellipse'
-test_model_filename = 'Bar30.txt'
+test_model_filename = 'Bar30'
 
 
 archive = SmoldynCombineArchive(
