@@ -21,6 +21,27 @@ class Viscosity:
 
 
 class AbsoluteTemperature(Temperature):
-    def __init__(self, value: float, unit: str, environment: Environment):
-        super().__init__(value, unit)
-        self.environment = environment
+    def __init__(self, value: float, units: str):
+        """The most commonly used units will be Kelvin (K) or Celsius (C)"""
+        super().__init__(value, units)
+        self.C = self._celsius()
+        self.K = self._kelvin()
+
+    def _celsius(self):
+        units = self.unit.value
+        if "C" in units:
+            return self.value
+        elif "K" in units:
+            return self.value + 273.15
+
+    def _kelvin(self):
+        units = self.unit.value
+        if "K" in units:
+            return self.value
+        elif "C" in units:
+            return self.value - 273.15
+
+
+class Gravity:
+    value: float
+    units: str

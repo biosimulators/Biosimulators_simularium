@@ -11,13 +11,14 @@ licence: MIT
 from typing import *
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from biosimulators_simularium.normalize.parameters.universe import AbsoluteTemperature
+from biosimulators_simularium.normalize.parameters.data_model import Density, Radius, Temperature
 
 
 
 
 class Particle:
-    density: Density
+    rho: Density
     r: Radius
-    T: AbsoluteTemperature
+    T: Temperature
+    D:
 
