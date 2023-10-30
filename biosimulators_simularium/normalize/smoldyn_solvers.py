@@ -61,21 +61,22 @@ class MoleculeRadius(MoleculeAttribute):
         return
 
 
-@dataclass
-class MoleculeEnvironment:
-    """
-    Params:
-        environment_type:`str`
-        viscosity:`Tuple[float, str]`: expects the [value, units]
-        temperature:`Tuple[float, str]`: expects the [value, units]
-    """
-    environment_type: str
-    viscosity: Tuple[float, str]
-    temperature: Tuple[float, str]
+class MoleculeEnvironment(MoleculeAttribute):
+    def __init__(self,
+                 viscosity: float,
+                 temperature: float,
+                 viscosity_units: str = 'g/cm',
+                 temperature_units: str = 'K',
+                 state: str = 'liquid'):
+        super().__init__()
+        self.state = state
+        self.viscosity = {'value': viscosity, 'units': viscosity_units}
+        self.temperature = {'value': temperature, 'units': temperature_units}
 
 
 class Molecule:
     def __init__(self,
+                 name: str,
                  environment: MoleculeEnvironment,
                  r: Optional[float] = None,
                  density: Optional[float] = None,
@@ -88,15 +89,22 @@ class Molecule:
             density:
             D:
         """
+        self.name = name
         self.environment = environment
+        self.D = D
         self.r = self._set_radius(r)
         self.density = density
-        self.D = D
 
     def _set_radius(self, r: Optional[float] = None):
-        if not r:
-            T = self.environment.temperature
-            eta: self.environment.
+        if not self.D:
+            raise ValueError('A D value must be passed to compute radius.')
+        else:
+            if not r:
+                T = self.environment.temperature
+                eta = self.environment.viscosity
+                if self.environment.state == 'liquid':
+                    r = (self.k * T) / (6 * np.pi * eta * self.D)
 
-
+            else:
+                return r
 
