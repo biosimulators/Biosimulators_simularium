@@ -95,16 +95,18 @@ class Molecule:
         self.r = self._set_radius(r)
         self.density = density
 
-    def _set_radius(self, r: Optional[float] = None):
-        if not self.D:
-            raise ValueError('A D value must be passed to compute radius.')
+    def _set_radius(self, r: Optional[float] = None) -> float:
+        try:
+            self.D
+        except:
+            raise ValueError('A diffusion coefficient value must be passed to compute radius.')
         else:
             if not r:
                 T = self.environment.temperature
                 eta = self.environment.viscosity
                 if self.environment.state == 'liquid':
                     r = (self.k * T) / (6 * np.pi * eta * self.D)
-
+                    return r
             else:
                 return r
 
