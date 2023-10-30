@@ -7,14 +7,17 @@ date: 10/28/2023
 licence: MIT
 """
 
-from biosimulators_simularium.normalize.verification.parameters.data_model import Density, Radius, Temperature
-
-
+from biosimulators_simularium.normalize.verification.parameters.data_model import (
+    Density,
+    Radius,
+    Temperature,
+    DiffusionCoefficient
+)
 
 
 class Particle:
     rho: Density
     r: Radius
     T: Temperature
-    D:
+    D: DiffusionCoefficient
 
