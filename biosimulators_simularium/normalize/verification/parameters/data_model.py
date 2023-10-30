@@ -51,7 +51,7 @@ class TemperatureUnit:
 
 class Temperature:
     def __init__(self, value: float, unit: str):
-        self.value = TemperatureValue(value.upper())
+        self.value = TemperatureValue(value)
         self.unit = TemperatureUnit(unit.upper())
 
 
@@ -76,3 +76,10 @@ class DiffusionCoefficient:
                 medium:`str`: medium for which a given particle's diffusion coefficient is being calculated.
         """
         self.value = value
+
+
+@dataclass
+class MeasurementUnit:
+    value: str
+    measurement_type: str
+

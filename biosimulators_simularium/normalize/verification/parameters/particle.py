@@ -7,11 +7,7 @@ date: 10/28/2023
 licence: MIT
 """
 
-
-from typing import *
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
-from biosimulators_simularium.normalize.parameters.data_model import Density, Radius, Temperature
+from biosimulators_simularium.normalize.verification.parameters.data_model import Density, Radius, Temperature
 
 
 
