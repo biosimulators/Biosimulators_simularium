@@ -17,7 +17,7 @@ class ParticleDiffusionCoefficient:
     """Object which calculates a molecule's diffusion coefficient given the required parameters of the
         Stokes-Einstein equation.
     """
-    class
+    pass
 
 
 class ParticleRadius:
@@ -29,7 +29,9 @@ class ParticleRadius:
         Methods:
             `radius_from_composition`: calculates the radius of the particle based on mol.mass and density.
             `radius_from_D`: calculates the radius of the particle by reverse-engineering the provided diffusion
-                coefficient. Here, `T` is the absolute temp of the liquid during the simulation.
+                coefficient. Here, `T` is the absolute temp of the liquid during the simulation. Here, it is assumed that
+                the radius was originally derived via the `radius_from_composition` by the Smoldyn modeler when
+                creating the model itself.
     """
     pass
 
