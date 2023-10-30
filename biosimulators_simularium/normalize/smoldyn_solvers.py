@@ -16,52 +16,34 @@ from dataclasses import dataclass
 import numpy as np
 
 
-class MoleculeAttribute:
+class AgentAttribute(ABC):
     k: float
 
     def __init__(self):
         self.k = 1.380649 * 10**-23
 
+    @abstractmethod
+    def _calculate(self, **parameters) -> float:
+        """Abstract method for calculating the values for the relative child class. I.E: if class is radius,
+            this method would take in D, T, eta, etc and reverse-engineer the radius.
+        """
+        pass
 
-class MoleculeDiffusionCoefficient(MoleculeAttribute):
+
+class AgentRadius(AgentAttribute):
+    def __init__(self, D: float, ):
+        super().__init__()
+
+
+class AgentDiffusionCoefficient(AgentAttribute):
     """Object which calculates a molecule's diffusion coefficient given the required parameters of the
-        Stokes-Einstein equation.
+            Stokes-Einstein equation.
     """
     def __init__(self):
         super().__init__()
 
 
-class MoleculeRadius(MoleculeAttribute):
-    """Object which calculates a molecule's radius to serve as input for `simulariumio.DisplayData` relative to
-        a given smoldyn simulation agent. The calculation for this value is based on the parameters which represent the
-        molecular mass and density of the given agent. Can be used as an input parameter of the Stokes-Einstein
-        equation.
-
-        Methods(children):
-            `radius_from_composition`: calculates the radius of the particle based on mol.mass and density.
-            `radius_from_D`: calculates the radius of the particle by reverse-engineering the provided diffusion
-                coefficient. Here, `T` is the absolute temp of the liquid during the simulation. Here, it is assumed that
-                the radius was originally derived via the `radius_from_composition` by the Smoldyn modeler when
-                creating the model itself.
-    """
-
-    def __init__(self, D: float, T: float, eta: float):
-        """Instance which takes in a given diffusion coefficient from the smoldyn model file through validation
-            and reverse-engineers the radius.
-
-            Args:
-                D:`float`: The diffusion coefficient as described by the field `difc` in the Smoldyn model file.
-            Params:
-                value:`float`: The particle's radius to use as the `radius` field within `simulariumio.DisplayData`.
-        """
-        super().__init__()
-        self.value = self._set_radius(D)
-
-    def _set_radius(self, D, T, eta):
-        return
-
-
-class MoleculeEnvironment(MoleculeAttribute):
+class AgentEnvironment(AgentAttribute):
     def __init__(self,
                  viscosity: float,
                  temperature: float,
@@ -74,10 +56,10 @@ class MoleculeEnvironment(MoleculeAttribute):
         self.temperature = {'value': temperature, 'units': temperature_units}
 
 
-class Molecule:
+class Agent:
     def __init__(self,
                  name: str,
-                 environment: MoleculeEnvironment,
+                 environment: AgentEnvironment,
                  r: Optional[float] = None,
                  density: Optional[float] = None,
                  D: Optional[float] = None):
