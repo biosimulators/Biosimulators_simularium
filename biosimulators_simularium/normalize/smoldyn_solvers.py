@@ -16,22 +16,15 @@ from dataclasses import dataclass
 import numpy as np
 
 
-class AgentAttribute(ABC):
+class AgentAttribute:
     k: float
 
     def __init__(self):
         self.k = 1.380649 * 10**-23
 
-    @abstractmethod
-    def _calculate(self, **parameters) -> float:
-        """Abstract method for calculating the values for the relative child class. I.E: if class is radius,
-            this method would take in D, T, eta, etc and reverse-engineer the radius.
-        """
-        pass
-
 
 class AgentRadius(AgentAttribute):
-    def __init__(self, D: float, ):
+    def __init__(self, D: float, T: float, eta: float):
         super().__init__()
 
 
@@ -39,7 +32,7 @@ class AgentDiffusionCoefficient(AgentAttribute):
     """Object which calculates a molecule's diffusion coefficient given the required parameters of the
             Stokes-Einstein equation.
     """
-    def __init__(self):
+    def __init__(self, T: float, eta: float, r: float):
         super().__init__()
 
 
@@ -55,19 +48,26 @@ class AgentEnvironment(AgentAttribute):
         self.viscosity = {'value': viscosity, 'units': viscosity_units}
         self.temperature = {'value': temperature, 'units': temperature_units}
 
+    def _calculate(self, **parameters):
+        pass
+
 
 class Agent:
+    """PLEASE NOTE: At a minimum, at least D or r must be passed."""
     def __init__(self,
                  name: str,
                  environment: AgentEnvironment,
+                 D: Optional[float] = None,
                  r: Optional[float] = None,
                  density: Optional[float] = None,
-                 D: Optional[float] = None):
+                 molecular_mass: Optional[float] = None):
         """
 
         Args:
+            name:`str`: name of the molecule (for metadata)
             environment:`MoleculeEnvironment`: this provides the T and eta required to solve for radius
-            r:
+            r:`Optional[float]`: radius of the given particle as per simulariumio. If `None` is passed, the default
+                value for this field is derived from the given diffusion coefficient (D).
             density:
             D:
         """
@@ -76,18 +76,19 @@ class Agent:
         self.D = D
         self.r = self._set_radius(r)
         self.density = density
+        self.molecular_mass = molecular_mass
 
     def _set_radius(self, r: Optional[float] = None) -> float:
         try:
-            self.D
-        except:
+            assert self.D is not None
+        except AssertionError:
             raise ValueError('A diffusion coefficient value must be passed to compute radius.')
         else:
             if not r:
                 T = self.environment.temperature
                 eta = self.environment.viscosity
                 if self.environment.state == 'liquid':
-                    r = (self.k * T) / (6 * np.pi * eta * self.D)
+                    r = (self.environment.k * T.get('value')) / (6 * np.pi * eta.get('value') * self.D)
                     return r
             else:
                 return r
