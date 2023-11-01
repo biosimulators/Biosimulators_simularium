@@ -71,17 +71,17 @@ class ModelDepiction:
                 warn(f'Warning: the value passed for the diffusion coefficient is an alias and must be defined.')
         return agent_difcs
 
-
-    def _set_agents(self, agents: List[ModelAgent] = None) -> List[ModelAgent]:
+    def _set_agents(self, agents: List[ModelAgent] = None) -> Union[Dict[str, ModelAgent], List[ModelAgent]]:
+        model_agents = {}
         if not agents:
-            model_agents = []
             agents = list(self.agent_difcs.keys())
             for agent in agents:
                 model_agent = ModelAgent(name=agent, difc=self.agent_difcs[agent])
-                model_agents.append(model_agent)
+                model_agents[model_agent.name] = model_agent
             return model_agents
         else:
             return agents
+
 
     def get_model(self, model_fp: Optional[str] = None) -> List[str]:
         validation = validate_model(model_fp or self.model_fp)
