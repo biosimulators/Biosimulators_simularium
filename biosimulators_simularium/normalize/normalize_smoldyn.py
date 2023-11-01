@@ -24,20 +24,37 @@ from biosimulators_simularium.archives.data_model import SmoldynCombineArchive, 
 """
 
 
-def read_model_diffusion_coefficients(model_fp: str):
+def get_model(model_fp: str) -> List[str]:
     validation = validate_model(model_fp)
     for item in validation:
         if isinstance(item, tuple):
             for datum in item:
                 if isinstance(datum, list):
-                    difcs = []
-                    for line in datum:
-                        if line.startswith('difc'):
-                            print(line)
-                            difcs.append(line)
-                    return difcs
+                    return datum
+
+
+def get_value_from_model(model_fp: str, term: str) -> List[str]:
+    model = get_model(model_fp)
+    values = []
+    for line in model:
+        if line.startswith(term):
+            values.append(line)
+    return values
+
+
+def read_model_diffusion_coefficients(model_fp: str):
+    return get_value_from_model(model_fp, 'difc')
+
+
+def read_model_definitions(model_fp: str):
+    return get_value_from_model(model_fp, 'define')
 
 
 archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
+
+# 1. get difcs
 difcs_from_model = read_model_diffusion_coefficients(archive.model_path)
-print(difcs_from_model)
+# 2. get definitions
+defines = read_model_definitions(archive.model_path)
+# match #1[split(' ')[-1]] to #2.split(' ')[-1]
+
