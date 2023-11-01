@@ -15,6 +15,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import numpy as np
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive, validate_model
+from biosimulators_simularium.normalize.data_model import AgentEnvironment
+
 
 """
 1. get 'difc' from model file lines (isinstance)
@@ -50,6 +52,14 @@ def read_model_definitions(model_fp: str):
     return get_value_from_model(model_fp, 'define')
 
 
+def calculate_agent_radius(D: float, environment: AgentEnvironment) -> float:
+    T = environment.temperature.get('value')
+    eta = environment.viscosity.get('value')
+    if 'liquid' in environment.state:
+        return (environment.k * T) / (6 * np.pi * eta * D)
+
+
+
 archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
 
 # 1. get difcs
@@ -58,3 +68,7 @@ difcs_from_model = read_model_diffusion_coefficients(archive.model_path)
 defines = read_model_definitions(archive.model_path)
 # match #1[split(' ')[-1]] to #2.split(' ')[-1]
 
+D = 2.5
+environment = AgentEnvironment(viscosity=8.1, temperature=310.0)
+D_D_radius = calculate_agent_radius(D, environment)
+print(D_D_radius)
