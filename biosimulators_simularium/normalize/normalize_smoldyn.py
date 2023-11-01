@@ -68,7 +68,13 @@ difcs_from_model = read_model_diffusion_coefficients(archive.model_path)
 defines = read_model_definitions(archive.model_path)
 # match #1[split(' ')[-1]] to #2.split(' ')[-1]
 
-D = 2.5
-environment = AgentEnvironment(viscosity=8.1, temperature=310.0)
-D_D_radius = calculate_agent_radius(D, environment)
-print(D_D_radius)
+
+
+def parse_difcs(difc_list: List[str]):
+    for difc in difc_list:
+        mol_difc = difc.split(' ')
+        for item in mol_difc:
+            print(item)
+
+
+parsed_difcs = parse_difcs(difcs_from_model)
