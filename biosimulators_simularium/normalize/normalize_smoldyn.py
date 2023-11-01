@@ -35,7 +35,7 @@ def get_model(model_fp: str) -> List[str]:
                     return datum
 
 
-def get_value_from_model(model_fp: str, term: str) -> List[str]:
+def read_value_from_model(model_fp: str, term: str) -> List[str]:
     model = get_model(model_fp)
     values = []
     for line in model:
@@ -44,12 +44,56 @@ def get_value_from_model(model_fp: str, term: str) -> List[str]:
     return values
 
 
-def read_model_diffusion_coefficients(model_fp: str):
-    return get_value_from_model(model_fp, 'difc')
+def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:
+    """Read in a model file and return a dictionary of {agent name: agent difc value}.
+        Please note that difcs can be defined in Smoldyn as an alias which serves as a reference to another
+        data definition.
+
+        Args:
+            model_fp:`str`: path to the model file of which you want to extract the agent diffusion coefficient
+                values from.
+
+        Returns:
+            `Dict[str, str]`: a dictionary of {model agent name: model agent value}
+    """
+    difcs = {}
+    difc_defs = read_value_from_model(model_fp, 'difc')
+    for difc in difc_defs:
+        single_agent_difc = difc.split(' ')
+        agent_name = single_agent_difc[1]
+        difc_value = single_agent_difc[2]
+        difcs[agent_name] = difc_value
+    return difcs
 
 
 def read_model_definitions(model_fp: str):
-    return get_value_from_model(model_fp, 'define')
+    return read_value_from_model(model_fp, 'define')
+
+
+def parse_difcs_from_model_definitions(model_fp: str):
+    definitions = read_model_definitions(model_fp)
+    parsed_difcs = get_model_diffusion_coefficients(model_fp)
+    difcs = list(parsed_difcs.values())
+    for definition in definitions:
+        definition = definition.split(' ')
+
+
+def generate_environment(**environment_parameters):
+    """Generate a new instance of `AgentEnvironment` given environment parameters. The output of this function
+        should be used on the global scale in relation to the highest level/view of the simulation. All agents
+        (currently) communicate with this Singleton.
+
+        Keyword Args:
+            state:`str`: state in which the environment exists. Choices are `liquid` or `gas`. This effects how
+                the calculation of agent radii in the stokes-einstein equation occurs. Defaults to `liquid`.
+            viscosity:`float`: viscosity of the simulation environment.
+            temperature`float`: temperature of the simulation temperature (absolute temperature).
+            viscosity_units:`Optional[str]`: units by which the viscosity is measured. Defaults to 'cP' (centipoise)
+
+        Returns:
+            `AgentEnvironment`: instance of an object which represents the simulation environment.
+    """
+    return AgentEnvironment(**environment_parameters)
 
 
 def calculate_agent_radius(D: float, environment: AgentEnvironment) -> float:
@@ -63,18 +107,13 @@ def calculate_agent_radius(D: float, environment: AgentEnvironment) -> float:
 archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
 
 # 1. get difcs
-difcs_from_model = read_model_diffusion_coefficients(archive.model_path)
+difcs_from_model = get_model_diffusion_coefficients(archive.model_path)
 # 2. get definitions
-defines = read_model_definitions(archive.model_path)
+definitions = read_model_definitions(archive.model_path)
 # match #1[split(' ')[-1]] to #2.split(' ')[-1]
+parsed_difcs = get_model_diffusion_coefficients(archive.model_path)
+# create agent difcs
+agent_difcs = parse_difcs_from_model_definitions(archive.model_path)
 
 
-
-def parse_difcs(difc_list: List[str]):
-    for difc in difc_list:
-        mol_difc = difc.split(' ')
-        for item in mol_difc:
-            print(item)
-
-
-parsed_difcs = parse_difcs(difcs_from_model)
+USE validatemodel TO PARSE AGENT NAMES FOR BIOSIMULARIUM!

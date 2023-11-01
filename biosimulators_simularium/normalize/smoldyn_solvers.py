@@ -37,7 +37,7 @@ class AgentDiffusionCoefficient(AgentAttribute):
         super().__init__()
 
 
-class AgentEnvironment(AgentAttribute):
+class AgentUniverse(AgentAttribute):
     def __init__(self,
                  viscosity: float,
                  temperature: float,
@@ -57,7 +57,6 @@ class Agent:
     """PLEASE NOTE: At a minimum, at least D or r must be passed."""
     def __init__(self,
                  name: str,
-                 #environment: AgentEnvironment,
                  D: Optional[float] = None,
                  r: Optional[float] = None,
                  density: Optional[float] = None,
@@ -67,7 +66,6 @@ class Agent:
 
         Args:
             name:`str`: name of the molecule (for metadata)
-            environment:`MoleculeEnvironment`: this provides the T and eta required to solve for radius
             r:`Optional[float]`: radius of the given particle as per simulariumio. If `None` is passed, the default
                 value for this field is derived from the given diffusion coefficient (D).
             density:`Optional[float]`: density of the molecule. Defaults to `None`.
@@ -78,7 +76,7 @@ class Agent:
                 state(`str`): defaults to `'liquid'`.
         """
         self.name = name
-        self.environment = AgentEnvironment(**environment_parameters)
+        self.environment = AgentUniverse(**environment_parameters)
         self.D = D
         self.r = self._set_radius(r)
         self.density = density
