@@ -61,14 +61,14 @@ class ModelDepiction:
         """
         self.model_fp = model_fp
         self.environment = environment
-        self.agent_difcs =  self._set_agent_difcs()
+        self.agent_difcs = self._set_agent_difcs()
         self.agents = self._set_agents(agents)
 
     def _set_agent_difcs(self):
         agent_difcs = self.get_model_diffusion_coefficients()
         for v in list(agent_difcs.values()):
             if not isinstance(v, float):
-                warn(f'Warning: the value passed for the diffusion coefficient is an alias and must be defined.')
+                warn(f'Warning: the value passed for the diffusion coefficient is an alias and must be defined/derived.')
         return agent_difcs
 
     def _set_agents(self, agents: List[ModelAgent] = None) -> Union[Dict[str, ModelAgent], List[ModelAgent]]:
@@ -92,14 +92,15 @@ class ModelDepiction:
                         return datum
 
     def read_value_from_model(self, term: str, model_fp: Optional[str] = None) -> List[str]:
-        model = self.get_model(model_fp or self.model_fp)
+        model = self.get_model(self.model_fp)
         values = []
         for line in model:
             if line.startswith(term):
                 values.append(line)
         return values
 
-    def get_model_diffusion_coefficients(self, model_fp: Optional[str] = None) -> Dict[str, str]:
+    @classmethod
+    def get_model_diffusion_coefficients(cls, model_fp: Optional[str] = None) -> Dict[str, str]:
         """Read in a model file and return a dictionary of {agent name: agent difc value}.
             Please note that difcs can be defined in Smoldyn as an alias which serves as a reference to another
             data definition.
@@ -112,7 +113,7 @@ class ModelDepiction:
                 `Dict[str, str]`: a dictionary of {model agent name: model agent value}
         """
         difcs = {}
-        difc_defs = self.read_value_from_model(model_fp or self.model_fp, 'difc')
+        difc_defs = self.read_value_from_model(model_fp, 'difc')
         for difc in difc_defs:
             single_agent_difc = difc.split(' ')
             agent_name = single_agent_difc[1]
@@ -123,8 +124,8 @@ class ModelDepiction:
     def read_model_definitions(self, model_fp: Optional[str] = None):
         return self.read_value_from_model(model_fp or self.model_fp, 'define')
 
-    def parse_difcs_from_model_definitions(self, model_fp: str):
-        model_fp = model_fp or self.model_fp
+    def parse_difcs_from_model_definitions(self):
+        model_fp = self.model_fp
         definitions = self.read_model_definitions(model_fp)
         parsed_difcs = self.get_model_diffusion_coefficients(model_fp)
         difcs = list(parsed_difcs.values())
@@ -170,23 +171,13 @@ def generate_depiction(model_fp: str):
 
 def generate_depiction_from_archive(archive: SmoldynCombineArchive):
     depiction = generate_depiction(archive.model_path)
-
-
-
-
-
+    return depiction
 
 
 archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
+depiction = generate_depiction_from_archive(archive)
+print(depiction.get_model_diffusion_coefficients())
 
-# 1. get difcs
-difcs_from_model = get_model_diffusion_coefficients(archive.model_path)
-# 2. get definitions
-definitions = read_model_definitions(archive.model_path)
-# match #1[split(' ')[-1]] to #2.split(' ')[-1]
-model_agent_difcs = get_model_diffusion_coefficients(archive.model_path)
-# create agent difcs
-agent_difcs = parse_difcs_from_model_definitions(archive.model_path)
 
 
 # USE validatemodel TO PARSE AGENT NAMES FOR BIOSIMULARIUM!
