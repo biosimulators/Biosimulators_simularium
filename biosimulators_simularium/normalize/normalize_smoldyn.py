@@ -33,6 +33,7 @@ class ModelAgent:
         simulation, """
     name: str = None
     difc: Union[float, str] = None  # check if val passed is type(str)...if so require or get val.
+    color: str = None
 
 
 class ModelDepiction:
@@ -61,11 +62,11 @@ class ModelDepiction:
         """
         self.model_fp = model_fp
         self.environment = environment
-        self.agent_difcs = self._set_agent_difcs()
+        self.agent_difcs = self._set_agent_difcs(model_fp)
         self.agents = self._set_agents(agents)
 
-    def _set_agent_difcs(self):
-        agent_difcs = self.get_model_diffusion_coefficients(self.model_fp)
+    def _set_agent_difcs(self, model_fp: str):
+        agent_difcs = self.get_model_diffusion_coefficients(model_fp)
         for v in list(agent_difcs.values()):
             if not isinstance(v, float):
                 warn(f'Warning: the value passed for the diffusion coefficient is an alias and must be defined/derived.')
@@ -91,8 +92,8 @@ class ModelDepiction:
                     if isinstance(datum, list):
                         return datum
 
-    def read_value_from_model(self, term: str, model_fp: Optional[str] = None) -> List[str]:
-        model = self.get_model(self.model_fp)
+    def read_value_from_model(self, term: str, model_fp: str) -> List[str]:
+        model = self.get_model(model_fp)
         values = []
         for line in model:
             if line.startswith(term):
@@ -112,7 +113,7 @@ class ModelDepiction:
                 `Dict[str, str]`: a dictionary of {model agent name: model agent value}
         """
         difcs = {}
-        difc_defs = self.read_value_from_model(model_fp, 'difc')
+        difc_defs = self.read_value_from_model('difc', model_fp)
         for difc in difc_defs:
             single_agent_difc = difc.split(' ')
             agent_name = single_agent_difc[1]
@@ -131,8 +132,7 @@ class ModelDepiction:
         for definition in definitions:
             definition = definition.split(' ')
 
-    @staticmethod
-    def generate_environment(**environment_parameters):
+    def generate_environment(self, **environment_parameters):
         """Generate a new instance of `AgentEnvironment` given environment parameters. The output of this function
             should be used on the global scale in relation to the highest level/view of the simulation. All agents
             (currently) communicate with this Singleton. Sets the environment if not a value for this class.
@@ -143,11 +143,14 @@ class ModelDepiction:
                 viscosity:`float`: viscosity of the simulation environment.
                 temperature`float`: temperature of the simulation temperature (absolute temperature).
                 viscosity_units:`Optional[str]`: units by which the viscosity is measured. Defaults to 'cP' (centipoise)
+                temperature_units:`Optional[str]`: units by which the temperature is measured. Defaults to 'K'.
 
             Returns:
                 `AgentEnvironment`: instance of an object which represents the simulation environment.
         """
         env = AgentEnvironment(**environment_parameters)
+        if self.environment is None:
+            self.environment = env
         return env
 
     def calculate_agent_radius(self, D: float) -> float:
@@ -173,10 +176,6 @@ def generate_depiction_from_archive(archive: SmoldynCombineArchive):
     depiction = generate_depiction(archive.model_path)
     return depiction
 
-
-archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
-depiction = generate_depiction_from_archive(archive)
-print(depiction.get_model_diffusion_coefficients())
 
 
 

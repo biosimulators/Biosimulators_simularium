@@ -29,6 +29,28 @@ class Environment:
         self.eta = eta
 
 
+def build_environment(T: EnvironmentAttribute, eta: EnvironmentAttribute):
+    return Environment(T, eta)
+
+
+def calculate_radius(
+        T_env: float,
+        eta_env: float,
+        D_agent: float,
+        ) -> float:
+    """Assumes K for T_env, cP for eta_env, um^2/s for D_agent, and nm for output radius.
+
+    Args:
+        T_env:`float`:
+        eta_env:
+        D_agent:
+    Returns:
+        `float`: agent radius nm.
+    """
+    k = 1.380649 * 10 ** -23
+    return (k * T_env) / (6 * np.pi * (eta_env * 0.001) * D_agent) * 10**9
+
+
 def calculate_agent_radius(
         T_env: float,
         eta_env: float,
@@ -56,7 +78,11 @@ def calculate_agent_radius(
     k = 1.380649 * 10 ** -23
     if 'cP' in env_units.get('eta'):
         eta_env *= 0.001
-    return (k * T_env) / (6 * np.pi * eta_env * D_agent) * 10**9
+    r = (k * T_env) / (6 * np.pi * eta_env * D_agent)
+    if radius_units == 'nm':
+        return r * 10**9
+    else:
+        return r
 
 
 def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:
