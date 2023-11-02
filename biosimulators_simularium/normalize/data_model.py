@@ -53,6 +53,12 @@ class AgentEnvironment(AgentAttribute):
     def _calculate(self, **parameters):
         pass
 
+    def get_temp(self) -> float:
+        return self.temperature.get('value')
+
+    def get_viscosity(self) -> float:
+        return self.viscosity.get('value')
+
 
 class SmoldynAgent:
     def __init__(self,

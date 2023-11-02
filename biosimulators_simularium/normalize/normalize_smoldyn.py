@@ -61,6 +61,9 @@ class ModelDepiction:
                 environment:`AgentEnvironment`: instance of `AgentEnvironment` specific to this simulation.
         """
         self.model_fp = model_fp
+
+        if not environment:
+            warn('Warning: this Model Depiction was created without an environment and therefore must create one.')
         self.environment = environment
         self.agent_difcs = self._set_agent_difcs(model_fp)
         self.agents = self._set_agents(agents)
@@ -153,12 +156,41 @@ class ModelDepiction:
             self.environment = env
         return env
 
-    def calculate_agent_radius(self, D: float) -> float:
-        T = self.environment.temperature
-        eta = self.environment.viscosity
-        self._check_units(T.get('units'), eta.get('units'))
-        if 'liquid' in self.environment.state:
-            return (self.environment.k * T.get('value')) / (6 * np.pi * eta.get('value') * D)
+    def calculate_agent_radius(
+            self,
+            T_env: float,
+            eta_env: float,
+            D_agent: float,
+            radius_units='nm',
+            env_units: Dict[str, str] = None
+            ) -> float:
+        """
+
+        Args:
+            T_env:`float`:
+            eta_env:
+            D_agent:
+            radius_units: units by which to standardize/measure the output radius. Defaults to `'nm'` as per simularium.
+            env_units:`Dict[str, str]`: units by which env parameters are measured. Defaults to
+                `{'T': 'K', 'eta': 'cP'}`
+        Returns:
+            `float`: agent radius in `radius_units` units.
+        """
+        if not env_units:
+            env_units = {
+                'T': 'K',
+                'eta': 'cP'
+            }
+        T_env = self.environment.temperature.get_temp()
+        eta_env = self.environment.temperature.get_viscosity()
+        k = 1.380649 * 10 ** -23
+        if 'cP' in env_units.get('eta'):
+            eta_env *= 0.001
+        r = (k * T_env) / (6 * np.pi * eta_env * D_agent)
+        if radius_units == 'nm':
+            return r * 10 ** 9
+        else:
+            return r
 
     @staticmethod
     def _check_units(*units):
