@@ -10,4 +10,9 @@ depiction = ModelDepiction(model_fp=archive.model_path)
 
 environment = depiction.generate_environment(state='liquid', temperature=310.0, viscosity=8.1)
 
-print(depiction.agents)
+def create_agents(depiction: ModelDepiction):
+    agents = []
+    for agent in depiction.agents.keys():
+        agent = (agent, )
+
+

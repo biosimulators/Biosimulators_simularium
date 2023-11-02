@@ -80,7 +80,7 @@ def calculate_agent_radius(
         eta_env *= 0.001
     r = (k * T_env) / (6 * np.pi * eta_env * D_agent)
     if radius_units == 'nm':
-        return r * 10**9
+        return r * 10**18
     else:
         return r
 

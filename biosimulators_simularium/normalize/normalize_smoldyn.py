@@ -158,33 +158,21 @@ class ModelDepiction:
 
     def calculate_agent_radius(
             self,
-            T_env: float,
-            eta_env: float,
             D_agent: float,
             radius_units='nm',
-            env_units: Dict[str, str] = None
             ) -> float:
         """
 
         Args:
-            T_env:`float`:
-            eta_env:
             D_agent:
             radius_units: units by which to standardize/measure the output radius. Defaults to `'nm'` as per simularium.
-            env_units:`Dict[str, str]`: units by which env parameters are measured. Defaults to
-                `{'T': 'K', 'eta': 'cP'}`
         Returns:
             `float`: agent radius in `radius_units` units.
         """
-        if not env_units:
-            env_units = {
-                'T': 'K',
-                'eta': 'cP'
-            }
         T_env = self.environment.temperature.get_temp()
         eta_env = self.environment.temperature.get_viscosity()
         k = 1.380649 * 10 ** -23
-        if 'cP' in env_units.get('eta'):
+        if 'cP' in self.environment.viscosity.get('units'):
             eta_env *= 0.001
         r = (k * T_env) / (6 * np.pi * eta_env * D_agent)
         if radius_units == 'nm':
