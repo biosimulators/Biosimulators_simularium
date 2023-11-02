@@ -13,16 +13,19 @@ converter = SmoldynDataConverter(archive=archive)
 
 # env parameters
 T = 310.0
-k = 1.380649 * 10**-23
 eta = 8.1
 
 agents = [
-    ('MinD_ATP(front)', calculate_agent_radius(k, T, eta, 0.01), HEX_COLORS.get('blue')), # 0.01
-    ('MinE(solution)', calculate_agent_radius(k, T, eta, 2.5), HEX_COLORS.get('orange')), # 2.5
-    ('MinD_ADP(solution)', calculate_agent_radius(k, T, eta, 2.5), HEX_COLORS.get('green')), # 2.5
-    ('MinDMinE(front)', calculate_agent_radius(k, T, eta, 0.01), HEX_COLORS.get('purple')), # 0.01
-    ('MinD_ATP(solution)', calculate_agent_radius(k, T, eta, 2.5), HEX_COLORS.get('yellow')) # 2.5
+    ('MinD_ATP(front)', calculate_agent_radius(T, eta, 0.01), HEX_COLORS.get('blue')), # 0.01
+    ('MinE(solution)', calculate_agent_radius(T, eta, 2.5), HEX_COLORS.get('orange')), # 2.5
+    ('MinD_ADP(solution)', calculate_agent_radius(T, eta, 2.5), HEX_COLORS.get('green')), # 2.5
+    ('MinDMinE(front)', calculate_agent_radius(T, eta, 0.01), HEX_COLORS.get('purple')), # 0.01
+    ('MinD_ATP(solution)', calculate_agent_radius(T, eta, 2.5), HEX_COLORS.get('yellow')) # 2.5
 ] # normally 0.01 radius
+
+
+def generate_agent(agent_name: str, agent_difc: float, env_T: float, env_eta: float, agent_color: str):
+    return (agent_name, agent_difc, env_T, env_eta, agent_color)
 
 
 for agent in agents:

@@ -9,14 +9,53 @@ license: MIT
 
 import os
 from typing import *
+from dataclasses import dataclass
 import numpy as np
 from biosimulators_simularium.converters.utils import validate_model
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 
 
-def calculate_agent_radius(T_env: float, eta_env: float, D_agent: float) -> float:
+@dataclass
+class EnvironmentAttribute:
+    value: Union[float, int]
+    units: str
+    name: Optional[str] = None
+
+
+class Environment:
+    def __init__(self, T: EnvironmentAttribute, eta: EnvironmentAttribute):
+        self.T = T
+        self.eta = eta
+
+
+def calculate_agent_radius(
+        T_env: float,
+        eta_env: float,
+        D_agent: float,
+        radius_units='nm',
+        env_units: Dict[str, str] = None
+        ) -> float:
+    """
+
+    Args:
+        T_env:`float`:
+        eta_env:
+        D_agent:
+        radius_units: units by which to standardize/measure the output radius. Defaults to `'nm'` as per simularium.
+        env_units:`Dict[str, str]`: units by which env parameters are measured. Defaults to
+            `{'T': 'K', 'eta': 'cP'}`
+    Returns:
+        `float`: agent radius in `radius_units` units.
+    """
+    if not env_units:
+        env_units = {
+            'T': 'K',
+            'eta': 'cP'
+        }
     k = 1.380649 * 10 ** -23
+    if 'cP' in env_units.get('eta'):
+        eta_env *= 0.001
     return (k * T_env) / (6 * np.pi * eta_env * D_agent) * 10**9
 
 
