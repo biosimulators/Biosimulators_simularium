@@ -65,7 +65,7 @@ class ModelDepiction:
         self.agents = self._set_agents(agents)
 
     def _set_agent_difcs(self):
-        agent_difcs = self.get_model_diffusion_coefficients()
+        agent_difcs = self.get_model_diffusion_coefficients(self.model_fp)
         for v in list(agent_difcs.values()):
             if not isinstance(v, float):
                 warn(f'Warning: the value passed for the diffusion coefficient is an alias and must be defined/derived.')
@@ -82,9 +82,9 @@ class ModelDepiction:
         else:
             return agents
 
-
-    def get_model(self, model_fp: Optional[str] = None) -> List[str]:
-        validation = validate_model(model_fp or self.model_fp)
+    @staticmethod
+    def get_model(model_fp: str) -> List[str]:
+        validation = validate_model(model_fp)
         for item in validation:
             if isinstance(item, tuple):
                 for datum in item:
@@ -99,8 +99,7 @@ class ModelDepiction:
                 values.append(line)
         return values
 
-    @classmethod
-    def get_model_diffusion_coefficients(cls, model_fp: Optional[str] = None) -> Dict[str, str]:
+    def get_model_diffusion_coefficients(self, model_fp: str) -> Dict[str, str]:
         """Read in a model file and return a dictionary of {agent name: agent difc value}.
             Please note that difcs can be defined in Smoldyn as an alias which serves as a reference to another
             data definition.
@@ -136,7 +135,7 @@ class ModelDepiction:
     def generate_environment(**environment_parameters):
         """Generate a new instance of `AgentEnvironment` given environment parameters. The output of this function
             should be used on the global scale in relation to the highest level/view of the simulation. All agents
-            (currently) communicate with this Singleton.
+            (currently) communicate with this Singleton. Sets the environment if not a value for this class.
 
             Keyword Args:
                 state:`str`: state in which the environment exists. Choices are `liquid` or `gas`. This effects how
@@ -148,7 +147,8 @@ class ModelDepiction:
             Returns:
                 `AgentEnvironment`: instance of an object which represents the simulation environment.
         """
-        return AgentEnvironment(**environment_parameters)
+        env = AgentEnvironment(**environment_parameters)
+        return env
 
     def calculate_agent_radius(self, D: float) -> float:
         T = self.environment.temperature

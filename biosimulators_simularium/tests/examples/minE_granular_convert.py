@@ -1,6 +1,7 @@
 import os
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.converters.utils import validate_model
+from biosimulators_simularium.normalize.utils import calculate_agent_radius
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 
 
