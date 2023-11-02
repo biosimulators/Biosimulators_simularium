@@ -555,7 +555,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             data = self.translate_data_object(c, box_size, n_dim, translation_magnitude=box_size)
 
         # concat the proper suffix to simularium file based on the io format (for clarity)
-        simularium_filename += f'{io_format}_save'
+        simularium_filename += f'_{io_format}_save'
 
         # write the simularium file
         self.write_simularium_file(

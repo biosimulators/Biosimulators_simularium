@@ -5,7 +5,7 @@ from biosimulators_simularium.normalize.utils import calculate_agent_radius
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
-test_simularium_filename = 'minE_binary_save'
+test_simularium_filename = 'minE_um_scale2'
 
 
 archive = SmoldynCombineArchive(rootpath=test_archive_root, simularium_filename=test_simularium_filename)
@@ -25,4 +25,4 @@ agents = [
 ] # normally 0.01 radius
 
 
-converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0)
+converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0, spatial_units="um", scale=2.0)
