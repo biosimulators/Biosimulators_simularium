@@ -25,4 +25,6 @@ agents = [
 ] # normally 0.01 radius
 
 
-converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0, spatial_units="um", scale=2.0)
+for agent in agents:
+    print(agent)
+#converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0, spatial_units="um", scale=2.0)

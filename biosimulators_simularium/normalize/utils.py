@@ -15,8 +15,9 @@ from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 
 
-def calculate_agent_radius(k: float, T: float, eta: float, D: float) -> float:
-    return (k * T) / (6 * np.pi * eta * D)
+def calculate_agent_radius(T_env: float, eta_env: float, D_agent: float) -> float:
+    k = 1.380649 * 10 ** -23
+    return (k * T_env) / (6 * np.pi * eta_env * D_agent) * 10**9
 
 
 def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:
@@ -58,7 +59,7 @@ def read_value_from_model(model_fp: str, term: str) -> List[str]:
     return values
 
 
-MODEL_DIFCS = {
+'''MODEL_DIFCS = {
     'D_D':  2.5,
     'D_E':  2.5,
     'D_d':  0.01,
@@ -85,7 +86,7 @@ for key in model_coeffs:
     if model_coeffs[key] in difc_radii_values:
         model_coeffs[key] = difc_radii_values[model_coeffs[key]]
 
-
+'''
 
 
 
