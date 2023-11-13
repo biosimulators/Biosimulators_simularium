@@ -1,5 +1,8 @@
 """Utilities for preparing agent radii based on the the model file
-    within `biosimulators_simularium.archives.data_model.SmoldynCombineArchive
+    within `biosimulators_simularium.archives.data_model.SmoldynCombineArchive.
+
+    PLEASE NOTE: These methods are currently specific to Smoldyn itself. Soon, the methods will be more
+    generalized/reorganized to reflect the methodologies of other simulator tools.
 
 author: Alex Patrie <apatrie@uchc.edu>
 date: 11/01/2023
