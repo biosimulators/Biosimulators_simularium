@@ -51,7 +51,7 @@ def calculate_radius(
     return (k * T_env) / (6 * np.pi * (eta_env * 0.001) * D_agent) * 10**9
 
 
-def calculate_agent_radius(
+def agent_radius_from_D(
         T_env: float,
         eta_env: float,
         D_agent: float,
@@ -83,6 +83,27 @@ def calculate_agent_radius(
         return r * 10**18
     else:
         return r
+
+
+def agent_radius_from_physicality(m: float, rho: float) -> float:
+    """Calculate the radius of an agent given its molecular mass and density.
+
+        Args:
+            m:`float`: the molecular mass of the given agent/particle.
+            rho:`float`: the density of the given agent/particle.
+
+        Returns:
+            `float`: radius of the given agent.
+    """
+    return ((3 * m) / (4 * np.pi * rho)) ** (1/3)
+
+
+def calculate_minE_molecular_mass(amino_acid_mass_sequence: List[float], water_mol_mass: List[float], n_amino_acids: int = None) -> float:
+    mass_total = 0.0
+    for mass in amino_acid_mass_sequence:
+        for m in water_mol_mass:
+            mass_total += mass - m
+    return mass_total
 
 
 def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:
