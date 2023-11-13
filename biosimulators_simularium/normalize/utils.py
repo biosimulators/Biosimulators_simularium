@@ -147,12 +147,23 @@ def generate_agent_radii_from_physicality(agent_masses: Dict[str, int], protein_
     return agent_radii
 
 
-def generate_min_agent_radii(agent_masses, protein_density, agents: List[Tuple]) -> List[Agent]:
+def generate_min_agent_radii(agent_masses, protein_density, agents: List[Tuple]) -> Dict[str, float]:
+    """Generate a dictionary of {agent name: agent radius} based on input parameters.
+
+        Args:
+            agent_masses:`Dict`: dictionary of agentname: masses.
+            protein_density:`int`: density of proteins in agent. Defaults to average min protein density.
+            agents:`List[Tuple]`: a list of (agent name, agent color)
+
+        Returns:
+            `Dict[str, float]`: A dict of agent names: agent radii.
+    """
     agent_radii = generate_agent_radii_from_physicality(agent_masses, protein_density)
     agent_objects = []
+    radii = {}
     for agent in agents:
         agent_type = agent[0]
-        agent_color = agent[2]
+        agent_color = agent[1]
         if 'MinD' and not 'MinE' in agent_type:
             sim_agent = Agent(agent_type, agent_radii.get('MinD'), agent_color)
             agent_objects.append(sim_agent)
@@ -162,7 +173,22 @@ def generate_min_agent_radii(agent_masses, protein_density, agents: List[Tuple])
         elif 'MinE' and 'MinD' in agent_type:
             sim_agent = Agent(agent_type, agent_radii.get('MinDMinE'), agent_color)
             agent_objects.append(sim_agent)
-    return agent_objects
+    for obj in agent_objects:
+        radii[obj.name] = obj.radius
+    return radii
+
+
+def generate_agent(name, radius, color):
+    return (name, radius, color)
+
+
+def generate_agents(agent_masses, protein_density, agents):
+    all_agents = []
+    agent_radii = generate_min_agent_radii(agent_masses, protein_density, agents)
+    for agent in agents:
+        a = generate_agent(agent[0], agent_radii[agent[0]], agent[1])
+        all_agents.append(a)
+    return all_agents
 
 
 def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:

@@ -472,7 +472,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: Optional[List[Tuple[str, float, str]]] = None,
+            agents: Optional[List] = None,
             box_size: float = 10.0,
             spatial_units: str = "nm",
             temporal_units: str = "s",

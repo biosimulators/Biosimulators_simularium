@@ -1,11 +1,11 @@
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.utils.core import HEX_COLORS
-from biosimulators_simularium.normalize.utils import agent_radius_from_D, generate_min_agent_radii
+from biosimulators_simularium.normalize.utils import agent_radius_from_D, generate_min_agent_radii, generate_agents
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
-test_simularium_filename = 'minE_corrected_units_3'
+test_simularium_filename = 'minE_corrected_units_10'
 
 
 archive = SmoldynCombineArchive(rootpath=test_archive_root, simularium_filename=test_simularium_filename)
@@ -17,11 +17,11 @@ eta = 8.1
 
 
 agents = [
-    ('MinD_ATP(front)', agent_radius_from_D(T, eta, 0.01), HEX_COLORS.get('blue')), # 0.01
-    ('MinE(solution)', agent_radius_from_D(T, eta, 2.5), HEX_COLORS.get('orange')), # 2.5
-    ('MinD_ADP(solution)', agent_radius_from_D(T, eta, 2.5), HEX_COLORS.get('green')), # 2.5
-    ('MinDMinE(front)', agent_radius_from_D(T, eta, 0.01), HEX_COLORS.get('purple')), # 0.01
-    ('MinD_ATP(solution)', agent_radius_from_D(T, eta, 2.5), HEX_COLORS.get('yellow')) # 2.5
+    ('MinD_ATP(front)', HEX_COLORS.get('blue')), # 0.01
+    ('MinE(solution)', HEX_COLORS.get('orange')), # 2.5
+    ('MinD_ADP(solution)', HEX_COLORS.get('green')), # 2.5
+    ('MinDMinE(front)', HEX_COLORS.get('purple')), # 0.01
+    ('MinD_ATP(solution)', HEX_COLORS.get('yellow')) # 2.5
 ] # normally 0.01 radius
 
 agent_masses = {
@@ -30,12 +30,8 @@ agent_masses = {
     'MinDMinE': 29700 + 9680
 }
 protein_density = 1350
+agent_radii = generate_min_agent_radii(agent_masses, protein_density, agents)
+all_agents = generate_agents(agent_masses, protein_density, agents)
+print(all_agents)
 
-
-agent_objects = generate_min_agent_radii(agent_masses, protein_density, agents)
-
-for obj in agent_objects:
-    print(f'{obj.name}: {dir(obj)}: {obj.radius}')
-
-
-# converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0, spatial_units="nm")
+converter.generate_simularium_file(io_format='binary', agents=all_agents, box_size=10.0, spatial_units="cm")
