@@ -1,7 +1,7 @@
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.utils.core import HEX_COLORS
-from biosimulators_simularium.normalize.utils import agent_radius_from_D
+from biosimulators_simularium.normalize.utils import agent_radius_from_D, generate_min_agent_radii
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
@@ -15,6 +15,7 @@ converter = SmoldynDataConverter(archive=archive)
 T = 310.0
 eta = 8.1
 
+
 agents = [
     ('MinD_ATP(front)', agent_radius_from_D(T, eta, 0.01), HEX_COLORS.get('blue')), # 0.01
     ('MinE(solution)', agent_radius_from_D(T, eta, 2.5), HEX_COLORS.get('orange')), # 2.5
@@ -23,12 +24,18 @@ agents = [
     ('MinD_ATP(solution)', agent_radius_from_D(T, eta, 2.5), HEX_COLORS.get('yellow')) # 2.5
 ] # normally 0.01 radius
 
+agent_masses = {
+    'MinD': 29700,
+    'MinE': 9680,
+    'MinDMinE': 29700 + 9680
+}
+protein_density = 1350
 
-def generate_agent(agent_name: str, agent_difc: float, env_T: float, env_eta: float, agent_color: str):
-    return (agent_name, agent_difc, env_T, env_eta, agent_color)
 
+agent_objects = generate_min_agent_radii(agent_masses, protein_density, agents)
 
-for agent in agents:
-    print(agent)
+for obj in agent_objects:
+    print(f'{obj.name}: {dir(obj)}: {obj.radius}')
+
 
 # converter.generate_simularium_file(io_format='binary', agents=agents, box_size=10.0, spatial_units="nm")

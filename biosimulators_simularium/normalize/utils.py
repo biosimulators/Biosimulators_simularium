@@ -32,6 +32,13 @@ class Environment:
         self.eta = eta
 
 
+class Agent:
+    def __init__(self, name: str, radius: float, color: str):
+        self.name = name
+        self.radius = radius
+        self.color = color
+
+
 def build_environment(T: EnvironmentAttribute, eta: EnvironmentAttribute):
     return Environment(T, eta)
 
@@ -88,25 +95,74 @@ def agent_radius_from_D(
         return r
 
 
-def agent_radius_from_physicality(m: float, rho: float) -> float:
-    """Calculate the radius of an agent given its molecular mass and density.
+def agent_radius_from_physicality(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:
+    """Calculate the radius of an agent given its molecular mass and density. Please note: the molecular mass
+        of MinE is 11000 Da with a protein density of 1.35 g/cm^3 (1350 kg/m^3).
 
         Args:
-            m:`float`: the molecular mass of the given agent/particle.
-            rho:`float`: the density of the given agent/particle.
+            m:`float`: the molecular mass of the given agent/particle (Daltons).
+            rho:`float`: the density of the given agent/particle (kg/m^3).
+            scaling_factor:`float`: tiny number by which to scale the output measurement. Defaults to
+                `10**(-2)`, which converts from nm to cm.
 
         Returns:
             `float`: radius of the given agent.
     """
-    return ((3 * m) / (4 * np.pi * rho)) ** (1/3)
+    dalton_to_kg = 1.66053906660e-27  # Conversion factor from Daltons to kilograms
+    m_kg = m * dalton_to_kg  # Convert mass to kilograms
+    radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
+    radius_nm = radius_m * 1e9  # Convert radius to nanometers
+    return radius_nm * scaling_factor
 
 
-def calculate_minE_molecular_mass(amino_acid_mass_sequence: List[float], water_mol_mass: List[float], n_amino_acids: int = None) -> float:
-    mass_total = 0.0
-    for mass in amino_acid_mass_sequence:
-        for m in water_mol_mass:
-            mass_total += mass - m
-    return mass_total
+def calculate_agent_molecular_mass(n_amino_acids: int, amino_acid_mass: int = 110) -> float:
+    """Calculate the molecular mass for an agent, given the amount of amino acids in the particular agent.
+        For example, MinD in E.coli typically consists of around 270 amino acids. `amino_acid_mass` is meant to be
+        the approximation of the average molecular weight of amino acids.
+
+        Args:
+            n_amino_acids:`int`: number of amino acids within the given agent.
+            amino_acid_mass:`Optional[int]`: average molecular weight of amino acids. Defaults to `110`.
+
+        Returns:
+            `float`: the molecular mass of the given agent.
+    """
+    return float(n_amino_acids * amino_acid_mass)
+
+
+def generate_agent_radii_from_physicality(agent_masses: Dict[str, int], protein_density: int = 1350) -> Dict[str, float]:
+    """Generate a dict of agent radii, indexed by agent name.
+
+        Args:
+            agent_masses:`Dict[str, int]`: a dict describing {agent name: agent mass}. Expects Daltons.
+            protein_density:`Optional[int]`: Average density of proteins in the given agent. Defaults to `1350`.
+
+        Returns:
+            `Dict[str, float]`: Dictionary of agent name: radii.
+    """
+    agent_radii = {}
+    for k in agent_masses.keys():
+        r = agent_radius_from_physicality(agent_masses[k], protein_density)
+        agent_radii[k] = r
+    return agent_radii
+
+
+def generate_min_agent_radii(agent_masses, protein_density, agents: List[Tuple]) -> List[Agent]:
+    agent_radii = generate_agent_radii_from_physicality(agent_masses, protein_density)
+    agent_objects = []
+    for agent in agents:
+        agent_type = agent[0]
+        agent_color = agent[2]
+        if 'MinD' and not 'MinE' in agent_type:
+            sim_agent = Agent(agent_type, agent_radii.get('MinD'), agent_color)
+            agent_objects.append(sim_agent)
+        elif 'MinE' and not 'MinD' in agent_type:
+            sim_agent = Agent(agent_type, agent_radii.get('MinE'), agent_color)
+            agent_objects.append(sim_agent)
+        elif 'MinE' and 'MinD' in agent_type:
+            sim_agent = Agent(agent_type, agent_radii.get('MinDMinE'), agent_color)
+            agent_objects.append(sim_agent)
+    return agent_objects
 
 
 def get_model_diffusion_coefficients(model_fp: str) -> Dict[str, str]:
