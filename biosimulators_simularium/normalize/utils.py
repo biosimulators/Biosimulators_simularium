@@ -103,7 +103,7 @@ def agent_radius_from_physicality(m: float, rho: float, scaling_factor: float = 
             m:`float`: the molecular mass of the given agent/particle (Daltons).
             rho:`float`: the density of the given agent/particle (kg/m^3).
             scaling_factor:`float`: tiny number by which to scale the output measurement. Defaults to
-                `10**(-2)`, which converts from nm to cm.
+                `10**(-2)`, which effectively converts from nm to cm.
 
         Returns:
             `float`: radius of the given agent.

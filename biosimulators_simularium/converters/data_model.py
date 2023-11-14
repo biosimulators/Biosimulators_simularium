@@ -474,7 +474,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             self,
             agents: Optional[List] = None,
             box_size: float = 10.0,
-            spatial_units: str = "nm",
+            spatial_units: str = "cm",
             temporal_units: str = "s",
             n_dim: int = 3,
             io_format: str = "JSON",
@@ -519,7 +519,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         try:
             assert n_dim == 3
         except AssertionError as e:
-            raise AssertionError('Currently only 3 dimensions are currently supported.')
+            raise ValueError(
+                'Invalid number of dimensions. Only 3 dimensional simulation visualizations are supported.'
+            )
 
         # set simularium filename/path
         if not simularium_filename:
