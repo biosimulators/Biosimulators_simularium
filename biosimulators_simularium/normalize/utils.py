@@ -135,7 +135,7 @@ def generate_agent_radii_from_physicality(agent_masses: Dict[str, int], protein_
 
         Args:
             agent_masses:`Dict[str, int]`: a dict describing {agent name: agent mass}. Expects Daltons.
-            protein_density:`Optional[int]`: Average density of proteins in the given agent. Defaults to `1350`.
+            protein_density:`Optional[int]`: Average density of proteins in the given agent. Defaults to `1350` g/m^2.
 
         Returns:
             `Dict[str, float]`: Dictionary of agent name: radii.
@@ -147,11 +147,14 @@ def generate_agent_radii_from_physicality(agent_masses: Dict[str, int], protein_
     return agent_radii
 
 
-def generate_min_agent_radii(agent_masses, protein_density, agents: List[Tuple]) -> Dict[str, float]:
+def generate_min_agent_radii(
+        agent_masses: Dict[str, Union[float, int]],
+        protein_density, agents: List[Tuple]
+        ) -> Dict[str, float]:
     """Generate a dictionary of {agent name: agent radius} based on input parameters.
 
         Args:
-            agent_masses:`Dict`: dictionary of agentname: masses.
+            agent_masses:`Dict`: dictionary of {agent name: masses}.
             protein_density:`int`: density of proteins in agent. Defaults to average min protein density.
             agents:`List[Tuple]`: a list of (agent name, agent color)
 
@@ -228,39 +231,3 @@ def read_value_from_model(model_fp: str, term: str) -> List[str]:
         if line.startswith(term):
             values.append(line)
     return values
-
-
-'''MODEL_DIFCS = {
-    'D_D':  2.5,
-    'D_E':  2.5,
-    'D_d':  0.01,
-    'D_de':  0.01,
-}
-
-# env parameters
-T = 310.0
-k = 1.380649 * 10**-23
-eta = 8.1
-
-difc_radii_values = {}
-for difc in MODEL_DIFCS.keys():
-    radius = calculate_agent_radius(k, T, eta, MODEL_DIFCS[difc])
-    difc_radii_values[difc] = radius
-
-
-archive = SmoldynCombineArchive(rootpath='biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023')
-model_coeffs = get_model_diffusion_coefficients(archive.model_path)
-print(model_coeffs)
-print(difc_radii_values)
-
-for key in model_coeffs:
-    if model_coeffs[key] in difc_radii_values:
-        model_coeffs[key] = difc_radii_values[model_coeffs[key]]
-
-'''
-
-
-
-
-
-
