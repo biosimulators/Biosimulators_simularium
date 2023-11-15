@@ -45,6 +45,7 @@ from biosimulators_simularium.archives.data_model import (
     SpatialCombineArchive,
     SmoldynCombineArchive
 )
+from biosimulators_simularium.normalize.stage import Agent
 
 
 __all__ = [
@@ -237,7 +238,7 @@ class BiosimulatorsDataConverter(ABC):
             color=color
         )
 
-    def generate_display_data_dict(self, agents: List[Tuple[str, float, str]]) -> Dict[str, DisplayData]:
+    def generate_display_data_dict(self, agents: List[Agent]) -> Dict[str, DisplayData]:
         """ Generate a display data dictionary based on a list of string agent names.
 
             Args:
@@ -248,14 +249,14 @@ class BiosimulatorsDataConverter(ABC):
                 `Dict[str, simulariumio.DisplayData]`
         """
         display_data_dict = {}
-        for agent_name in agents:
-            name = agent_name[0]
-            rad = agent_name[1]
+        for agent in agents:
+            name = agent.name
+            rad = agent.radius
             display_data_dict[name] = self.generate_display_data_object(
                 name=name,
                 radius=rad,
                 display_type=DISPLAY_TYPE.SPHERE,
-                color=agent_name[2]
+                color=agent.color
             )
         return display_data_dict
 
