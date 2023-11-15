@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import *
+from dataclasses import dataclass
 import numpy as np
 
 
@@ -42,9 +43,66 @@ class AgentStage(ABC):
         pass
 
 
+class AgentAttribute(ABC):
+    def __init__(self, value: Any, units: str, name: Optional[str] = None):
+        self.units = units
+        self.value = value
+        self.name = name
+
+    @abstractmethod
+    def convert_units(self, desired_units: str) -> Tuple[float, str]:
+        """Abstract method for converting `self.units` to another `desired_unit`. For example,
+            convert Daltons to Kg in the `MolecularMassAttribute` implementation class.
+
+            Returns:
+                `Tuple[float, str]`: A tuple representation of (converted value, desired_units).
+        """
+        pass
+
+
+class MolecularMassAttribute(AgentAttribute):
+    def __init__(self, value: float, units: str):
+        self.value = value
+        self.units = units
+        self.name = 'molecular_mass'
+
+    def convert_units(self, desired_units: str) -> Tuple[float, str]:
+        if 'daltons' in self.units.lower():
+            pass
+
+
 class SmoldynAgentStage(AgentStage):
     """Smoldyn-specific implementation of an `AgentStage` instance."""
     def __init__(self):
         super().__init__()
         self.simulator = 'smoldyn'
+
+    def stage_agents(self, **agent_params) -> List[Tuple[str, float, str]]:
+        pass
+
+    def solve_agent_radius(self, scaling_factor: Optional[float] = 10**(-2), **agent_params) -> float:
+        """Implementation of the parent abstract radius solver.
+
+            Keyword Args:
+                molecular_mass:`float`: molecular mass of the given agent in Daltons. Gets converted to Kg.
+                density:`float`: density of the given in agent in kg/m^3.
+
+            Args:
+                scaling_factor:`float`: tiny number by which to scale the output measurement. Defaults to
+                    `10**(-2)`, which (for Smoldyn), effectively converts from nm to cm.
+
+            Returns:
+                `float`: radius of the given agent derived from the provided `**agent_params` kwargs and scaling.
+        """
+        dalton_to_kg = 1.66053906660e-27  # Conversion factor from Daltons to kilograms
+        try:
+            m = agent_params.get('molecular_mass')
+            rho = agent_params.get('density')
+        except KeyError:
+            raise "You must input valid keyword arguments (molecular_mass, density, and scaling_factor)."
+
+        m_kg = m * dalton_to_kg  # Convert mass to kilograms
+        radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
+        radius_nm = radius_m * 1e9  # Convert radius to nanometers
+        return radius_nm * scaling_factor
 
