@@ -473,7 +473,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: Optional[List] = None,
+            agents: Optional[List[Agent]] = None,
             box_size: float = 10.0,
             spatial_units: str = "cm",
             temporal_units: str = "s",
@@ -492,8 +492,9 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
             file, the outputs will be re-bundled.
 
             Args:
-                agents(:obj:`List[Tuple[str, float, str]]`): a list of tuples representing agent names and agent radii and
-                    agent hexcolor by which to base this visualization's metadata on.
+                agents(:obj:`List[Agent]`): a list of `biosimulators_simularium.normalize.data_model.Agent` instances
+                    representing agent names and agent radii and agent hexcolor by which to base
+                    this visualization's metadata on.
                 box_size(:obj:`float`): `Optional`: size by which to scale the simulation stage. Defaults to `1.`
                 spatial_units(:obj:`str`): `Optional`: units by which to measure the spatial aspect
                     of the simulation. Defaults to `nm`.
