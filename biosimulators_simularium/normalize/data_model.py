@@ -67,7 +67,12 @@ class AgentStage(ABC):
 
 class SmoldynAgentStage(AgentStage):
     """Smoldyn-specific implementation of an `AgentStage` instance."""
-    def __init__(self, molecular_masses: List[float], density: float, agent_names: List[str], spatial_units: str = 'cm'):
+    def __init__(self,
+                 molecular_masses: List[float],
+                 density: float,
+                 agent_names: List[str],
+                 agent_colors: List[str],
+                 spatial_units: str = 'cm'):
         super().__init__()
         self.simulator = 'smoldyn'
         self.scaling_factor = self._get_scaling_factor(spatial_units)
@@ -104,7 +109,8 @@ class SmoldynAgentStage(AgentStage):
 
     def _stage_agents(self, **agent_params) -> List[Agent]:
         """Assemble agents by attributes and return a list of each agent. TODO: fix this method to include
-            `agent_info` in place of `molecular_masses` and `agent_names`, as a Dict of {agent_name: molecular_mass}.
+            `agent_info` in place of `molecular_masses` and `agent_names`, as a Dict of {agent_name: molecular_mass},
+            which can be achieved via `y = dict(zip(x0, x1))`, etc... where x0 and x1 are lists (names, masses)
 
             Keyword Args:
                 molecular_masses:`List[float]`: list of agent molecular masses (in order).
@@ -118,13 +124,20 @@ class SmoldynAgentStage(AgentStage):
             molecular_masses = agent_params.get('molecular_masses')
             density = agent_params.get('density')
             agent_names = agent_params.get('agent_names')
+            agent_colors = agent_params.get('agent_colors')
         except KeyError:
-            raise "You must input valid keyword arguments: 'molecular_masses', 'density', and 'agent_names'."
+            raise """You must input valid keyword arguments: 
+                     'molecular_masses', 'density', 'agent_names', and 'agent_colors'."""
 
         agents = []
         agent_i = 0
         for agent in agent_names:
-            _agent = self.stage_agent(name=agent, molecular_mass=molecular_masses[agent_i], density=density)
+            _agent = self.stage_agent(
+                name=agent,
+                molecular_mass=molecular_masses[agent_i],
+                density=density,
+                color=agent_colors[agent_i]
+            )
             agents.append(_agent)
             agent_i += 1
         return agents
