@@ -4,6 +4,13 @@ from dataclasses import dataclass
 import numpy as np
 
 
+@dataclass
+class Agent:
+    name: str
+    radius: float
+    color: str
+
+
 class AgentStage(ABC):
     """Abstract base class for preparing the output of specific simulators to be the input for the
         `simulariumio` API. The class handles the generation of agent radii based on the logic of the
@@ -20,7 +27,7 @@ class AgentStage(ABC):
         pass
 
     @abstractmethod
-    def stage_agents(self, **agent_params) -> List[Tuple[str, float, str]]:
+    def stage_agents(self, **agent_params) -> List[Agent]:
         """Abstract method for staging agents in to become input for
             `biosimulators_simularium.converters.data_model.SmoldynDataConverter.generate_simularium_file()`.
 
@@ -56,8 +63,37 @@ class SmoldynAgentStage(AgentStage):
         if 'cm' in units:
             return 10**(-2)
 
-    def stage_agents(self, **agent_params) -> List[Tuple[str, float, str]]:
-        pass
+    def stage_agent(self, **agent_params) -> Agent:
+        """Assemble agent by attributes and return an `Agent` instance of the agent data.
+
+            Keyword Args:
+                name:`str`: name of the given agent (to be used in the `simulariumio.DisplayData` interface.
+                molecular_mass:`float`: molecular mass of the given agent.
+                density:`float`: density of the given agent.
+                color:`str`: color of the given agent in Hex form.
+
+            Returns:
+                `Agent`: Agent class instance representation of the agent to be used as input
+
+        """
+        agent_radius = self.solve_agent_radius(
+            molecular_mass=agent_params.get('molecular_mass'),
+            density=agent_params.get('density')
+        )
+        return Agent(name=agent_params.get('name'), radius=agent_radius, color=agent_params.get('color'))
+
+    def stage_agents(self, molecular_masses: List[float], density: float, agent_names: List[str]) -> List[Agent]:
+        """Assemble agents by attributes and return a list of each agent in the following representation:
+            (agent name, agent radius, agent color).
+        """
+        agents = []
+        agent_i = 0
+        for agent in agent_names:
+            _agent = self.stage_agent(name=agent, molecular_mass=molecular_masses[agent_i], density=density)
+            agents.append(_agent)
+            agent_i += 1
+        return agents
+
 
     def solve_agent_radius(self, **agent_params: float) -> float:
         """Implementation of the parent abstract radius solver. Converts to cm by default, but really whatever
