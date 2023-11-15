@@ -43,34 +43,6 @@ class AgentStage(ABC):
         pass
 
 
-class AgentAttribute(ABC):
-    def __init__(self, value: Any, units: str, name: Optional[str] = None):
-        self.units = units
-        self.value = value
-        self.name = name
-
-    @abstractmethod
-    def convert_units(self, desired_units: str) -> Tuple[float, str]:
-        """Abstract method for converting `self.units` to another `desired_unit`. For example,
-            convert Daltons to Kg in the `MolecularMassAttribute` implementation class.
-
-            Returns:
-                `Tuple[float, str]`: A tuple representation of (converted value, desired_units).
-        """
-        pass
-
-
-class MolecularMassAttribute(AgentAttribute):
-    def __init__(self, value: float, units: str):
-        self.value = value
-        self.units = units
-        self.name = 'molecular_mass'
-
-    def convert_units(self, desired_units: str) -> Tuple[float, str]:
-        if 'daltons' in self.units.lower():
-            pass
-
-
 class SmoldynAgentStage(AgentStage):
     """Smoldyn-specific implementation of an `AgentStage` instance."""
     def __init__(self):
