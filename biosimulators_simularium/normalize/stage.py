@@ -45,15 +45,17 @@ class AgentStage(ABC):
 
 class SmoldynAgentStage(AgentStage):
     """Smoldyn-specific implementation of an `AgentStage` instance."""
-    def __init__(self):
+    def __init__(self, spatial_units: str = 'cm'):
         super().__init__()
         self.simulator = 'smoldyn'
+        self.spatial_units = spatial_units
 
     def stage_agents(self, **agent_params) -> List[Tuple[str, float, str]]:
         pass
 
     def solve_agent_radius(self, scaling_factor: Optional[float] = 10**(-2), **agent_params) -> float:
-        """Implementation of the parent abstract radius solver.
+        """Implementation of the parent abstract radius solver. Converts to cm by default, but really whatever
+            is set as `self.spatial units`.
 
             Keyword Args:
                 molecular_mass:`float`: molecular mass of the given agent in Daltons. Gets converted to Kg.
@@ -76,5 +78,8 @@ class SmoldynAgentStage(AgentStage):
         m_kg = m * dalton_to_kg  # Convert mass to kilograms
         radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
         radius_nm = radius_m * 1e9  # Convert radius to nanometers
-        return radius_nm * scaling_factor
+        if 'cm' in self.spatial_units.lower():
+            return radius_nm * scaling_factor
+        else:
+            return radius_nm
 
