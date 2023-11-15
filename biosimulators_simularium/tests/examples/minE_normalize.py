@@ -4,7 +4,7 @@ from biosimulators_simularium.normalize.data_model import SmoldynAgentStage
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
-test_simularium_filename = 'minE_corrected_units_10'
+test_simularium_filename = 'minE_Andrews_normalized_0'
 
 
 archive = SmoldynCombineArchive(rootpath=test_archive_root, simularium_filename=test_simularium_filename)
