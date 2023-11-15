@@ -6,7 +6,7 @@
     simularium.
 
 author: Alex Patrie <apatrie@uchc.edu>
-date: 10/31/2023
+date: 11/15/2023
 license: MIT
 """
 
