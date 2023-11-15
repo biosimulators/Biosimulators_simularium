@@ -79,7 +79,8 @@ class SmoldynAgentStage(AgentStage):
         self.agents = self._stage_agents(
             molecular_masses=molecular_masses,
             density=density,
-            agent_names=agent_names
+            agent_names=agent_names,
+            agent_colors=agent_colors
         )
 
     @staticmethod

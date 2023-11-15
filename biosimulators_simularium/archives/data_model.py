@@ -967,18 +967,14 @@ class SpatialCombineArchive(ABC):
     def add_modelout_file_to_manifest(self, model_fp) -> None:
         return self.add_file_to_manifest(model_fp)
 
-    def add_simularium_file_to_manifest(self, simularium_fp: Optional[str] = None) -> None:
+    def add_simularium_file_to_manifest(self) -> None:
         """Read the contents of the manifest file found at `self.rootpath`, create a new instance of
             `CombineArchiveContent` using a set simularium_fp, append the new content to the original,
             and re-write the archive to reflect the newly added content.
-
-            Args:
-                  simularium_fp:`Optional`: path to the newly generated simularium file. Defaults
-                    to `self.simularium_filename`.
         """
+        simularium_fp = self.simularium_file
         try:
-            if not simularium_fp:
-                simularium_fp = self.simularium_file
+
             self.add_file_to_manifest(simularium_fp + '.simularium')
             print('Simularium File added to archive manifest contents!')
         except Exception:
