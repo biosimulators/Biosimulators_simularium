@@ -66,7 +66,9 @@ class AgentStage(ABC):
 
 
 class SmoldynAgentStage(AgentStage):
-    """Smoldyn-specific implementation of an `AgentStage` instance."""
+    """Smoldyn-specific implementation of an `AgentStage` instance. TODO: Adjust for mol masses, density, and names to
+        be in dict form.
+    """
     def __init__(self,
                  molecular_masses: List[float],
                  density: float,

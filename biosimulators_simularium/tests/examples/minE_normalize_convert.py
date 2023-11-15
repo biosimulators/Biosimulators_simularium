@@ -5,12 +5,12 @@ from biosimulators_simularium.utils.core import HEX_COLORS
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
-test_simularium_filename = 'minE_Andrews_normalized_0'
+test_simularium_filename = 'minE_Andrews_normalized_1'
 
 agent_names = [
     'MinD_ATP(front)',
     'MinE(solution)',
-    'MinD_ADP(solution)'
+    'MinD_ADP(solution)',
     'MinDMinE(front)',
     'MinD_ATP(solution)'
 ]

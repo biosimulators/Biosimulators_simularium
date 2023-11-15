@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <omexManifest xmlns="http://identifiers.org/combine.specifications/omex-manifest">
   <content location="model.txt" format="http://purl.org/NET/mediatypes/text/smoldyn+plain" master="true"/>
+  <content location="minE_Andrews_normalized_0.simularium" master="false"/>
 </omexManifest>
