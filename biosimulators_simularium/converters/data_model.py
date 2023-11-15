@@ -45,7 +45,7 @@ from biosimulators_simularium.archives.data_model import (
     SpatialCombineArchive,
     SmoldynCombineArchive
 )
-from biosimulators_simularium.normalize.stage import Agent
+from biosimulators_simularium.normalize.data_model import Agent, SmoldynAgentStage
 
 
 __all__ = [
@@ -336,7 +336,10 @@ class BiosimulatorsDataConverter(ABC):
 
 
 class SmoldynDataConverter(BiosimulatorsDataConverter):
-    def __init__(self, archive: SmoldynCombineArchive, generate_model_output: bool = True):
+    def __init__(self,
+                 archive: SmoldynCombineArchive,
+                 agent_stage: SmoldynAgentStage,
+                 generate_model_output: bool = True):
         """General class for converting Smoldyn output (modelout.txt) to .simularium. Checks the passed archive object
             directory for a `modelout.txt` file (standard Smoldyn naming convention) and runs the simulation by default if
             not. At the time of construction, checks for the existence of a simulation `out.txt` file and runs
@@ -349,8 +352,10 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                     smoldyn model output file based on the `self.archive` parameter if True. Defaults to `True`.
         """
         super().__init__(archive)
+        self.stage = agent_stage
         if generate_model_output:
             self.generate_model_output_file()
+
 
     def generate_model_output_file(self,
                                    model_output_filename: Optional[str] = None,
@@ -473,7 +478,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
 
     def generate_simularium_file(
             self,
-            agents: Optional[List[Agent]] = None,
+            # agents: Optional[List[Agent]] = None,
             box_size: float = 10.0,
             spatial_units: str = "cm",
             temporal_units: str = "s",
@@ -540,8 +545,8 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         input_file = self.generate_input_file_data_object()
 
         # set display data and metadata
-        if agents:
-            display_data = self.generate_display_data_dict(agents)
+        if self.stage.agents:
+            display_data = self.generate_display_data_dict(self.stage.agents)
         metadata_object = metadata_object or self.generate_metadata_object(box_size=box_size, scale_factor=scale)
 
         # construct SmoldynData object
