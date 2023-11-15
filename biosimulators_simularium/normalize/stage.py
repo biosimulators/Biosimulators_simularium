@@ -48,22 +48,24 @@ class SmoldynAgentStage(AgentStage):
     def __init__(self, spatial_units: str = 'cm'):
         super().__init__()
         self.simulator = 'smoldyn'
-        self.spatial_units = spatial_units
+        self.scaling_factor = self._get_scaling_factor(spatial_units)
+
+    @staticmethod
+    def _get_scaling_factor(spatial_units: str) -> float:
+        units = spatial_units.lower()
+        if 'cm' in units:
+            return 10**(-2)
 
     def stage_agents(self, **agent_params) -> List[Tuple[str, float, str]]:
         pass
 
-    def solve_agent_radius(self, scaling_factor: Optional[float] = 10**(-2), **agent_params) -> float:
+    def solve_agent_radius(self, **agent_params: float) -> float:
         """Implementation of the parent abstract radius solver. Converts to cm by default, but really whatever
             is set as `self.spatial units`.
 
             Keyword Args:
                 molecular_mass:`float`: molecular mass of the given agent in Daltons. Gets converted to Kg.
                 density:`float`: density of the given in agent in kg/m^3.
-
-            Args:
-                scaling_factor:`float`: tiny number by which to scale the output measurement. Defaults to
-                    `10**(-2)`, which (for Smoldyn), effectively converts from nm to cm.
 
             Returns:
                 `float`: radius of the given agent derived from the provided `**agent_params` kwargs and scaling.
@@ -73,13 +75,10 @@ class SmoldynAgentStage(AgentStage):
             m = agent_params.get('molecular_mass')
             rho = agent_params.get('density')
         except KeyError:
-            raise "You must input valid keyword arguments (molecular_mass, density, and scaling_factor)."
+            raise "You must input valid keyword arguments: 'molecular_mass' and 'density'."
 
         m_kg = m * dalton_to_kg  # Convert mass to kilograms
         radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
         radius_nm = radius_m * 1e9  # Convert radius to nanometers
-        if 'cm' in self.spatial_units.lower():
-            return radius_nm * scaling_factor
-        else:
-            return radius_nm
+        return radius_nm * self.scaling_factor
 
