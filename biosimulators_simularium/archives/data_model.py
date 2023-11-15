@@ -974,7 +974,6 @@ class SpatialCombineArchive(ABC):
         """
         simularium_fp = self.simularium_file
         try:
-
             self.add_file_to_manifest(simularium_fp + '.simularium')
             print('Simularium File added to archive manifest contents!')
         except Exception:
