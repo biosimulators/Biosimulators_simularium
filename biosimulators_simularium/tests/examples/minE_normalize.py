@@ -34,7 +34,12 @@ agent_colors = [
 protein_density = 1350
 
 archive = SmoldynCombineArchive(rootpath=test_archive_root, simularium_filename=test_simularium_filename)
-stage = SmoldynAgentStage(molecular_masses=agent_masses, density=protein_density, agent_names=agent_names)
+stage = SmoldynAgentStage(
+    molecular_masses=agent_masses,
+    density=protein_density,
+    agent_names=agent_names,
+    agent_colors=agent_colors
+)
 converter = SmoldynDataConverter(archive=archive, agent_stage=stage)
 
 converter.generate_simularium_file(io_format='binary', spatial_units='cm')
