@@ -580,7 +580,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
         for manifest_item in manifest:
             content = list(vars(manifest_item).values())
             if 'simularium' not in content:
-                self.archive.add_simularium_file_to_manifest(simularium_fp=simularium_filename)
+                self.archive.add_simularium_file_to_manifest()
 
         # re-zip the archive if it was passed as an omex file
         if '.omex' in self.archive.rootpath:
