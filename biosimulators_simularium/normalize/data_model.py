@@ -114,7 +114,6 @@ class SmoldynAgentStage(AgentStage):
             Returns:
                 `List[Agent]`: A list of `Agent` objects to be unpacked in `simulariumio.DisplayData`.
         """
-        agents = []
         try:
             molecular_masses = agent_params.get('molecular_masses')
             density = agent_params.get('density')
@@ -122,6 +121,7 @@ class SmoldynAgentStage(AgentStage):
         except KeyError:
             raise "You must input valid keyword arguments: 'molecular_masses', 'density', and 'agent_names'."
 
+        agents = []
         agent_i = 0
         for agent in agent_names:
             _agent = self.stage_agent(name=agent, molecular_mass=molecular_masses[agent_i], density=density)
@@ -141,13 +141,13 @@ class SmoldynAgentStage(AgentStage):
             Returns:
                 `float`: radius of the given agent derived from the provided `**agent_params` kwargs and scaling.
         """
-        dalton_to_kg = 1.66053906660e-27  # Conversion factor from Daltons to kilograms
         try:
             m = agent_params.get('molecular_mass')
             rho = agent_params.get('density')
         except KeyError:
             raise "You must input valid keyword arguments: 'molecular_mass' and 'density'."
 
+        dalton_to_kg = 1.66053906660e-27  # Conversion factor from Daltons to kilograms
         m_kg = m * dalton_to_kg  # Convert mass to kilograms
         radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
         radius_nm = radius_m * 1e9  # Convert radius to nanometers
