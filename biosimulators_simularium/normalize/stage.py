@@ -83,8 +83,16 @@ class SmoldynAgentStage(AgentStage):
         return Agent(name=agent_params.get('name'), radius=agent_radius, color=agent_params.get('color'))
 
     def stage_agents(self, molecular_masses: List[float], density: float, agent_names: List[str]) -> List[Agent]:
-        """Assemble agents by attributes and return a list of each agent in the following representation:
-            (agent name, agent radius, agent color).
+        """Assemble agents by attributes and return a list of each agent. TODO: fix this method to include
+            `agent_info` in place of `molecular_masses` and `agent_names`, as a Dict of {agent_name: molecular_mass}.
+
+            Args:
+                molecular_masses:`List[float]`: list of agent molecular masses (in order).
+                density:`float`: density of the given agents.
+                agent_names:`List[str]`: list of the given agent names (in order).
+
+            Returns:
+                `List[Agent]`: A list of `Agent` objects to be unpacked in `simulariumio.DisplayData`.
         """
         agents = []
         agent_i = 0
