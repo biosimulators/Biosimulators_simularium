@@ -39,7 +39,7 @@ class AgentStage(ABC):
     agents: List[Agent]
 
     def __init__(self):
-        self.agents = self._stage_agents()
+        pass
 
     @abstractmethod
     def _stage_agents(self) -> List[Agent]:
