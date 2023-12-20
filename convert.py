@@ -1,4 +1,6 @@
+import os.path
 from typing import *
+from smoldyn import Simulation
 from simulariumio import (
     InputFileData,
     DisplayData,
@@ -13,7 +15,11 @@ from biosimulators_simularium.utils import (
 from biosimulators_simularium.simulation_data import generate_molecules
 
 
-def generate_output_data_object(
+def run_simulation(model_fp: str):
+    return Simulation.fromFile(model_fp).runSim()
+
+
+def output_data_object(
     file_data: Union[InputFileData, str],
     display_data: Optional[Dict[str, DisplayData]] = None,
     meta_data: Optional[MetaData] = None,
@@ -24,7 +30,8 @@ def generate_output_data_object(
         using the `self.generate_metadata_object` interface of this same class.
 
     Args:
-        file_data: (:obj:`InputFileData`): `simulariumio.InputFileData` instance based on model output.
+        file_data: (:obj:`InputFileData`, `str`): `simulariumio.InputFileData` instance based on model output or `str`
+            path to the output.
         display_data: (:obj:`Dict[Dict[str, DisplayData]]`): `Optional`: if passing this parameter, please
             use the `self.generate_display_object_dict` interface of this same class.
         meta_data: (:obj:`Metadata`): new instance of `Metadata` object. If passing this parameter, please use the
@@ -46,3 +53,26 @@ def generate_output_data_object(
         meta_data=meta_data,
         center=True
     )
+
+
+def generate_output_data_object(**config) -> SmoldynData:
+    """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
+        directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
+
+        Args:
+              config:`kwargs`: The keyword arguments are as follows:
+                    model:`str`: path to the model file
+                    file_data:`Union[str, InputFileData]` path to the output file(pass if not model),
+                    display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
+                    meta_data:`Optional[MetaData]`
+                    spatial_units:`str`: defaults to nm
+                    temporal_units:`str`: defaults to ns
+    """
+    model_fp = config.pop(config.get('model', None))
+    modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
+    if not os.path.exists(modelout_fp) and model_fp is not None:
+        run_simulation(model_fp)
+    return output_data_object(**config)
+
+
+
