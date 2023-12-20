@@ -1,7 +1,7 @@
 from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.normalize.data_model import SmoldynAgentStage
-from biosimulators_simularium.utils.core import HEX_COLORS
+from biosimulators_simularium.util.core import HEX_COLORS
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'

@@ -361,7 +361,7 @@ class SmoldynDataConverter(BiosimulatorsDataConverter):
                                    model_output_filename: Optional[str] = None,
                                    smoldyn_archive: Optional[SmoldynCombineArchive] = None) -> None:
         """Generate a modelout file if one does not exist using the `ModelValidation` interface via
-            `.utils.generate_model_validation_object` method. If either parameter is not passed, the data will
+            `.util.generate_model_validation_object` method. If either parameter is not passed, the data will
             be derived from `self.archive(:obj:`SmoldynCombineArchive`)`.
 
             Args:

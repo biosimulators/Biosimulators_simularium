@@ -6,8 +6,8 @@ import os
 from typing import Union
 from enum import Enum
 from typing import Dict, List
-from biosimulators_simularium.utils.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
-from biosimulators_simularium.utils.platform_parser import SmoldynPlatformParser
+from biosimulators_simularium.util.coordinate_interleaver import CoordinateDeinterleaver, CoordinateInterleaver
+from biosimulators_simularium.util.platform_parser import SmoldynPlatformParser
 
 
 __all__ = [

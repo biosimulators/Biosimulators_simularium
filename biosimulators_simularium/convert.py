@@ -68,8 +68,11 @@ def generate_output_data_object(**config) -> SmoldynData:
                     spatial_units:`str`: defaults to nm
                     temporal_units:`str`: defaults to ns
     """
-    model_fp = config.pop(config.get('model', None))
+    # TODO: Add graphics handler
+
+    model_fp = config.pop('model')
     modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
+    config['file_data'] = modelout_fp
     if not os.path.exists(modelout_fp) and model_fp is not None:
         run_simulation(model_fp)
     return output_data_object(**config)

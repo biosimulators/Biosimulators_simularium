@@ -1,5 +1,5 @@
 """Objects for the storage, retrieval, and calculation of data pertaining to OMEX/Combine archives whose contents
-    are directly related to purely spatial simulations. Several objects are copied directly from biosimulators-utils
+    are directly related to purely spatial simulations. Several objects are copied directly from biosimulators-util
     for ease of development, as they exist within the same organization.
 
 :Author: Alexander Patrie <apatrie@uchc.edu> / Jonathan Karr
@@ -19,7 +19,7 @@ from typing import Optional, Tuple, Dict, List, Union
 from abc import ABC, abstractmethod
 import libcombine
 from biosimulators_simularium.converters.utils import validate_model, ModelValidation
-from biosimulators_simularium.utils.core import (
+from biosimulators_simularium.util.core import (
     are_lists_equal,
     none_sorted,
     flatten_nested_list_of_strings
@@ -1078,7 +1078,7 @@ class SmoldynCombineArchive(SpatialCombineArchive):
 
     def generate_model_validation_object(self) -> ModelValidation:
         """Generate an instance of `ModelValidation` based on the output of `self.model_path`
-            with `biosimulators-utils.model_lang.smoldyn.validate_model` method.
+            with `biosimulators-util.model_lang.smoldyn.validate_model` method.
             Implementation of ancestral abstract method.
 
         Returns:

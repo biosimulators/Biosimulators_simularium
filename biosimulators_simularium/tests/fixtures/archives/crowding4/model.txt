@@ -1,7 +1,7 @@
 # Crowding test
 # This tests excluded volume with reactions for surface-bound molecules
 
-graphics opengl_better
+#graphics opengl_better
 
 light room ambient 0 0 0
 light 0 position -1 1 1 0
