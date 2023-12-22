@@ -1,7 +1,7 @@
-from biosimulators_simularium.converters.data_model import SmoldynDataConverter
+from biosimulators_simularium.old_api.converters.data_model import SmoldynDataConverter
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
 from biosimulators_simularium.util.core import HEX_COLORS
-from biosimulators_simularium.normalize.utils import agent_radius_from_D, generate_min_agent_radii, generate_agents
+from biosimulators_simularium.normalize.utils import generate_min_agent_radii, generate_agents
 
 
 test_archive_root = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'

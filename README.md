@@ -56,11 +56,11 @@ on a valid COMBINE/OMEX archive.
 
 
 ### Getting-Started Example:
+
 ```python
 import os
 from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
-from biosimulators_simularium.converters.data_model import SmoldynDataConverter
-
+from biosimulators_simularium.old_api.converters.data_model import SmoldynDataConverter
 
 # define the combine archive rootpath
 crowding_archive_path = os.path.join('biosimulators_simularium', 'tests', 'fixtures', 'archives', 'crowding4')
@@ -76,7 +76,7 @@ converter = SmoldynDataConverter(archive)
 
 # define the agents from the simulation that you are going to visualize. 
 # The shape of the data is expected to be as follows:
-    # (agent name, agent radius, agent hex color)
+# (agent name, agent radius, agent hex color)
 agents = [
     ('red(up)', 0.2, '#eb1414'),
     ('green(up)', 0.5, '#5dcf30'),

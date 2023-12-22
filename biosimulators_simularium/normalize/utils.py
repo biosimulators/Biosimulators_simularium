@@ -9,14 +9,10 @@ date: 11/01/2023
 license: MIT
 """
 
-
-import os
 from typing import *
 from dataclasses import dataclass
 import numpy as np
 from biosimulators_simularium.converters.utils import validate_model
-from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
-from biosimulators_simularium.converters.data_model import SmoldynDataConverter
 
 
 @dataclass

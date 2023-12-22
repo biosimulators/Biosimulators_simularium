@@ -675,7 +675,7 @@ class CombineArchiveReader(object):
 #        archive_comb.extractTo(out_dir) # libcombine incorrectly extracts files as directories.
 
         # read metadata files skipped by libCOMBINE
-        content_locations = set(os.path.relpath(content.location, '.') for content in archive.contents)
+        content_locations = set(os.path.relpath(content.location, '') for content in archive.contents)
         manifest_contents = self.read_manifest(os.path.join(out_dir, 'manifest.xml'), in_file, config=config)
 
         if include_omex_metadata_files:
@@ -683,14 +683,14 @@ class CombineArchiveReader(object):
                 if (
                     manifest_content.format
                     and re.match(CombineArchiveContentFormatPattern.OMEX_METADATA.value, manifest_content.format)
-                    and os.path.relpath(manifest_content.location, '.') not in content_locations
+                    and os.path.relpath(manifest_content.location, '') not in content_locations
                 ):
                     archive.contents.append(manifest_content)
 
         if config.VALIDATE_OMEX_MANIFESTS:
             manifest_includes_archive = False
             for manifest_content in manifest_contents:
-                if os.path.relpath(manifest_content.location, '.') == '.':
+                if os.path.relpath(manifest_content.location, '') == '.':
                     if manifest_content.format:
                         if re.match(CombineArchiveContentFormatPattern.OMEX, manifest_content.format):
                             manifest_includes_archive = True

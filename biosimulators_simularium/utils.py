@@ -1,7 +1,8 @@
-"""Functions from smoldyn.biosimulators.combine"""
+"""Some of the functions are from smoldyn.biosimulators.combine"""
 
 
 import re
+import os
 
 
 def read_smoldyn_simulation_configuration(filename):
@@ -39,3 +40,26 @@ def disable_smoldyn_graphics_in_simulation_configuration(configuration):
     for i_line, line in enumerate(configuration):
         if line.startswith('graphics '):
             configuration[i_line] = re.sub(r'^graphics +[a-z_]+', 'graphics none', line)
+
+
+def standardize_model_output_fn(working_dirpath: str):
+    """Read in the root of a directory for a file containing the word 'out' and rename
+        it to reflect a standard name.
+
+        working_dirpath(`str`): path of the directory root relative to where the output file is.
+    """
+    for root, _, files in os.walk(working_dirpath):
+        for f in files:
+            if 'out' in f[-7:]:
+                extension = f[-4:]
+                new_prefix = 'modelout'
+                fp = os.path.join(root, new_prefix + extension)
+                os.rename(os.path.join(root, f), fp)
+
+
+def get_modelout_fp(working_dir):
+    for f in os.listdir(working_dir):
+        fp = os.path.join(working_dir, f)
+        if 'out' in fp:
+            return fp
+
