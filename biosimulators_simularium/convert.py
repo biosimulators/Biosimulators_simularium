@@ -72,8 +72,6 @@ def generate_output_data_object(**config) -> SmoldynData:
                     spatial_units:`str`: defaults to nm
                     temporal_units:`str`: defaults to ns
     """
-    # TODO: Add graphics handler
-
     model_fp = config.pop('model')
     modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
     config['file_data'] = modelout_fp
