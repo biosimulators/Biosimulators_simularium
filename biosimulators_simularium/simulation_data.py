@@ -30,3 +30,7 @@ def get_axis(agent_coordinates: list[list[float]], axis: int):
             A 1d list of axis scalars
     """
     return np.array([agent_coord[axis] for agent_coord in agent_coordinates])
+
+
+def run_simulation(model_fp: str):
+    return Simulation.fromFile(model_fp).runSim()

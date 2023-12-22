@@ -1,26 +1,18 @@
 import os.path
-from typing import *
-from smoldyn import Simulation
+from typing import Dict, Union, Optional
 from simulariumio import (
     InputFileData,
     DisplayData,
     UnitData,
-    MetaData,
-    TrajectoryData,
-    BinaryWriter,
-    JsonWriter
+    MetaData
 )
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
+from biosimulators_simularium.simulation_data import run_simulation
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
     write_smoldyn_simulation_configuration
 )
-from biosimulators_simularium.simulation_data import generate_molecules
-
-
-def run_simulation(model_fp: str):
-    return Simulation.fromFile(model_fp).runSim()
 
 
 def output_data_object(
@@ -84,33 +76,3 @@ def generate_output_data_object(**config) -> SmoldynData:
     if not os.path.exists(modelout_fp) and model_fp is not None:
         run_simulation(model_fp)
     return output_data_object(**config)
-
-
-def write_simularium_file(
-    data: Union[SmoldynData, TrajectoryData],
-    simularium_filename: str,
-    save_format: str,
-    validation=True
-) -> None:
-    """Takes in either a `SmoldynData` or `TrajectoryData` instance and saves a simularium file based on it
-        with the name of `simularium_filename`. If none is passed, the file will be saved in `self.archive.rootpath`
-        Args:
-            data(:obj:`Union[SmoldynData, TrajectoryData]`): data object to save.
-            simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
-                passed, will default to `self.archive.rootpath/self.archive.simularium_filename`.
-            save_format(:obj:`str`): format which to write the `data`. Options include `json, binary`.
-            validation(:obj:`bool`): whether to call the wrapped method using `validate_ids=True`. Defaults
-                to `True`.
-    """
-    save_format = save_format.lower()
-    if not os.path.exists(simularium_filename):
-        if 'binary' in save_format:
-            writer = BinaryWriter()
-        elif 'json' in save_format:
-            writer = JsonWriter()
-        else:
-            raise TypeError('You must provide a valid writer object.')
-        return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validation)
-
-
-
