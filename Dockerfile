@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --upgrade pip && pip install python-libcombine>=0.2.19
+RUN pip install --upgrade pip && pip install python-libcombine>=0.2.19 smoldyn
 RUN pip install .
 ENTRYPOINT ["biosimulators-simularium"]
 CMD []
