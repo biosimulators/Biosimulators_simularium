@@ -3,9 +3,10 @@
 
 import re
 import os
+from typing import List
 
 
-def read_smoldyn_simulation_configuration(filename):
+def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
     ''' Read a configuration for a Smoldyn simulation
 
     Args:
@@ -18,7 +19,7 @@ def read_smoldyn_simulation_configuration(filename):
         return [line.strip('\n') for line in file]
 
 
-def write_smoldyn_simulation_configuration(configuration, filename):
+def write_smoldyn_simulation_configuration(configuration: List[str], filename: str):
     ''' Write a configuration for Smoldyn simulation to a file
 
     Args:
@@ -31,7 +32,7 @@ def write_smoldyn_simulation_configuration(configuration, filename):
             file.write('\n')
 
 
-def disable_smoldyn_graphics_in_simulation_configuration(configuration):
+def disable_smoldyn_graphics_in_simulation_configuration(configuration: List[str]):
     ''' Turn off graphics in the configuration of a Smoldyn simulation
 
     Args:
@@ -57,7 +58,7 @@ def standardize_model_output_fn(working_dirpath: str):
                 os.rename(os.path.join(root, f), fp)
 
 
-def get_modelout_fp(working_dir):
+def get_modelout_fp(working_dir: str) -> str:
     for f in os.listdir(working_dir):
         fp = os.path.join(working_dir, f)
         if 'out' in fp:
