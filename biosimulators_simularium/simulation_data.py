@@ -1,5 +1,6 @@
 from smoldyn import Simulation
 import numpy as np
+from biosimulators_simularium.validation import validate_model
 
 
 def generate_molecules(model_fp: str, duration: int):
@@ -18,7 +19,7 @@ def generate_molecule_coordinates(model_fp: str, duration: int):
     return np.array(mol_coords)
 
 
-def get_axis(agent_coordinates: list[list[float]], axis: int):
+def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
     """Return a 1d list of scalar `axis` values from the given `agent_coordinates`.
 
         Args:
@@ -32,5 +33,5 @@ def get_axis(agent_coordinates: list[list[float]], axis: int):
     return np.array([agent_coord[axis] for agent_coord in agent_coordinates])
 
 
-def run_simulation(model_fp: str):
-    return Simulation.fromFile(model_fp).runSim()
+def run_model_file_simulation(model_fp: str) -> None:
+    return validate_model(model_fp)[2][0].runSim()

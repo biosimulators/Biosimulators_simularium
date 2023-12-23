@@ -7,7 +7,7 @@ from simulariumio import (
     MetaData
 )
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
-from biosimulators_simularium.simulation_data import run_simulation
+from biosimulators_simularium.simulation_data import run_model_file_simulation
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
@@ -74,5 +74,5 @@ def generate_output_data_object(**config) -> SmoldynData:
         write_smoldyn_simulation_configuration(sim_config, model_fp)
 
     if not os.path.exists(modelout_fp) and model_fp is not None:
-        run_simulation(model_fp)
+        run_model_file_simulation(model_fp)
     return output_data_object(**config)
