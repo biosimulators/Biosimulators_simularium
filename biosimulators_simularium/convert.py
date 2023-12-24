@@ -6,7 +6,8 @@ from simulariumio import (
     DisplayData,
     UnitData,
     MetaData,
-    TrajectoryData
+    TrajectoryData,
+    DISPLAY_TYPE
 )
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
@@ -59,8 +60,8 @@ def generate_output_data_object(**config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
 
-        Args:
-              config:`kwargs`: The keyword arguments are as follows:
+            Args:
+                config:`kwargs`: output data configuration whose keyword arguments are as follows:
                     model:`str`: path to the model file
                     file_data:`Union[str, InputFileData]` path to the output file(pass if not model),
                     display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
@@ -78,12 +79,27 @@ def generate_output_data_object(**config) -> SmoldynData:
         write_smoldyn_simulation_configuration(sim_config, model_fp)
 
     if not os.path.exists(modelout_fp) and model_fp is not None:
-        run_model_file_simulation(model_fp)
+        sim, mol_outputs = run_model_file_simulation(model_fp)  # TODO: Use the outputs to populate the DisplayData dict
+        species_names = sorted(list([range(count) for count in sim.count()['species']]))
+        if 'empty' in species_names:
+            species_names.remove('empty')
+
+        if not config.get('display_data'):
+            display_data = {}
+            for mol in mol_outputs:
+                mol_species_id = mol[1]
+                mol_species_name = species_names[mol_species_id]
+                display_data[mol] = DisplayData(
+                    name=mol_species_name,
+                    display_type=DISPLAY_TYPE.SPHERE,
+                    #radius=  TODO: use solver
+                )
+            config['display_data'] = display_data
     return output_data_object(**config)
 
 
 def translate_data_object(
-    c: SmoldynConverter,
+    data: SmoldynData,
     box_size: float,
     n_dim=3,
     translation_magnitude: Optional[Union[int, float]] = None
@@ -92,7 +108,7 @@ def translate_data_object(
            simularium viewer.
 
            Args:
-               c: Instance of `SmoldynConverter` loaded with `SmoldynData`.
+               data:`SmoldynData`: configured simulation output data instance.
                box_size: size of the simularium viewer box.
                n_dim: n dimensions of the simulation output. Defaults to `3`.
                translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
@@ -101,9 +117,6 @@ def translate_data_object(
                `TrajectoryData`: translated data object instance.
        """
     translation_magnitude = translation_magnitude or -box_size / 2
-    return c.filter_data([
-           TranslateFilter(
-               translation_per_type={},
-               default_translation=translation_magnitude * np.ones(n_dim)
-           ),
-    ])
+    return SmoldynConverter(data).filter_data(
+        [TranslateFilter(translation_per_type={}, default_translation=translation_magnitude * np.ones(n_dim))]
+    )

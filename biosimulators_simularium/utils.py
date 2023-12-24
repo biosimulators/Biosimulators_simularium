@@ -58,9 +58,18 @@ def standardize_model_output_fn(working_dirpath: str):
                 os.rename(os.path.join(root, f), fp)
 
 
-def get_modelout_fp(working_dir: str) -> str:
+def get_fp(working_dir: str, identifier: str) -> str:
+    """Search a working_dir for a file of a specified identifier."""
     for f in os.listdir(working_dir):
         fp = os.path.join(working_dir, f)
-        if 'out' in fp:
+        if identifier in fp:
             return fp
+
+
+def get_model_fp(working_dir: str) -> str:
+    return get_fp(working_dir, 'model.txt')
+
+
+def get_modelout_fp(working_dir: str) -> str:
+    return get_fp(working_dir, 'out')
 
