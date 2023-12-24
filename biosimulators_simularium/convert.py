@@ -1,12 +1,16 @@
 import os.path
 from typing import Dict, Union, Optional
+import numpy as np
 from simulariumio import (
     InputFileData,
     DisplayData,
     UnitData,
-    MetaData
+    MetaData,
+    TrajectoryData
 )
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
+from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
+from simulariumio.filters.translate_filter import TranslateFilter
 from biosimulators_simularium.simulation_data import run_model_file_simulation
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
@@ -84,22 +88,22 @@ def translate_data_object(
     n_dim=3,
     translation_magnitude: Optional[Union[int, float]] = None
 ) -> TrajectoryData:
-   """Translate the data object's data if the coordinates are all positive to center the data in the
-       simularium viewer.
+    """Translate the data object's data if the coordinates are all positive to center the data in the
+           simularium viewer.
 
-       Args:
-           c: Instance of `SmoldynConverter` loaded with `SmoldynData`.
-           box_size: size of the simularium viewer box.
-           n_dim: n dimensions of the simulation output. Defaults to `3`.
-           translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
+           Args:
+               c: Instance of `SmoldynConverter` loaded with `SmoldynData`.
+               box_size: size of the simularium viewer box.
+               n_dim: n dimensions of the simulation output. Defaults to `3`.
+               translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
 
-       Returns:
-           `TrajectoryData`: translated data object instance.
-   """
-   translation_magnitude = translation_magnitude or -box_size / 2
-   return c.filter_data([
-       TranslateFilter(
-           translation_per_type={},
-           default_translation=translation_magnitude * np.ones(n_dim)
-       ),
-   ])
+           Returns:
+               `TrajectoryData`: translated data object instance.
+       """
+    translation_magnitude = translation_magnitude or -box_size / 2
+    return c.filter_data([
+           TranslateFilter(
+               translation_per_type={},
+               default_translation=translation_magnitude * np.ones(n_dim)
+           ),
+    ])

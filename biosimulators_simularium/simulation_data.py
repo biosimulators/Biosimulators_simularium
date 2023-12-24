@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
