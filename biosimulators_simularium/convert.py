@@ -80,21 +80,46 @@ def generate_output_data_object(**config) -> SmoldynData:
 
     if not os.path.exists(modelout_fp) and model_fp is not None:
         sim, mol_outputs = run_model_file_simulation(model_fp)  # TODO: Use the outputs to populate the DisplayData dict
-        species_names = sorted(list([range(count) for count in sim.count()['species']]))
+        species_names = sorted(list([sim.getSpeciesName(n) for n in range(sim.count()['species'])]))
         if 'empty' in species_names:
             species_names.remove('empty')
 
         # TODO: Calculate radii
         #molecule_radius = calculate_agent_radius()
+
+        protein_density = 1.0
+
+        # TODO: Automate this based on the species names list
+        agent_params = {
+            'MinD_ATP': {
+                'density': 1.0,  # Approximate density in g/cm³
+                'molecular_mass': 30.0,  # Approximate molecular mass in kDa (kilodaltons)
+            },
+            'MinD_ADP': {
+                'density': 1.0,  # Approximate density in g/cm³
+                'molecular_mass': 30.0,  # Approximate molecular mass in kDa
+            },
+            'MinE': {
+                'density': 1.0,  # Approximate density in g/cm³
+                'molecular_mass': 9.0,  # Approximate molecular mass in kDa
+            },
+            'MinDMinE': {
+                'density': 1.0,  # Approximate density in g/cm³
+                'molecular_mass': 39.0,  # Approximate molecular mass in kDa (assuming a 1:1 complex)
+            },
+        }
+
         if not config.get('display_data'):
             display_data = {}
             for mol in mol_outputs:
                 mol_species_id = mol[1]
                 mol_species_name = species_names[mol_species_id]
+                mol_params = agent_params[mol_species_name]
+                mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
                 display_data[mol] = DisplayData(
                     name=mol_species_name,
                     display_type=DISPLAY_TYPE.SPHERE,
-                    #radius=  TODO: use solver
+                    radius=mol_radius
                 )
             config['display_data'] = display_data
     return output_data_object(**config)
