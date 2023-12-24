@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
@@ -62,3 +62,55 @@ def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, np.ndarray]:
     simulation.runSim()
     molecules = np.array(simulation.getOutputData('molecules'))
     return simulation, molecules
+
+
+def calculate_agent_radius(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:
+    """Calculate the radius of an agent given its molecular mass and density. Please note: the molecular mass
+        of MinE is 11000 Da with a protein density of 1.35 g/cm^3 (1350 kg/m^3).
+
+        Args:
+            m:`float`: the molecular mass of the given agent/particle (Daltons).
+            rho:`float`: the density of the given agent/particle (kg/m^3).
+            scaling_factor:`float`: tiny number by which to scale the output measurement. Defaults to
+                `10**(-2)`, which effectively converts from nm to cm.
+
+        Returns:
+            `float`: radius of the given agent.
+    """
+    dalton_to_kg = 1.66053906660e-27  # Conversion factor from Daltons to kilograms
+    m_kg = m * dalton_to_kg  # Convert mass to kilograms
+    radius_m = ((3 * m_kg) / (4 * np.pi * rho)) ** (1 / 3)  # Calculate radius in meters
+    radius_nm = radius_m * 1e9  # Convert radius to nanometers
+    return radius_nm * scaling_factor
+
+
+def calculate_agent_molecular_mass(n_amino_acids: int, amino_acid_mass: int = 110) -> float:
+    """Calculate the molecular mass for an agent, given the amount of amino acids in the particular agent.
+        For example, MinD in E.coli typically consists of around 270 amino acids. `amino_acid_mass` is meant to be
+        the approximation of the average molecular weight of amino acids.
+
+        Args:
+            n_amino_acids:`int`: number of amino acids within the given agent.
+            amino_acid_mass:`Optional[int]`: average molecular weight of amino acids. Defaults to `110`.
+
+        Returns:
+            `float`: the molecular mass of the given agent.
+    """
+    return float(n_amino_acids * amino_acid_mass)
+
+
+def generate_agent_radii(agent_masses: Dict[str, int], protein_density: int = 1350) -> Dict[str, float]:
+    """Generate a dict of agent radii, indexed by agent name.
+
+        Args:
+            agent_masses:`Dict[str, int]`: a dict describing {agent name: agent mass}. Expects Daltons.
+            protein_density:`Optional[int]`: Average density of proteins in the given agent. Defaults to `1350` g/m^2.
+
+        Returns:
+            `Dict[str, float]`: Dictionary of agent name: radii.
+    """
+    agent_radii = {}
+    for k in agent_masses.keys():
+        r = calculate_agent_radius(agent_masses[k], protein_density)
+        agent_radii[k] = r
+    return agent_radii

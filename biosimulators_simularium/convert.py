@@ -12,7 +12,7 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
 from simulariumio.filters.translate_filter import TranslateFilter
-from biosimulators_simularium.simulation_data import run_model_file_simulation
+from biosimulators_simularium.simulation_data import run_model_file_simulation, calculate_agent_radius
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
@@ -84,6 +84,8 @@ def generate_output_data_object(**config) -> SmoldynData:
         if 'empty' in species_names:
             species_names.remove('empty')
 
+        # TODO: Calculate radii
+        #molecule_radius = calculate_agent_radius()
         if not config.get('display_data'):
             display_data = {}
             for mol in mol_outputs:
