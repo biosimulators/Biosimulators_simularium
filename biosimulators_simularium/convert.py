@@ -76,3 +76,30 @@ def generate_output_data_object(**config) -> SmoldynData:
     if not os.path.exists(modelout_fp) and model_fp is not None:
         run_model_file_simulation(model_fp)
     return output_data_object(**config)
+
+
+def translate_data_object(
+    c: SmoldynConverter,
+    box_size: float,
+    n_dim=3,
+    translation_magnitude: Optional[Union[int, float]] = None
+) -> TrajectoryData:
+   """Translate the data object's data if the coordinates are all positive to center the data in the
+       simularium viewer.
+
+       Args:
+           c: Instance of `SmoldynConverter` loaded with `SmoldynData`.
+           box_size: size of the simularium viewer box.
+           n_dim: n dimensions of the simulation output. Defaults to `3`.
+           translation_magnitude: magnitude by which to translate and filter. Defaults to `-box_size / 2`.
+
+       Returns:
+           `TrajectoryData`: translated data object instance.
+   """
+   translation_magnitude = translation_magnitude or -box_size / 2
+   return c.filter_data([
+       TranslateFilter(
+           translation_per_type={},
+           default_translation=translation_magnitude * np.ones(n_dim)
+       ),
+   ])

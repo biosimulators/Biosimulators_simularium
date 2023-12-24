@@ -2,8 +2,16 @@
 
 
 import os
-from biosimulators_simularium.simulation_data import run_model_file_simulation
-from biosimulators_simularium.validation import validate_model
-from biosimulators_simularium.convert import
+from biosimulators_simularium.convert import generate_output_data_object
+
+
+def convert_minE(model_fp: str, display_data_dict):
+    """TODO: Create display data dict for each mol in the simulation."""
+
+    data_obj = generate_output_data_object(
+        file_data=model_fp,
+
+    )
+
 
 
