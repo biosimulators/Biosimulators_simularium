@@ -56,6 +56,10 @@ def output_data_object(
     )
 
 
+def randomize_mass(origin: float) -> float:
+    return np.random.randint(origin)
+
+
 def generate_output_data_object(**config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
@@ -84,28 +88,27 @@ def generate_output_data_object(**config) -> SmoldynData:
         if 'empty' in species_names:
             species_names.remove('empty')
 
-        # TODO: Calculate radii
-        #molecule_radius = calculate_agent_radius()
+        # for now, we will randomize the minE mass::::::Finish this.
+        protein_density = 1.35  # g/cm^3. Assuming global protein density parameter value for this simulation
+        minE_molecular_mass = 11000.0  # Daltons
 
-        protein_density = 1.0
-
-        # TODO: Automate this based on the species names list
+        # TODO: Automate this based on the species names list and remove random mass
         agent_params = {
             'MinD_ATP': {
-                'density': 1.0,  # Approximate density in g/cm³
-                'molecular_mass': 30.0,  # Approximate molecular mass in kDa (kilodaltons)
+                'density': 1.0,
+                'molecular_mass': randomize_mass(minE_molecular_mass),
             },
             'MinD_ADP': {
-                'density': 1.0,  # Approximate density in g/cm³
-                'molecular_mass': 30.0,  # Approximate molecular mass in kDa
+                'density': 1.0,
+                'molecular_mass': randomize_mass(minE_molecular_mass),
             },
             'MinE': {
-                'density': 1.0,  # Approximate density in g/cm³
-                'molecular_mass': 9.0,  # Approximate molecular mass in kDa
+                'density': 1.0,
+                'molecular_mass': minE_molecular_mass,
             },
             'MinDMinE': {
-                'density': 1.0,  # Approximate density in g/cm³
-                'molecular_mass': 39.0,  # Approximate molecular mass in kDa (assuming a 1:1 complex)
+                'density': 1.0,
+                'molecular_mass': randomize_mass(minE_molecular_mass),
             },
         }
 
