@@ -6,6 +6,9 @@
 """
 
 
+# TODO: Update this CLI functionality based on the new simplified API
+
+'''
 import os
 import argparse
 from biosimulators_simularium.converters.io import generate_new_simularium_file
@@ -32,7 +35,9 @@ def main():
 
 
 # TODO: NOW ADD A METHOD THAT ADDS THE SIMULARIUM FILE TO THE XML MANIFEST!
+'''
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    pass
