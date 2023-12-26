@@ -2,10 +2,20 @@
 
 
 import os
-from biosimulators_simularium.convert import generate_output_data_object
+from biosimulators_simularium.exec import generate_simularium_file
 
 
-def test_convert_minE(model_fp: str, display_data_dict):
-    """TODO: Create display data dict for each mol in the simulation."""
+def test_convert_minE():
+    working_dir = 'biosimulators_simularium/tests/fixtures/models'
+    simularium_fn = os.path.join(working_dir, 'simplified-api-output')
+    generate_simularium_file(working_dir, simularium_fn)
+    try:
+        assert os.path.exists(simularium_fn)
+        print(f'{simularium_fn} has been successfully generated.')
+    except:
+        AssertionError('A simularium file could not be generated.')
 
-    model_fp =
+
+
+if __name__ =='__main__':
+    test_convert_minE()

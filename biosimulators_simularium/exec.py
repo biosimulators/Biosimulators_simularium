@@ -6,7 +6,7 @@ from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 
 
-def generate_simularium_file(working_dir: str, simularium_filename: str, model_fp: str = None, return_sim: bool = False):
+def generate_simularium_file(working_dir: str, simularium_filename: str, model_fp: str = None):
     """If `model_fp` is `None` (by default), the working_dir passed into this function MUST be the parent(or contain)
         the Smoldyn model file to run.
     """
@@ -17,7 +17,7 @@ def generate_simularium_file(working_dir: str, simularium_filename: str, model_f
 
     # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
     data = generate_output_data_object(model=model_fp)
-    translated_data = translate_data_object(data=data)
+    translated_data = translate_data_object(data=data, box_size=10.0)
     return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=False)
 
 
