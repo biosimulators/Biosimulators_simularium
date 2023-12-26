@@ -82,16 +82,14 @@ def generate_output_data_object(**config) -> SmoldynData:
         disable_smoldyn_graphics_in_simulation_configuration(sim_config)
         write_smoldyn_simulation_configuration(sim_config, model_fp)
 
-    if not os.path.exists(modelout_fp) and model_fp is not None:
+    if model_fp is not None:
         sim, mol_outputs = run_model_file_simulation(model_fp)  # TODO: Use the outputs to populate the DisplayData dict
         species_names = sorted(list([sim.getSpeciesName(n) for n in range(sim.count()['species'])]))
         if 'empty' in species_names:
             species_names.remove('empty')
-
         # for now, we will randomize the minE mass::::::Finish this.
         protein_density = 1.35  # g/cm^3. Assuming global protein density parameter value for this simulation
         minE_molecular_mass = 11000.0  # Daltons
-
         # TODO: Automate this based on the species names list and remove random mass
         agent_params = {
             'MinD_ATP': {
@@ -111,7 +109,6 @@ def generate_output_data_object(**config) -> SmoldynData:
                 'molecular_mass': randomize_mass(minE_molecular_mass),
             },
         }
-
         if not config.get('display_data'):
             display_data = {}
             for mol in mol_outputs:
@@ -125,6 +122,8 @@ def generate_output_data_object(**config) -> SmoldynData:
                     radius=mol_radius
                 )
             config['display_data'] = display_data
+    else:
+        raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.')
     return output_data_object(**config)
 
 

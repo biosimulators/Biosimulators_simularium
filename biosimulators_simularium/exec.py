@@ -18,8 +18,7 @@ def generate_simularium_file(working_dir: str, simularium_filename: str, model_f
     # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
     data = generate_output_data_object(model=model_fp)
     translated_data = translate_data_object(data=data)
-    write_simularium_file(data, simularium_filename=simularium_filename, save_format='JSON')
-    return
+    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=False)
 
 
 def exec_combine_archive(
@@ -52,3 +51,4 @@ def exec_combine_archive(
 
     # TODO: Open and write new omex file here.
 
+NOW EXEC FUNCTION!
