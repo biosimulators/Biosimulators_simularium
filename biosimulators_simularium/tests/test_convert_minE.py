@@ -17,5 +17,5 @@ def test_convert_minE():
 
 
 
-if __name__ =='__main__':
+if __name__ == '__main__':
     test_convert_minE()
