@@ -123,7 +123,7 @@ def generate_output_data_object(**config) -> SmoldynData:
                 )
             config['display_data'] = display_data
     else:
-        raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.')
+        raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')
     return output_data_object(**config)
 
 

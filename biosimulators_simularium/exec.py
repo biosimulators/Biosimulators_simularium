@@ -51,4 +51,3 @@ def exec_combine_archive(
 
     # TODO: Open and write new omex file here.
 
-NOW EXEC FUNCTION!
