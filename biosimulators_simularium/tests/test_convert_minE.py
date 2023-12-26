@@ -16,6 +16,11 @@ def test_convert_minE():
         AssertionError('A simularium file could not be generated.')
 
 
+def test_convert_minE_archive():
+    omex_fp = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023.omex'
+    w
+
+
 
 if __name__ == '__main__':
     test_convert_minE()

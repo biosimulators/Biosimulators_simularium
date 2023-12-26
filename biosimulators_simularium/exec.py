@@ -47,7 +47,8 @@ def exec_combine_archive(
 
     # add the output simularium filepath to the Biosimulators output bundle
     simularium_fp = os.path.join(output_dir, simularium_filename)
-    generate_simularium_file(working_dir, simularium_fp, model_fp, return_sim)
+    generate_simularium_file(working_dir, simularium_fp, model_fp)
+    return results, log, simularium_fp
 
     # TODO: Open and write new omex file here.
 
