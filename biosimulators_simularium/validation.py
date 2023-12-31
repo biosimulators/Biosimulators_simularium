@@ -1,6 +1,6 @@
 from typing import *
-from biosimulators_utils.sedml.data_model import Variable
-from smoldyn.biosimulators.combine import validate_variables
+# from biosimulators_utils.sedml.data_model import Variable
+# from smoldyn.biosimulators.combine import validate_variables
 import os
 import tempfile
 import re
@@ -217,7 +217,7 @@ def is_digit(item):
     return item.replace('.', '', 1).isdigit()
 
 
-def validate_spatial(model_fp: str) -> Dict[Tuple, Tuple]:
+'''def validate_spatial(model_fp: str) -> Dict[Tuple, Tuple]:
     """Validate a list of `Variable` objects whose simulation's output data is spatial in nature, i.e: `listmols`.
         Wrapper of `smoldyn.biosimulators.combine.validate_variables()` which handles inevitable errors and
         continues.
@@ -251,6 +251,6 @@ def validate_spatial(model_fp: str) -> Dict[Tuple, Tuple]:
             id=str(mol[-1]),
 
         )
-
+'''
 
 

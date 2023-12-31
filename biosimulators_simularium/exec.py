@@ -3,7 +3,7 @@ from typing import Tuple, Dict
 from biosimulators_simularium.convert import generate_output_data_object, translate_data_object
 from biosimulators_simularium.io import write_simularium_file
 from biosimulators_simularium.utils import get_model_fp, get_modelout_fp
-from smoldyn.biosimulators.combine import exec_sed_doc
+# from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 
 
@@ -53,7 +53,7 @@ def generate_simularium_file(
     return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=False)
 
 
-def exec_combine_archive(
+'''def exec_combine_archive(
         sed_doc: str,
         working_dir: str,
         output_dir: str,
@@ -82,5 +82,5 @@ def exec_combine_archive(
     generate_simularium_file(working_dir, simularium_fp, model_fp)
     return results, log, simularium_fp
 
-    # TODO: Open and write new omex file here.
+    # TODO: Open and write new omex file here.'''
 

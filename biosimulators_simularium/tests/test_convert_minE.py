@@ -49,6 +49,3 @@ def test_convert_minE():
     except:
         AssertionError('A simularium file could not be generated.')
 
-
-if __name__ == '__main__':
-    test_convert_minE()

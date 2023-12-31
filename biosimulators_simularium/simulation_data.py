@@ -2,7 +2,7 @@ from typing import Tuple, Dict
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
-from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
+# from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
 
 
 def generate_molecules(model_fp: str, duration: int) -> np.ndarray:
