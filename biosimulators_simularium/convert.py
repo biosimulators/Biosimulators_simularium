@@ -56,10 +56,6 @@ def output_data_object(
     )
 
 
-def randomize_mass(origin: float) -> float:
-    return np.random.randint(origin)
-
-
 def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
@@ -110,9 +106,7 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
         species_names = sorted(list([sim.getSpeciesName(n) for n in range(sim.count()['species'])]))
         if 'empty' in species_names:
             species_names.remove('empty')
-        # for now, we will randomize the minE mass::::::Finish this.
-        protein_density = 1.35  # g/cm^3. Assuming global protein density parameter value for this simulation
-        minE_molecular_mass = 11000.0  # Daltons
+
         # TODO: Automate this based on the species names list and remove random mass
 
         if not config.get('display_data'):
