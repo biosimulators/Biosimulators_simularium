@@ -60,11 +60,34 @@ def randomize_mass(origin: float) -> float:
     return np.random.randint(origin)
 
 
-def generate_output_data_object(**config) -> SmoldynData:
+def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
 
             Args:
+                agent_params:`Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
+                    and the value is another dictionary with the keys 'density' and 'molecular_mass'.
+                    For example, in the MinE model:
+
+                        agent_params = {
+                            'MinD_ATP': {
+                                'density': 1.0,
+                                'molecular_mass': randomize_mass(minE_molecular_mass),
+                            },
+                            'MinD_ADP': {
+                                'density': 1.0,
+                                'molecular_mass': randomize_mass(minE_molecular_mass),
+                            },
+                            'MinE': {
+                                'density': 1.0,
+                                'molecular_mass': minE_molecular_mass,
+                            },
+                            'MinDMinE': {
+                                'density': 1.0,
+                                'molecular_mass': randomize_mass(minE_molecular_mass),
+                            },
+                        }
+
                 config:`kwargs`: output data configuration whose keyword arguments are as follows:
                     model:`str`: path to the model file
                     file_data:`Union[str, InputFileData]` path to the output file(pass if not model),
@@ -91,24 +114,7 @@ def generate_output_data_object(**config) -> SmoldynData:
         protein_density = 1.35  # g/cm^3. Assuming global protein density parameter value for this simulation
         minE_molecular_mass = 11000.0  # Daltons
         # TODO: Automate this based on the species names list and remove random mass
-        agent_params = {
-            'MinD_ATP': {
-                'density': 1.0,
-                'molecular_mass': randomize_mass(minE_molecular_mass),
-            },
-            'MinD_ADP': {
-                'density': 1.0,
-                'molecular_mass': randomize_mass(minE_molecular_mass),
-            },
-            'MinE': {
-                'density': 1.0,
-                'molecular_mass': minE_molecular_mass,
-            },
-            'MinDMinE': {
-                'density': 1.0,
-                'molecular_mass': randomize_mass(minE_molecular_mass),
-            },
-        }
+
         if not config.get('display_data'):
             display_data = {}
             for mol in mol_outputs:

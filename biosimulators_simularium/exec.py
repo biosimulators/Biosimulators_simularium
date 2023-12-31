@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 from biosimulators_simularium.convert import generate_output_data_object, translate_data_object
 from biosimulators_simularium.io import write_simularium_file
 from biosimulators_simularium.utils import get_model_fp, get_modelout_fp
@@ -9,6 +10,10 @@ from biosimulators_simularium.config import Config
 def generate_simularium_file(working_dir: str, simularium_filename: str, model_fp: str = None):
     """If `model_fp` is `None` (by default), the working_dir passed into this function MUST be the parent(or contain)
         the Smoldyn model file to run.
+
+        Args:
+            working_dir:`str`: root directory in which to save the simularium file. If no `model_fp` is passed,
+                this working dir path is assumed to contain the Smoldyn model file.
     """
     if not model_fp:
         model_fp = get_model_fp(working_dir)
@@ -29,7 +34,7 @@ def exec_combine_archive(
         model_fp: str = None,
         return_sim: bool = False,
         **config_params
-):
+) -> Tuple:
     """Pass in a `working_dir` filepath and execute/retrieve the outputs of two fundamentally different
         simulations: A. The output of a SED-ML simulation which returns 2d data (not molecule location based),
         and B. The output of a Smoldyn simulation run from a given Smoldyn model filepath.
