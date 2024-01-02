@@ -1,4 +1,4 @@
-"""Testing `minE_model.txt` to simularium ONLY"""
+"""Testing `model.txt` to simularium ONLY"""
 
 
 from biosimulators_simularium.old_api.converters.data_model import SmoldynDataConverter

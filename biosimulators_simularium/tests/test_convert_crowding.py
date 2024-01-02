@@ -13,7 +13,7 @@ def randomize_mass(origin: float) -> int:
 
 def test_convert_crowding():
     # define the working dir
-    working_dir = 'biosimulators_simularium/tests/fixtures/models'
+    working_dir = 'biosimulators_simularium/tests/fixtures/crowding'
 
     # define the simularium filepath (using the working dir as root in this case)
     simularium_fn = os.path.join(working_dir, 'simplified-api-output')

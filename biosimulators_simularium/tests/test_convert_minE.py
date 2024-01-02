@@ -13,10 +13,12 @@ def randomize_mass(origin: float) -> int:
 
 def test_convert_minE():
     # define the working dir
-    working_dir = 'biosimulators_simularium/tests/fixtures/models'
+    working_dir = 'biosimulators_simularium/tests/fixtures/MinE'
 
     # define the simularium filepath (using the working dir as root in this case)
     simularium_fn = os.path.join(working_dir, 'simplified-api-output')
+
+    model_fp = os.path.join(working_dir, 'model.txt')
 
     # define agent parameters (for now, we randomly select masses based on MinE primitive mass)
     minE_molecular_mass = 12100
