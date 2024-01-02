@@ -43,6 +43,8 @@ def generate_simularium_file(
                                     'molecular_mass': randomize_mass(minE_molecular_mass),
                                 },
                             }
+            model_fp:`str`: path to the model file containing the simulation details. If not specified, the Smoldyn model
+                file is assumed to be a child of the `working_dir`. Defaults to `None`.
     """
     if not model_fp:
         model_fp = get_model_fp(working_dir)
