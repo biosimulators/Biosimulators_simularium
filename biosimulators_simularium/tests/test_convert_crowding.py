@@ -18,31 +18,26 @@ def test_convert_crowding():
     # define the simularium filepath (using the working dir as root in this case)
     simularium_fn = os.path.join(working_dir, 'simplified-api-output')
 
+    model_fp = os.path.join(working_dir, 'model.txt')
+
     # define agent parameters (for now, we randomly select masses based on MinE primitive mass)
     minE_molecular_mass = 12100
     agent_params = {
-        'MinD_ATP': {
+        'red': {
             'density': 1.0,
             'molecular_mass': randomize_mass(minE_molecular_mass),
         },
-        'MinD_ADP': {
+        'green': {
             'density': 1.0,
             'molecular_mass': randomize_mass(minE_molecular_mass),
-        },
-        'MinE': {
-            'density': 1.0,
-            'molecular_mass': minE_molecular_mass,
-        },
-        'MinDMinE': {
-            'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
-        },
+        }
     }
 
     generate_simularium_file(
         working_dir=working_dir,
         simularium_filename=simularium_fn,
-        agent_params=agent_params
+        agent_params=agent_params,
+        model_fp=model_fp
     )
     try:
         assert os.path.exists(simularium_fn)
@@ -50,3 +45,5 @@ def test_convert_crowding():
     except:
         AssertionError('A simularium file could not be generated.')
 
+
+test_convert_crowding()

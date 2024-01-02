@@ -94,7 +94,7 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
                     temporal_units:`str`: defaults to ns
     """
     model_fp = config.pop('model')
-    modelout_fp = model_fp.replace('minE_model.txt', 'modelout.txt')
+    modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
     config['file_data'] = modelout_fp
 
     sim_config = read_smoldyn_simulation_configuration(model_fp)
@@ -115,7 +115,7 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
 
             # extract data from the individual molecule array
             for mol in mol_outputs:
-                mol_species_id_index = int(mol[1])
+                mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
                 mol_name = str(uuid4()).replace('-', '_')
                 mol_species_name = species_names[mol_species_id_index]
                 mol_params = agent_params[mol_species_name]
