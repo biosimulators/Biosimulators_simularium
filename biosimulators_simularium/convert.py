@@ -94,7 +94,7 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
                     temporal_units:`str`: defaults to ns
     """
     model_fp = config.pop('model')
-    modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
+    modelout_fp = model_fp.replace('minE_model.txt', 'modelout.txt')
     config['file_data'] = modelout_fp
 
     sim_config = read_smoldyn_simulation_configuration(model_fp)

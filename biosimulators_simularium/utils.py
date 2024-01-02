@@ -68,7 +68,7 @@ def get_fp(working_dir: str, identifier: str) -> str:
 
 
 def get_model_fp(working_dir: str) -> str:
-    return get_fp(working_dir, 'model.txt')
+    return get_fp(working_dir, 'minE_model.txt')
 
 
 def get_modelout_fp(working_dir: str) -> str:
