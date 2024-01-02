@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
@@ -49,7 +49,7 @@ def validated_model(model_fp: str) -> Simulation:
         raise ValueError(f"The filepath: {model_fp} is not a valid Smoldyn model file.")
 
 
-def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, np.ndarray]:
+def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, List[float]]:
     """Run a Smoldyn simulation from a given `model_fp` and return a Tuple consisting of
         (The simulation generated from the passed model fp, Molecule Outputs).
 
@@ -61,7 +61,7 @@ def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, np.ndarray]:
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
     simulation.runSim()
-    molecules = np.array(simulation.getOutputData('molecules'))
+    molecules = simulation.getOutputData('molecules')
     return simulation, molecules
 
 

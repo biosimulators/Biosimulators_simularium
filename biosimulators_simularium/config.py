@@ -29,7 +29,6 @@ DEFAULT_BIOSIMULATORS_API_ENDPOINT = 'https://api.biosimulators.org/'
 DEFAULT_BIOSIMULATIONS_API_ENDPOINT = 'https://api.biosimulations.org/'
 DEFAULT_BIOSIMULATIONS_API_AUTH_ENDPOINT = 'https://auth.biosimulations.org/oauth/token'
 DEFAULT_BIOSIMULATIONS_API_AUDIENCE = 'api.biosimulations.org'
-DEFAULT_SPATIAL = False
 
 
 class Config(object):
@@ -100,7 +99,7 @@ class Config(object):
                  BIOSIMULATIONS_API_AUDIENCE=DEFAULT_BIOSIMULATIONS_API_AUDIENCE,
                  VERBOSE=False,
                  DEBUG=False,
-                 SPATIAL=DEFAULT_SPATIAL):
+                 SPATIAL=False):
         """
         Args:
             OMEX_METADATA_INPUT_FORMAT (:obj:`OmexMetadataInputFormat`, optional): format to validate OMEX Metadata files against

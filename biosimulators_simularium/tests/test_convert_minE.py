@@ -3,6 +3,7 @@
 
 import os
 from biosimulators_simularium.exec import generate_simularium_file
+from biosimulators_simularium.config import Config
 
 
 def test_convert_minE():
@@ -17,8 +18,9 @@ def test_convert_minE():
 
 
 def test_convert_minE_archive():
-    omex_fp = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023.omex'
-    w
+    archive_rootpath = 'biosimulators_simularium/tests/fixtures/archives/minE_Andrews_052023'
+    sed_fp = os.path.join(archive_rootpath, 'simulation.sedml')
+    output_dir = os.getcwd()
 
 
 

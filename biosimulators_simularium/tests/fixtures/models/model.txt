@@ -107,9 +107,9 @@ endif
 compartment_mol NUMBER_MINE MinE cell
 
 
-output_files FILEROOTout.txt
-cmd E executiontime FILEROOTout.txt
-cmd E listmols FILEROOTout.txt
+output_files modelout.txt
+cmd E executiontime modelout.txt
+cmd E listmols modelout.txt
 
 end_file
 
