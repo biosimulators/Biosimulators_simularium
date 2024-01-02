@@ -108,7 +108,7 @@ compartment_mol NUMBER_MINE MinE cell
 
 
 output_files modelout.txt
-cmd E executiontime modelout.txt
+cmd i 0 TIME_STOP 2 executiontime modelout.txt
 cmd E listmols modelout.txt
 
 end_file

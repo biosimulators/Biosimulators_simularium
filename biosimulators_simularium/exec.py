@@ -70,7 +70,7 @@ def generate_simularium_file(
 
         PLEASE NOTE: the simularium_filename is NOT path, but rather the name of the file itself, without .simularium.
 
-        PLEASE NOTE: This funciton assumes that the model file is passed in with the working dir if model_fp is None.
+        PLEASE NOTE: This function assumes that the model file is passed in with the working dir if model_fp is None.
 
         # TODO: Add the simularium filepath to this dir upon write, effectively adding the simularium file
             to the omex.
