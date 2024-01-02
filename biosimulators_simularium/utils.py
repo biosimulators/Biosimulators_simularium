@@ -3,7 +3,8 @@
 
 import re
 import os
-from typing import List
+from typing import List, Dict
+from smoldyn import Simulation
 
 
 def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
@@ -72,4 +73,16 @@ def get_model_fp(working_dir: str) -> str:
 
 def get_modelout_fp(working_dir: str) -> str:
     return get_fp(working_dir, 'out')
+
+
+def generate_agent_parameters(sim: Simulation) -> Dict[str, Dict]:
+    species_names = sorted(list([sim.getSpeciesName(n) for n in range(sim.count()['species'])]))
+    if 'empty' in species_names:
+        species_names.remove('empty')
+
+    agent_params = {
+        spec_name: {}
+        for spec_name in species_names
+    }
+    return agent_params
 
