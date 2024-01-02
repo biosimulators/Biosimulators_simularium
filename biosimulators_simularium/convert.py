@@ -115,9 +115,9 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
 
             # extract data from the individual molecule array
             for mol in mol_outputs:
-                mol_species_id = int(mol[1])
+                mol_species_id_index = int(mol[1])
                 mol_name = str(uuid4()).replace('-', '_')
-                mol_species_name = species_names[mol_species_id]
+                mol_species_name = species_names[mol_species_id_index]
                 mol_params = agent_params[mol_species_name]
                 mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
                 display_data[mol_name] = DisplayData(
