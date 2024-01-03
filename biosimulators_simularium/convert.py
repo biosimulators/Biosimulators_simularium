@@ -114,7 +114,7 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
             if 'empty' in species_names:
                 species_names.remove('empty')
 
-            # extract data from the individual molecule array
+
             for agent in species_names:
                 mol_params = agent_params[agent]
                 agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
@@ -123,17 +123,19 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
                     display_type=DISPLAY_TYPE.SPHERE,
                     radius=agent_radius
                 )
-            '''for mol in mol_outputs:
-                mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
-                mol_name = str(uuid4()).replace('-', '_')
-                mol_species_name = species_names[mol_species_id_index]
-                mol_params = agent_params[mol_species_name]
-                mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
-                display_data[mol_name] = DisplayData(
-                    name=mol_species_name,
-                    display_type=DISPLAY_TYPE.SPHERE,
-                    radius=mol_radius
-                )'''
+
+            # extract data from the individual molecule array
+            # for mol in mol_outputs:
+            #     mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
+            #     mol_name = str(uuid4()).replace('-', '_')
+            #     mol_species_name = species_names[mol_species_id_index]
+            #     mol_params = agent_params[mol_species_name]
+            #     mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+            #     display_data[mol_name] = DisplayData(
+            #         name=mol_species_name,
+            #         display_type=DISPLAY_TYPE.SPHERE,
+            #         radius=mol_radius
+            #     )
             config['display_data'] = display_data
     else:
         raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')

@@ -43,14 +43,12 @@ def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
 
 
 def validated_model(model_fp: str) -> Simulation:
-    '''try:
-        validation = validated_model(model_fp)
-        print(validation)
-        return validation[2][0]
-    except:
-        return Simulation.fromFile(model_fp)
-        # raise ValueError(f"The filepath: {model_fp} is not a valid Smoldyn model file.")'''
-    return Simulation.fromFile(model_fp)
+    validation = validated_model(model_fp)
+    simulation = validation[2][0]
+    if isinstance(simulation, Simulation):
+        return simulation
+    else:
+        raise ValueError(f'{model_fp} is not valid.')
 
 
 def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, List[float]]:

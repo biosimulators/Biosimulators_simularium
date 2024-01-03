@@ -20,16 +20,17 @@ def test_convert_crowding():
 
     model_fp = os.path.join(working_dir, 'model.txt')
 
-    # define agent parameters (for now, we randomly select masses based on MinE primitive mass)
-    minE_molecular_mass = 12100
+    # define agent parameters (for now, we randomly select masses based on Red's mass.)
+    # TODO: Live-fetch this data
+    red_mass = 12100
     agent_params = {
         'red': {
             'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
+            'molecular_mass': red_mass,
         },
         'green': {
             'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
+            'molecular_mass': randomize_mass(red_mass),
         }
     }
 
@@ -44,6 +45,3 @@ def test_convert_crowding():
         print(f'{simularium_fn} has been successfully generated.')
     except:
         AssertionError('A simularium file could not be generated.')
-
-
-test_convert_crowding()
