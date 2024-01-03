@@ -22,7 +22,7 @@ time_start 0
 time_stop 1
 time_step 0.005
 
-define TIME_STOP 1
+define TIME_STOP 100
 
 species red green
 
@@ -63,8 +63,8 @@ surface_mol 5 green(up) ball sphere all
 
 #text_display time red(up) green(up)
 output_files modelout.txt
-cmd i 0 TIME_STOP 1 executiontime modelout.txt
-cmd E listmols modelout.txt
+cmd i 0 TIME_STOP 2 executiontime modelout.txt
+cmd i 0 TIME_STOP 2 listmols modelout.txt
 
 
 end_file
