@@ -43,8 +43,7 @@ def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
 
 
 def validated_model(model_fp: str) -> Simulation:
-    validation = validated_model(model_fp)
-    simulation = validation[2][0]
+    simulation = validate_model(model_fp)[2][0]
     if isinstance(simulation, Simulation):
         return simulation
     else:

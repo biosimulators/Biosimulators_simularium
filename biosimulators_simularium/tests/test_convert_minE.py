@@ -52,3 +52,6 @@ def test_convert_minE():
         print(f'{simularium_fn} has been successfully generated.')
     except:
         AssertionError('A simularium file could not be generated.')
+
+
+test_convert_minE()
