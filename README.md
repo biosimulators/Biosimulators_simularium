@@ -20,7 +20,7 @@ We recommend [installing and using Conda](https://conda.io/projects/conda/en/lat
    2. `conda activate biosimularium`
    3. `pip install biosimulators-simularium`
 
-   To verify successfull platform and installation...
+   To verify successful platform installation...
    
    1. `python3`
    2. `import biosimulators_simularium as biosimularium`
@@ -58,32 +58,50 @@ on a valid COMBINE/OMEX archive.
 ### Getting-Started Example:
 
 ```python
-import os
-from biosimulators_simularium.archives.data_model import SmoldynCombineArchive
-from biosimulators_simularium.old_api.converters.data_model import SmoldynDataConverter
+"""Generating a simularium file for the MinE Smoldyn model."""
 
-# define the combine archive rootpath
-crowding_archive_path = os.path.join('biosimulators_simularium', 'tests', 'fixtures', 'archives', 'crowding4')
+import os 
+from biosimulators_simularium import generate_simularium_file
 
-# construct an archive instance based on the rootpath
-archive = SmoldynCombineArchive(
-    rootpath=crowding_archive_path,
-    simularium_filename='crowding4'
+# define the working dir: here we use a dir from the tests library as an example.
+working_dir = 'biosimulators_simularium/tests/fixtures/crowding'
+
+# define the simularium filepath (using the working dir as root in this case)
+simularium_fn = os.path.join(working_dir, 'simplified-api-output')
+
+# define the path to the smoldyn model file which in this case is assumed to be in the working dir
+model_fp = os.path.join(working_dir, 'model.txt')
+
+# define agent parameters (for this example, we randomly select masses)
+red_molecular_mass = 11004
+green_molecular_mass = 12424
+
+# create a parameter mapping that maps simulation species type names to respective density and molecular_mass
+agent_params = {
+    'red': {
+        'density': 1.0,
+        'molecular_mass': red_molecular_mass,
+    },
+    'green': {
+        'density': 1.0,
+        'molecular_mass': green_molecular_mass,
+    }
+}
+
+# generate a simularium file from the given parameters
+generate_simularium_file(
+    working_dir=working_dir,
+    simularium_filename=simularium_fn,
+    agent_params=agent_params,
+    model_fp=model_fp
 )
 
-# construct a data converter
-converter = SmoldynDataConverter(archive)
-
-# define the agents from the simulation that you are going to visualize. 
-# The shape of the data is expected to be as follows:
-# (agent name, agent radius, agent hex color)
-agents = [
-    ('red(up)', 0.2, '#eb1414'),
-    ('green(up)', 0.5, '#5dcf30'),
-]
-
-# pass the agents to the converter method
-converter.generate_simularium_file(agents=agents, io_format='JSON', box_size=20.0)
+# test the existence of a simularium file
+try:
+    assert os.path.exists(simularium_fn)
+    print(f'{simularium_fn} has been successfully generated.')
+except:
+    AssertionError('A simularium file could not be generated.')
 ```
 
 You may then navigate to https://simularium.allencell.org/viewer and drag/drop the newly generated simularium
