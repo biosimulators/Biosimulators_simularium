@@ -3,6 +3,7 @@
 
 import os
 from numpy.random import randint
+from biosimulators_simularium.simulation_data import get_species_names_from_model_file
 from biosimulators_simularium.exec import generate_simularium_file
 from biosimulators_simularium.config import Config
 

@@ -28,6 +28,15 @@ def generate_molecule_coordinates(model_fp: str, duration: int) -> np.ndarray:
     return np.array(mol_coords)
 
 
+def get_species_names_from_model_file(model_fp: str) -> List[str]:
+    sim = Simulation.fromFile(model_fp)
+    species_names = [sim.getSpeciesName(n) for n in range(sim.count()['species'])]
+    if 'empty' in species_names:
+        species_names.remove('empty')
+    return species_names
+
+
+
 def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
     """Return a 1d list of scalar `axis` values from the given `agent_coordinates`.
 
