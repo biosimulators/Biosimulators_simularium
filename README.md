@@ -104,6 +104,38 @@ except:
     AssertionError('A simularium file could not be generated.')
 ```
 
+Consider also this MinE simulation where we use the params function to extract parameters of agents from the Smoldyn model file:
+
+```python
+import os 
+from biosimulators_simularium.simulation_data import generate_agent_params_for_minE
+from biosimulators_simularium.exec import generate_simularium_file
+# define the working dir
+working_dir = 'biosimulators_simularium/tests/fixtures/MinE'
+
+# define the simularium filepath (using the working dir as root in this case)
+simularium_fn = os.path.join(working_dir, 'simplified-api-output')
+
+model_fp = os.path.join(working_dir, 'model.txt')
+
+base_mass = 12100
+density = 1.0
+agent_params = generate_agent_params_for_minE(model_fp, base_mass, density)
+
+generate_simularium_file(
+    working_dir=working_dir,
+    simularium_filename=simularium_fn,
+    agent_params=agent_params,
+    model_fp=model_fp
+)
+
+try:
+    assert os.path.exists(simularium_fn)
+    print(f'{simularium_fn} has been successfully generated.')
+except:
+    AssertionError('A simularium file could not be generated.')
+```
+
 You may then navigate to https://simularium.allencell.org/viewer and drag/drop the newly generated simularium
 file into the GUI window.
 

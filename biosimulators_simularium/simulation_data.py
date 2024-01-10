@@ -36,6 +36,24 @@ def get_species_names_from_model_file(model_fp: str) -> List[str]:
     return species_names
 
 
+def generate_agent_params_for_minE(model_fp, base_molecular_mass: int, density: float) -> Dict:
+    params = {}
+    names = get_species_names_from_model_file(model_fp)
+    for name in names:
+        if 'MinE' and not 'MinD' in name:
+            mass = base_molecular_mass
+        else:
+            mass = randomize_mass(base_molecular_mass)
+        params[name] = {
+            'density': density,
+            'molecular_mass': mass
+        }
+    return params
+
+
+def randomize_mass(origin: float) -> int:
+    return np.random.randint(int(origin))
+
 
 def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
     """Return a 1d list of scalar `axis` values from the given `agent_coordinates`.

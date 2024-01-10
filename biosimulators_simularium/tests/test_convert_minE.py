@@ -3,13 +3,9 @@
 
 import os
 from numpy.random import randint
-from biosimulators_simularium.simulation_data import get_species_names_from_model_file
+from biosimulators_simularium.simulation_data import generate_agent_params_for_minE
 from biosimulators_simularium.exec import generate_simularium_file
 from biosimulators_simularium.config import Config
-
-
-def randomize_mass(origin: float) -> int:
-    return randint(int(origin))
 
 
 def test_convert_minE():
@@ -21,26 +17,7 @@ def test_convert_minE():
 
     model_fp = os.path.join(working_dir, 'model.txt')
 
-    # define agent parameters (for now, we randomly select masses based on MinE primitive mass)
-    minE_molecular_mass = 12100
-    agent_params = {
-        'MinD_ATP': {
-            'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
-        },
-        'MinD_ADP': {
-            'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
-        },
-        'MinE': {
-            'density': 1.0,
-            'molecular_mass': minE_molecular_mass,
-        },
-        'MinDMinE': {
-            'density': 1.0,
-            'molecular_mass': randomize_mass(minE_molecular_mass),
-        },
-    }
+    agent_params = generate_agent_params_for_minE(model_fp, 12100, 1.0)
 
     generate_simularium_file(
         working_dir=working_dir,
@@ -55,6 +32,4 @@ def test_convert_minE():
         AssertionError('A simularium file could not be generated.')
 
 
-# test_convert_minE()
-names = get_species_names_from_model_file('biosimulators_simularium/tests/fixtures/MinE/model.txt')
-print(names)
+test_convert_minE()
