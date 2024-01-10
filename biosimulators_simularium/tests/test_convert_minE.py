@@ -55,4 +55,6 @@ def test_convert_minE():
         AssertionError('A simularium file could not be generated.')
 
 
-test_convert_minE()
+# test_convert_minE()
+names = get_species_names_from_model_file('biosimulators_simularium/tests/fixtures/MinE/model.txt')
+print(names)
