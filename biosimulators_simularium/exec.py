@@ -71,6 +71,10 @@ def exec_combine_archive_and_simularium(
         simulations: A. The output of a SED-ML simulation which returns 2d data (not molecule location based),
         and B. The output of a Smoldyn simulation run from a given Smoldyn model filepath.
 
+        Keyword Args:
+            agent_params: dictionary of agent parameters for simulation configuration. Possibly the output of
+                `biosimulators_simularium.simulation_data.get_agent_params_from_model_file()`.
+
         PLEASE NOTE: the simularium_filename is NOT path, but rather the name of the file itself, without .simularium.
 
         PLEASE NOTE: This function assumes that the model file is passed in with the working dir if model_fp is None.
@@ -84,7 +88,12 @@ def exec_combine_archive_and_simularium(
 
     # add the output simularium filepath to the Biosimulators output bundle
     simularium_fp = os.path.join(output_dir, simularium_filename)
-    generate_simularium_file(working_dir, simularium_fp, model_fp)
+    generate_simularium_file(
+        working_dir=working_dir,
+        simularium_filename=simularium_fp,
+        model_fp=model_fp,
+        agent_params=config_params['agent_params']
+    )
     if not os.path.exists(simularium_fp):
         simularium_fp = None
     return results, log, simularium_fp
