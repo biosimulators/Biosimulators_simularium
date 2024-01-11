@@ -108,6 +108,8 @@ def exec_combine_archive_and_simularium(
     # TODO: Remove the commented-out content below if bundling works
 
     sedml_config = Config(**config_params.get('config', {}))
+
+    # TODO: Make sed_doc_path optional and extract from working_dir
     results, log, simularium_fp = exec_sed_doc(
         sed_doc_path,
         working_dir=working_dir,
@@ -117,8 +119,7 @@ def exec_combine_archive_and_simularium(
     )
 
     # add the output simularium filepath to the Biosimulators output bundle
-    # TODO: Refactor much of this logic into a try/except block
-
+    # TODO: Refactor much of this logic into an exception clause
     # simularium_fp = os.path.join(output_dir, simularium_filename)
     simularium_fp = os.path.join(working_dir, simularium_filename)
     generate_simularium_file(
