@@ -142,6 +142,7 @@ def exec_combine_archive_and_simularium(
         writer.write_manifest(filename=os.path.join(working_dir, 'manifest.xml'), contents=archive_content)
         # writer.run(archive=archive, in_dir=output_dir, out_file=save_path)
         writer.run(archive=archive, in_dir=working_dir, out_file=save_path)
+        print(f'File saved at: {save_path}')
     else:
         raise ValueError(
             f'There is no simularium file found at the path for working_dir/simularium_filename that you have defined as {simularium_fp}.'
