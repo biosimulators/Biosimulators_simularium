@@ -10,7 +10,7 @@ def get_archive_files(archive_rootpath: str) -> List[str]:
     return [os.path.join(archive_rootpath, f) for f in os.listdir(archive_rootpath)]
 
 
-def write_archive(archive_rootpath: str, archive_filename: str) -> None:
+def zip_archive(archive_rootpath: str, archive_filename: str) -> None:
     """Pack/Bundle a list of files derived from `rootpath` into a zip archive saved at `archive_filepath`.
     """
     archive_files = get_archive_files(archive_rootpath)
@@ -19,7 +19,7 @@ def write_archive(archive_rootpath: str, archive_filename: str) -> None:
             zip_file.write(file, arcname=archive_rootpath)
 
 
-def read_archive(archive_filepath: str, out_dir: str) -> List[str]:
+def unzip_and_read_archive(archive_filepath: str, out_dir: str) -> List[str]:
     """ Read the archive FILE found at `archive_filepath` and unpack into `out_dir`.
 
     Args:
