@@ -110,7 +110,7 @@ def exec_combine_archive_and_simularium(
     sedml_config = Config(**config_params.get('config', {}))
 
     # TODO: Make sed_doc_path optional and extract from working_dir
-    results, log = exec_sed_doc(
+    _, _ = exec_sed_doc(
         sed_doc_path,
         working_dir=working_dir,
         # base_out_path=output_dir,
