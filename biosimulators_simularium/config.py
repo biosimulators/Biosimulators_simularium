@@ -84,7 +84,7 @@ class Config(object):
                  COLLECT_COMBINE_ARCHIVE_RESULTS=False,
                  COLLECT_SED_DOCUMENT_RESULTS=False,
                  SAVE_PLOT_DATA=True,
-                 REPORT_FORMATS=[ReportFormat.h5],
+                 REPORT_FORMATS=[ReportFormat.csv],
                  VIZ_FORMATS=[VizFormat.pdf],
                  H5_REPORTS_PATH=DEFAULT_H5_REPORTS_PATH,
                  REPORTS_PATH=DEFAULT_REPORTS_PATH,

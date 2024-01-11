@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class ReportFormat(Enum):
+    # TODO: Add and implement vtk and vtp from the converter notebook into this class.
     """ Format of a report """
     csv = 'csv'
     h5 = 'h5'

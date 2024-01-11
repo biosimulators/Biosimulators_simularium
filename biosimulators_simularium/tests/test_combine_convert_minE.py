@@ -11,12 +11,13 @@ def test_exec():
     base = getcwd()
     output_fp = pj(base, 'OUTPUT')
     output_omex_fp = pj(base, 'OUTPUT.omex')
+
     exec_combine_archive_and_simularium(
         working_dir=working_dir,
         sed_doc_path=sed_fp,
         output_dir=output_fp,
         simularium_filename=simularium_fn,
-        save_path=output_omex_fp
+        save_path=output_omex_fp,
     )
 
 
