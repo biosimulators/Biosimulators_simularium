@@ -129,7 +129,7 @@ def exec_combine_archive_and_simularium(
         agent_params=config_params['agent_params']
     )
 
-    if os.path.exists(simularium_fp):
+    if os.path.exists(simularium_fp + '.simularium'):
         # archive_files = get_archive_files(output_dir)
         archive_files = get_archive_files(working_dir)
         archive_content = []
