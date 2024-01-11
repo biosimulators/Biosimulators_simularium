@@ -9,7 +9,7 @@ def test_exec():
     working_dir = 'biosimulators_simularium/tests/fixtures/archives/MinE'
     model_fp = pj(working_dir, 'model.txt')
     sed_fp = pj(working_dir, 'simulation.sedml')
-    simularium_fn = 'simulation.simularium'
+    simularium_fn = 'simulation'
     base = getcwd()
     output_fp = pj(base, 'OUTPUT')
     output_omex_fp = pj(base, 'OUTPUT.omex')
