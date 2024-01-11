@@ -59,3 +59,5 @@ def write_simularium_file(
         else:
             writer = BinaryWriter()
         return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
+
+
