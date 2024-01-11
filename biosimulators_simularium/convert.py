@@ -13,7 +13,11 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
 from simulariumio.filters.translate_filter import TranslateFilter
-from biosimulators_simularium.simulation_data import run_model_file_simulation, calculate_agent_radius
+from biosimulators_simularium.simulation_data import (
+    run_model_file_simulation,
+    calculate_agent_radius,
+    get_species_names_from_model_file
+)
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
@@ -103,17 +107,14 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
         write_smoldyn_simulation_configuration(sim_config, model_fp)
 
     if model_fp is not None:
-        sim, mol_outputs = run_model_file_simulation(model_fp)  # TODO: Use the outputs to populate the DisplayData dict
-
-        # TODO: Automate this based on the species names list and remove random mass
+        mol_outputs = run_model_file_simulation(model_fp)
 
         if not config.get('display_data'):
             display_data = {}
+            species_names = get_species_names_from_model_file(model_fp)
 
-            species_names = sorted(list([sim.getSpeciesName(n) for n in range(sim.count()['species'])]))
             if 'empty' in species_names:
                 species_names.remove('empty')
-
 
             for agent in species_names:
                 mol_params = agent_params[agent]

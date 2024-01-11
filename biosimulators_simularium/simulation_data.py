@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Optional
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
@@ -36,7 +36,11 @@ def get_species_names_from_model_file(model_fp: str) -> List[str]:
     return species_names
 
 
-def generate_agent_params_for_minE(model_fp, base_molecular_mass: int, density: float) -> Dict:
+def generate_agent_params_for_minE(
+        model_fp: str,
+        base_molecular_mass: int,
+        density: float
+) -> Dict:
     params = {}
     names = get_species_names_from_model_file(model_fp)
     for name in names:
@@ -44,6 +48,49 @@ def generate_agent_params_for_minE(model_fp, base_molecular_mass: int, density: 
             mass = base_molecular_mass
         else:
             mass = randomize_mass(base_molecular_mass)
+        params[name] = {
+            'density': density,
+            'molecular_mass': mass
+        }
+    return params
+
+
+def generate_agent_params_from_model_file(
+        model_fp: str,
+        global_density: Optional[float] = None,
+        basis_m: Optional[int] = None,
+        **config
+) -> Dict:
+    """Generate a dictionary of agent parameters for the purpose of simulation input configuration which define the
+        molecular mass and density inherent to a given agent based on a Smoldyn model file.
+
+        Args:
+            model_fp:`str`: path to a Smoldyn model file.
+            global_density:`Optional[float]`: Density by which all agent densities are set. NOTE: this value is
+              required if not passing explicit agent configs (**config). Defaults to `None`.
+            basis_m:`Optional[int]`: Upper bound value of the molecular mass by which to set the basis for the
+              randomization of agent molecular masses in the `randomize_mass` function which takes in a basis
+              integer and returns a random integer between 0 and that number. NOTE: this value is required
+              if not passing explicit agent configs (**config). Defaults to `None`.
+        Keyword Args:
+            <AGENT_NAME>:`dict`: an agent name (which should match that which is returned by
+                smoldyn.Simulation.getSpeciesName()) as the definition (for example: `MinE=`) and a dictionary with
+                `'molecular_mass'` and `'density'` as the keys.
+
+    """
+    params = {}
+    names = get_species_names_from_model_file(model_fp)
+    for name in names:
+        agent_config = config.get(f'{name}')
+        if agent_config:
+            mass = agent_config['molecular_mass']
+            density = agent_config['density']
+        else:
+            try:
+                mass = randomize_mass(basis_m)
+                density = global_density
+            except:
+                raise ValueError('You must pass either a config for a given agent or a base mol mass and global density.')
         params[name] = {
             'density': density,
             'molecular_mass': mass
@@ -77,9 +124,9 @@ def validated_model(model_fp: str) -> Simulation:
         raise ValueError(f'{model_fp} is not valid.')
 
 
-def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, List[float]]:
-    """Run a Smoldyn simulation from a given `model_fp` and return a Tuple consisting of
-        (The simulation generated from the passed model fp, Molecule Outputs).
+def run_model_file_simulation(model_fp: str) -> List[float]:
+    """Run a Smoldyn simulation from a given `model_fp` and return a 2d List of
+        molecule outputs with a shape of (n, 6) where n
 
         Please Note: This function will run the model file IN ADDITION to the `listmols` command.
             All commands (if present) will be run in the Smoldyn model file.
@@ -89,8 +136,8 @@ def run_model_file_simulation(model_fp: str) -> Tuple[Simulation, List[float]]:
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
     simulation.runSim()
-    molecules = simulation.getOutputData('molecules')
-    return simulation, molecules
+    molecule_output_data = simulation.getOutputData('molecules')
+    return molecule_output_data
 
 
 def calculate_agent_radius(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:
