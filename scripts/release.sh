@@ -27,8 +27,8 @@ fi
 
 # Check that we are on main
 branch="$(git rev-parse --abbrev-ref HEAD)"
-if [ "$branch" != "main" ]; then
-    echo "You are on $branch but should be on main for releases."
+if [ "$branch" != "dev" ]; then
+    echo "You are on $branch but should be on dev for releases."
     echo "Aborting."
     exit 1
 fi
