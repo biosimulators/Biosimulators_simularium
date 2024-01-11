@@ -1,7 +1,38 @@
 import os
-from typing import Union
+import zipfile
+from typing import Union, List
 from simulariumio import TrajectoryData, BinaryWriter, JsonWriter
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
+
+
+def get_archive_files(archive_rootpath: str) -> List[str]:
+    """Return a list of absolute paths for all files whose parent is `archive_rootpath`."""
+    return [os.path.join(archive_rootpath, f) for f in os.listdir(archive_rootpath)]
+
+
+def write_archive(archive_rootpath: str, archive_filename: str) -> None:
+    """Pack/Bundle a list of files derived from `rootpath` into a zip archive saved at `archive_filepath`.
+    """
+    archive_files = get_archive_files(archive_rootpath)
+    with zipfile.ZipFile(archive_filename, mode='w', compression=zipfile.ZIP_LZMA) as zip_file:
+        for file in archive_files:
+            zip_file.write(file, arcname=archive_rootpath)
+
+
+def read_archive(archive_filepath: str, out_dir: str) -> List[str]:
+    """ Read the archive FILE found at `archive_filepath` and unpack into `out_dir`.
+
+    Args:
+        archive_filepath (:obj:`str`): path to zip file you want to unpack.
+        out_dir (:obj:`str`, optional): path to unpack files.
+
+    Returns:
+        `List[str]`: a list of the absolute paths for each file in the archive.
+    """
+    with zipfile.ZipFile(archive_filepath, mode='r') as zip_file:
+        zip_file.extractall(out_dir)
+        archive_files = get_archive_files(out_dir)
+    return archive_files
 
 
 def write_simularium_file(

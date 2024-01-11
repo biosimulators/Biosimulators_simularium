@@ -22,14 +22,14 @@ define L_PARAM2		1.5	# half of cell length minus radius
 define NUMBER_MIND	4000	# number of MinD in cell
 define NUMBER_MINE	1400	# number of MinE in cell
 
-define TIME_STOP	10	 # stopping time
+define TIME_STOP	10	# stopping time
 
 #define KICK_START	1	# start with MinD_ATP at an end
 
 random_seed 1
 
-#graphics opengl
-#graphic_iter 100
+graphics opengl
+graphic_iter 100
 
 #tiff_name movie/MinMovie
 #tiff_iter 200
@@ -106,8 +106,10 @@ else
 endif
 compartment_mol NUMBER_MINE MinE cell
 
-output_files modelout.txt
-cmd i 0 TIME_STOP 2 executiontime modelout.txt
-cmd i 0 TIME_STOP 2 listmols modelout.txt
+
+output_files FILEROOTout.txt
+cmd i 0 TIME_STOP 1 executiontime FILEROOTout.txt
+cmd i 0 TIME_STOP 1 listmols FILEROOTout.txt
 
 end_file
+
