@@ -7,7 +7,7 @@ from biosimulators_simularium.utils import get_model_fp, get_modelout_fp
 from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 from biosimulators_simularium.io import get_archive_files
-from biosimulators_utils.combine.io import CombineArchiveWriter
+from biosimulators_utils.combine.io import CombineArchiveWriter, CombineArchiveReader
 from biosimulators_utils.combine.data_model import CombineArchive, CombineArchiveContent
 
 
@@ -120,6 +120,7 @@ def exec_combine_archive_and_simularium(
 
     # add the output simularium filepath to the Biosimulators output bundle
     # TODO: Refactor much of this logic into an exception clause
+
     # simularium_fp = os.path.join(output_dir, simularium_filename)
     simularium_fp = os.path.join(working_dir, simularium_filename)
     generate_simularium_file(
@@ -131,10 +132,22 @@ def exec_combine_archive_and_simularium(
 
     if os.path.exists(simularium_fp + '.simularium'):
         # archive_files = get_archive_files(output_dir)
-        archive_files = get_archive_files(working_dir)
+        # archive_files = get_archive_files(working_dir)
+        archive_files = os.listdir(working_dir)
         archive_content = []
         for file in archive_files:
             content = CombineArchiveContent(location=file)
+            if 'sedml' in file:
+                content.master = True
+                content.format = "http://identifiers.org/combine.specifications/sed-ml"
+            elif 'simularium' in file or 'manifest' in file:
+                content.format = "application/octet-stream"
+            elif 'model' and not 'out' in file:
+                content.format = "http://purl.org/NET/mediatypes/text/smoldyn+plain"
+            elif 'out' in file:
+                content.format = "text/plain"
+            elif 'h5' in file:
+                content.format = "application/x-hdf5"
             archive_content.append(content)
         archive = CombineArchive(archive_content)
         writer = CombineArchiveWriter()

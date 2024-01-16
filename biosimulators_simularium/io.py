@@ -14,7 +14,7 @@ def zip_archive(archive_rootpath: str, archive_filename: str) -> None:
     """Pack/Bundle a list of files derived from `rootpath` into a zip archive saved at `archive_filepath`.
     """
     archive_files = get_archive_files(archive_rootpath)
-    with zipfile.ZipFile(archive_filename, mode='w', compression=zipfile.ZIP_LZMA) as zip_file:
+    with zipfile.ZipFile(archive_filename, mode='w') as zip_file:
         for file in archive_files:
             zip_file.write(file, arcname=archive_rootpath)
 

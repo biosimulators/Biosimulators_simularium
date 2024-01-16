@@ -122,7 +122,8 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
                 display_data[agent] = DisplayData(
                     name=agent,
                     display_type=DISPLAY_TYPE.SPHERE,
-                    radius=agent_radius
+                    radius=0.01,
+                    url=f'{agent}.obj'
                 )
 
             # extract data from the individual molecule array
