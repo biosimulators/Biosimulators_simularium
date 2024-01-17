@@ -10,6 +10,13 @@ def get_archive_files(archive_rootpath: str) -> List[str]:
     return [os.path.join(archive_rootpath, f) for f in os.listdir(archive_rootpath)]
 
 
+def get_smoldyn_model_filepath(archive_rootpath: str) -> str:
+    files = get_archive_files(archive_rootpath)
+    for f in files:
+        if 'model.txt' in f:
+            return f
+
+
 def zip_archive(archive_rootpath: str, archive_filename: str) -> None:
     """Pack/Bundle a list of files derived from `rootpath` into a zip archive saved at `archive_filepath`.
     """
