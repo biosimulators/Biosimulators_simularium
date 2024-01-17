@@ -28,8 +28,8 @@ define TIME_STOP	10	# stopping time
 
 random_seed 1
 
-graphics opengl
-graphic_iter 100
+#graphics opengl
+#graphic_iter 100
 
 #tiff_name movie/MinMovie
 #tiff_iter 200
@@ -107,9 +107,11 @@ endif
 compartment_mol NUMBER_MINE MinE cell
 
 
-output_files modelout.txt
+output_files modelout.txt temporal-model-out.txt
 cmd i 0 TIME_STOP 2 executiontime modelout.txt
 cmd i 0 TIME_STOP 2 listmols modelout.txt
+cmd i 0 TIME_STOP 2 listmols2 temporal-model-out.txt
+
 
 end_file
 

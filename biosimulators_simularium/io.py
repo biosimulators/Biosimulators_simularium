@@ -10,11 +10,10 @@ def get_archive_files(archive_rootpath: str) -> List[str]:
     return [os.path.join(archive_rootpath, f) for f in os.listdir(archive_rootpath)]
 
 
-def get_smoldyn_model_filepath(archive_rootpath: str) -> str:
+def get_smoldyn_model_filepath(archive_rootpath: str) -> Union[str, None]:
     files = get_archive_files(archive_rootpath)
     for f in files:
-        if 'model.txt' in f:
-            return f
+        return f if 'model.txt' in f else None
 
 
 def zip_archive(archive_rootpath: str, archive_filename: str) -> None:

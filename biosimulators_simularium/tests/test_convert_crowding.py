@@ -38,7 +38,7 @@ def test_convert_crowding():
         working_dir=working_dir,
         simularium_filename=simularium_fn,
         agent_params=agent_params,
-        model_fp=model_fp
+        model_fp=model_fp,
     )
     try:
         assert os.path.exists(simularium_fn)

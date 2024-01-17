@@ -15,7 +15,8 @@ def generate_simularium_file(
         working_dir: str,
         simularium_filename: str,
         agent_params: Dict[str, Dict[str, float]],
-        model_fp: str = None
+        model_fp: str = None,
+        use_json: bool = False,
 ) -> None:
     """If `model_fp` is `None` (by default), the working_dir passed into this function MUST be the parent(or contain)
         the Smoldyn model file to run.
