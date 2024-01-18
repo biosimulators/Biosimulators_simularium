@@ -16,7 +16,8 @@ from simulariumio.filters.translate_filter import TranslateFilter
 from biosimulators_simularium.simulation_data import (
     run_model_file_simulation,
     calculate_agent_radius,
-    get_species_names_from_model_file
+    get_species_names_from_model_file,
+    generate_agent_params_from_model_file
 )
 from biosimulators_simularium.utils import (
     read_smoldyn_simulation_configuration,
@@ -51,17 +52,20 @@ def output_data_object(
     if isinstance(file_data, str):
         file_data = InputFileData(file_data)
 
-    return SmoldynData(
+    data = SmoldynData(
         smoldyn_file=file_data,
         spatial_units=UnitData(spatial_units),
         time_units=UnitData(temporal_units),
-        display_data=display_data,
+        # display_data=display_data,
         meta_data=meta_data,
         center=True
     )
+    if isinstance(display_data, dict):
+        data.display_data = display_data
+    return data
 
 
-def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
+def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
 
@@ -142,6 +146,52 @@ def generate_output_data_object(agent_params: Dict, **config) -> SmoldynData:
     else:
         raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')
     return output_data_object(**config)
+
+
+def generate_display_data_dict_from_model_file(
+        model_fp: str,
+        mol_major: Optional[bool] = False,
+        config: Optional[Dict] = None
+) -> Dict[str, DisplayData]:
+    """If `mol_major`, then generate the display data based on each molecule in the output which is generally
+        more computationally expensive.
+    """
+    species_names = get_species_names_from_model_file(model_fp)
+    agent_params = generate_agent_params_from_model_file(model_fp)
+    display_data = {}
+    if 'empty' in species_names:
+        species_names.remove('empty')
+
+    # extract data from the individual molecule array
+    if mol_major:
+        mol_outputs = run_model_file_simulation(model_fp)
+        for mol in mol_outputs:
+            mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
+            mol_name = str(uuid4()).replace('-', '_')
+            mol_species_name = species_names[mol_species_id_index]
+            mol_params = agent_params[mol_species_name]
+            mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+            display_data[mol_name] = DisplayData(
+                name=mol_species_name,
+                display_type=DISPLAY_TYPE.SPHERE,
+                radius=mol_radius
+            )
+    else:
+        for agent in species_names:
+            mol_params = agent_params[agent]
+            agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+            display_data[agent] = DisplayData(
+                name=agent,
+                display_type=DISPLAY_TYPE.SPHERE,
+                radius=0.01,
+                url=f'{agent}.obj'
+            )
+    # TODO: possibly remove this
+    if config:
+        config['display_data'] = display_data
+        return config
+    else:
+        return display_data
 
 
 def translate_data_object(
