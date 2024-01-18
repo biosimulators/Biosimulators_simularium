@@ -2,7 +2,7 @@ from typing import Tuple, Dict, List, Optional
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
-from biosimulators_simularium.io import get_smoldyn_model_filepath
+from biosimulators_simularium.utils import get_model_fp
 # from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
 
 
