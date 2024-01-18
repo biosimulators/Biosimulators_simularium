@@ -1,5 +1,4 @@
 #!/bin/bash
-# !/bin/zsh
 
 # TODO: read this from pyproject.toml
 # echo "What python version would you like to use for this environment?: "

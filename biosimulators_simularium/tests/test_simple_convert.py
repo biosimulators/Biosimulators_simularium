@@ -1,7 +1,7 @@
 import os
 from biosimulators_simularium import generate_simularium_file
 from biosimulators_simularium.io import get_model_fp
-from biosimulators_simularium.convert import generate_output_data_object, display_data_dict_agent_major, get_species_names_from_model_file
+from biosimulators_simularium.convert import generate_output_data_object, display_data_dict_agent_major, get_species_names_from_model_file, display_data_dict_from_archive_model
 from biosimulators_simularium.simulation_data import generate_agent_params
 
 
@@ -21,10 +21,12 @@ def test_convert():
 def test_trajectory_object():
     archive_root = 'biosimulators_simularium/tests/fixtures/MinE'
     model = get_model_fp(archive_root)
-    print(model)
     specs = get_species_names_from_model_file(model)
-    params = generate_agent_params(model, 1.0, 10000)
-    print(params)
+    params = generate_agent_params(species_names=specs, global_density=10.0, basis_m=3343)
+    display_dict = display_data_dict_from_archive_model(rootpath=archive_root, agent_params=params, mol_major=False)
+    trajectory = generate_output_data_object(root_fp=archive_root)
+    print(trajectory.meta_data)
+
 
 
 

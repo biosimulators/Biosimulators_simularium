@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM ghcr.io/biosimulators/biosimulators
 
 LABEL \
     org.opencontainers.image.authors="Alexander Patrie <apatrie@uchc.edu>, BioSimulators Team <info@biosimulators.org>" \
@@ -24,8 +24,6 @@ WORKDIR /app
 COPY . /app/
 
 RUN pip install poetry
-
-RUN poetry run pip install pyomexmeta
 
 RUN chmod +x /app/install.sh
 

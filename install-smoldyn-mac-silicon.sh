@@ -1,9 +1,7 @@
 #!/bin/bash
-# !/bin/zsh
+
 
 # The following script serves as a utility for installing this repository with the Smoldyn requirement on a Silicon Mac
-
-set -e
 
 # set installation parameters
 dist_url=https://www.smoldyn.org/smoldyn-2.72-mac.tgz
@@ -23,10 +21,13 @@ tar -xzvf $tarball_name
 rm $tarball_name
 
 # install smoldyn from the source
-cd $dist_dir
-sudo -H ./install.sh
+cd $dist_dir || return
 
-cd ..
-# remove the smoldyn dist
-rm -r $dist_dir
-
+if sudo -H ./install.sh; then
+  cd ..
+  # remove the smoldyn dist
+  rm -r $dist_dir
+  echo "Smoldyn successfully installed. Done."
+else
+  echo "Could not install smoldyn"
+fi

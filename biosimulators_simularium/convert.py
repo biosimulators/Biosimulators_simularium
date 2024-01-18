@@ -18,7 +18,7 @@ from biosimulators_simularium.simulation_data import (
     run_model_file_simulation,
     calculate_agent_radius,
     get_species_names_from_model_file,
-    generate_agent_params_from_model_file
+    generate_agent_params
 )
 from biosimulators_simularium.io import (
     get_model_fp,
@@ -33,7 +33,7 @@ from biosimulators_simularium.io import (
 __all__ = [
     'new_output_data_object',
     'generate_output_data_object',
-    'display_data_dict_from_archive_model_file',
+    'display_data_dict_from_archive_model',
     'translate_data_object'
 ]
 
@@ -135,50 +135,18 @@ def generate_output_data_object(
 
     # set the modelout file as input for simulariumio
     config['file_data'] = InputFileData(modelout_fp)
-    print(f'The config: {config}')
 
     # set the display data dict from the model file inside the archive
-    '''if not config.get('display_data'):
-        print('no display data')
-        display_data_dict = display_data_dict_from_archive_model_file(rootpath=root_fp)
-        config['display_data'] = display_data_dict'''
+    if not config.get('display_data'):
+        display_data_dict = display_data_dict_from_archive_model(rootpath=root_fp, agent_params=agent_params)
+        config['display_data'] = display_data_dict
 
-    print(config)
-    '''# return a configured instance
-    # return new_output_data_object(**config)'''
-
-
-def display_data_dict_mol_major(mol_outputs, species_names, agent_params):
-    display_data = {}
-    for mol in mol_outputs:
-        mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
-        mol_name = str(uuid4()).replace('-', '_')
-        mol_species_name = species_names[mol_species_id_index]
-        mol_params = agent_params[mol_species_name]
-        mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
-        display_data[mol_name] = DisplayData(
-            name=mol_species_name,
-            display_type=DISPLAY_TYPE.SPHERE,
-            radius=mol_radius
-        )
-    return display_data
+    print(f'final traj config: {config}')
+    # return a configured instance
+    return new_output_data_object(**config)
 
 
-def display_data_dict_agent_major(species_names, agent_params):
-    display_data = {}
-    for agent in species_names:
-        mol_params = agent_params[agent]
-        agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
-        display_data[agent] = DisplayData(
-            name=agent,
-            display_type=DISPLAY_TYPE.SPHERE,
-            radius=0.01,
-            url=f'{agent}.obj'
-        )
-    return display_data
-
-
-def display_data_dict_from_archive_model_file(
+def display_data_dict_from_archive_model(
         rootpath: str = None,
         mol_outputs: List[List[float]] = None,
         mol_major: Optional[bool] = False,
@@ -206,11 +174,93 @@ def display_data_dict_from_archive_model_file(
     # TODO: set the m and rho vals more dynamically.
     # generate agent params if necessary from model_fp
     if not agent_params:
-        agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
+        agent_params = generate_agent_params(species_names, global_density=1.0, basis_m=1000)
 
     # return mol-based display data dict if mol_major; agent-based if not
     return display_data_dict_mol_major(mol_outputs, species_names, agent_params) \
         if mol_major else display_data_dict_agent_major(species_names, agent_params)
+
+
+def display_data_dict_mol_major(
+        mol_outputs: List[List[float]],
+        species_names: List[str],
+        agent_params: Dict[str, Dict[str, Union[int, float]]]
+) -> Dict[str, DisplayData]:
+    """Generate a dictionary in which the keys are `uuid4()`-assigned molecule names and the
+        values are configured DisplayData instances based on the given molecule given
+        physical parameters like mol mass and density.
+
+        Args:
+            mol_outputs:`List[List[float]]`: A list of molecule output data: the exact result of
+                the Smoldyn `listmols` command.
+            species_names:`List[str]`: List of species names corresponding to the species of a
+                smoldyn simulation.
+            agent_params:`Dict`: agent params encoded in a dictionary. See
+                `biosimulators_simularium.convert.display_data_dict_agent_major()`.
+    """
+    display_data = {}
+    for mol in mol_outputs:
+        mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
+        mol_name = str(uuid4()).replace('-', '_')
+        mol_species_name = species_names[mol_species_id_index]
+        mol_params = agent_params[mol_species_name]
+        mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+
+        display_data[mol_name] = DisplayData(
+            name=mol_species_name,
+            display_type=DISPLAY_TYPE.SPHERE,
+            radius=mol_radius
+        )
+
+    return display_data
+
+
+def display_data_dict_agent_major(
+        species_names: List[str],
+        agent_params: Dict[str, Dict[str, Union[int, float]]]
+) -> Dict[str, DisplayData]:
+    """Generate a dictionary in which the keys are agent(in this case, species) names, and
+        the values are configured DisplayData instances corresponding to the agent name.
+        This is generally what `simulariumio` expects when instantiating a Trajectory.
+
+        Args:
+            species_names:`List[str]`: List of species names which correspond to the species of
+                a Smoldyn simulation configuration.
+            agent_params:`Dict`: dictionary of agent parameters according to the species names/smoldyn
+                configuration. For example, with a MinE simulation:
+
+                    agent_params = {
+                        'MinD_ATP': {
+                            'density': 1.0,
+                            'molecular_mass': randomize_mass(minE_molecular_mass),
+                        },
+                        'MinD_ADP': {
+                            'density': 1.0,
+                            'molecular_mass': randomize_mass(minE_molecular_mass),
+                        },
+                        'MinE': {
+                            'density': 1.0,
+                            'molecular_mass': minE_molecular_mass,
+                        },
+                        'MinDMinE': {
+                            'density': 1.0,
+                            'molecular_mass': randomize_mass(minE_molecular_mass),
+                        },
+                    }
+    """
+    display_data = {}
+    for agent in species_names:
+        mol_params = agent_params[agent]
+        agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+
+        display_data[agent] = DisplayData(
+            name=agent,
+            display_type=DISPLAY_TYPE.SPHERE,
+            radius=0.01,
+            url=f'{agent}.obj'
+        )
+
+    return display_data
 
 
 def translate_data_object(

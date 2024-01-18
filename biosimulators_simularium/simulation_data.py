@@ -87,22 +87,26 @@ def generate_agent_params(
 
     """
     params = {}
-    if not config or not global_density and basis_m:
+    if not config and not global_density and not basis_m:
         raise ValueError(
             f'You must pass either keyword arguments where the keyword is the agent name and the value is a dict defining molecular_mass and density OR a density AND basis molecular mass.'
         )
-    for name in species_names:
-        agent_config = config.get(f'{name}')
-        if agent_config:
-            mass = agent_config['molecular_mass']
-            density = agent_config['density']
-        else:
-            mass = randomize_mass(basis_m)
-            density = global_density
-        params[name] = {
-            'density': density,
-            'molecular_mass': mass
-        }
+    if not config:
+        for name in species_names:
+            agent_config = config.get(f'{name}')
+            if agent_config:
+                mass = agent_config['molecular_mass']
+                density = agent_config['density']
+            else:
+                mass = randomize_mass(basis_m)
+                density = global_density
+            params[name] = {
+                'density': density,
+                'molecular_mass': mass
+            }
+    else:
+        for k in config.keys():
+            params[k] = config[k]
     return params
 
 
