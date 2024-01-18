@@ -29,4 +29,4 @@ def test_trajectory_object():
 
 
 test_trajectory_object()
-./
+
