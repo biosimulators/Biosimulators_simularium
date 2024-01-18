@@ -1,4 +1,5 @@
 #!/bin/bash
+# !/bin/zsh
 
 # The following script serves as a utility for installing this repository with the Smoldyn requirement on an Intel Mac
 

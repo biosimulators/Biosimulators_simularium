@@ -1,4 +1,5 @@
 #!/bin/bash
+# !/bin/zsh
 
 # This is a helper script for active development
 

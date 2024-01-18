@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/bin/bash
+# !/bin/zsh
 
 # echo "Enter the Python version of the poetry environment you wish to remove: "
 # read -r version

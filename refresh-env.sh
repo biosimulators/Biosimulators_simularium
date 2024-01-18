@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/bin/bash
+# !/bin/zsh
 
 env_name="$1"
 

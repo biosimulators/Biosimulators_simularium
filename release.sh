@@ -1,12 +1,12 @@
+#!/bin/bash
+# !/bin/zsh
+
 # Create and publish a new version by creating and pushing a git tag for
 # the version and publishing the version to PyPI. Also perform some
 # basic checks to avoid mistakes in releases, for example tags not
 # matching PyPI.
 
-
-# set -e
-
-# version="$1"
+set -e
 
 version=$(grep "__version__" setup.py | awk -F\' '{print $2}')
 
