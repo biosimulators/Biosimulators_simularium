@@ -73,6 +73,32 @@ on a valid COMBINE/OMEX archive.
 
 ### Getting-Started Example:
 
+#### Generating a 3d stochastic particle diffusion simulation visualization is as easy as:
+
+1. Defining the filepath to an unpacked directory/archive in which a Smoldyn model resides
+   and defining the name of simularium file. We also want to save the simularium file in JSON format:
+```python
+from biosimulators_simularium import generate_simularium_file
+
+
+archive_root = 'biosimulators_simularium/tests/fixtures/archives/MinE'
+simularium_fn = 'simulation'
+is_json = True
+```
+2. Generating a simularium file from the model file housed in the `archive_root`:
+```python
+generate_simularium_file(
+   working_dir=archive_root,
+   simularium_filename=simularium_fn,
+   use_json=is_json
+)
+
+import os 
+
+assert os.path.exists(os.path.join(archive_root, simularium_fn)))
+```
+
+#### Here is another, slightly more complex example in which agent parameters such as molecular mass and density are defined:
 ```python
 """Generating a simularium file for the MinE Smoldyn model."""
 
