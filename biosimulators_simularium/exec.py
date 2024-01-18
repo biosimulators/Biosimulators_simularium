@@ -11,6 +11,12 @@ from biosimulators_utils.combine.io import CombineArchiveWriter, CombineArchiveR
 from biosimulators_utils.combine.data_model import CombineArchive, CombineArchiveContent
 
 
+__all__ = [
+    'generate_simularium_file',
+    'exec_combine_archive_and_simularium'
+]
+
+
 def generate_simularium_file(
         working_dir: str,
         simularium_filename: str,
@@ -56,6 +62,8 @@ def generate_simularium_file(
             model_fp:`str`: path to the model file containing the simulation details. If not specified, the Smoldyn model
                 file is assumed to be a child of the `working_dir`. Defaults to `None`.
     """
+
+    # TODO: Generate a .vtp/.vtk file instead of the modelout file here
     if not model_fp:
         model_fp = get_model_fp(working_dir)
 

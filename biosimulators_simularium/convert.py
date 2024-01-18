@@ -27,6 +27,14 @@ from biosimulators_simularium.utils import (
 )
 
 
+__all__ = [
+    'output_data_object',
+    'generate_output_data_object',
+    'generate_display_data_dict_from_model_file',
+    'translate_data_object'
+]
+
+
 def output_data_object(
     file_data: Union[InputFileData, str],
     display_data: Optional[Dict[str, DisplayData]] = None,
@@ -122,6 +130,7 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
 
     else:
         raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')
+
     return output_data_object(**config)
 
 
