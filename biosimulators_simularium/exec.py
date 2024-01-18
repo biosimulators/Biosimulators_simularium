@@ -67,18 +67,21 @@ def generate_simularium_file(
                 # TODO: Make box_size less arbitrary and move it.
             **setup_config:`kwargs`: spatial_units(str), temporal_units(str)
     """
-    simularium_filepath: str = os.path.join(working_dir, simularium_filename + '.simularium')
+    # generate a trajectory from the smoldyn file within a given working_dir
     trajectory: SmoldynData = generate_output_data_object(
         root_fp=working_dir,
         agent_params=agent_params,
         spatial_units=setup_config.get('spatial_units', 'mm'),
         temporal_units=setup_config.get('temporal_units', 'ms')
     )
+
     # In most cases you must translate the data such that negative values are accounted for as shown here
     translated_data: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
+    simularium_filepath: str = os.path.join(working_dir, simularium_filename)
 
     # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
-    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
+    print(simularium_filepath)
+    return write_simularium_file(translated_data, simularium_filename=simularium_filepath, json=use_json)
 
 
 def generate_vtp_file(data=None):

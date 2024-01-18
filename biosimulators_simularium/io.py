@@ -83,19 +83,17 @@ def write_simularium_file(
 
         Args:
             data(:obj:`Union[SmoldynData, TrajectoryData]`): data object to save.
-            simularium_filename(:obj:`str`): `Optional`: name by which to save the new simularium file. If None is
-                passed, will default to `self.archive.rootpath/self.archive.simularium_filename`.
+            simularium_filename(:obj:`str`): name by which to save the new simularium file.
             json(:obj:`bool`): exports simularium file in JSON format if true; exports in binary if false. Defaults
                 to `False` for optimization's sake.
             validate(:obj:`bool`): whether to call the wrapped method using `validate_ids=True`. Defaults
                 to `True`.
     """
-    if not os.path.exists(simularium_filename):
-        if json:
-            writer = JsonWriter()
-        else:
-            writer = BinaryWriter()
-        return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
+    if json:
+        writer = JsonWriter()
+    else:
+        writer = BinaryWriter()
+    return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
 
 
 def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
