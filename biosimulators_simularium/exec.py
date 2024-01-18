@@ -22,6 +22,7 @@ __all__ = [
 def generate_simularium_file(
         working_dir: str,
         simularium_filename: str,
+        output_dir: str = None,
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
         box_size: float = 10.0,
@@ -35,6 +36,9 @@ def generate_simularium_file(
             working_dir:`str`: root directory in which to save the simularium file. If no `model_fp` is passed,
                 this working dir path is assumed to contain the Smoldyn model file.
             simularium_filename:`str`: filename by which to serialize the simularium data object(s).
+            output_dir:`optional, str`: path to the root of the directory in which you wish to save
+                the outputs (simularium file, vtp). If `None` is passed, then this value will be set to
+                `working_dir`. Defaults to `None`.
             agent_params:`optional, Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
                 and the value is another dictionary with the keys 'density' and 'molecular_mass'.
 
@@ -77,6 +81,9 @@ def generate_simularium_file(
 
     # In most cases you must translate the data such that negative values are accounted for as shown here
     translated_data: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
+    if output_dir:
+        working_dir = output_dir
+
     simularium_filepath: str = os.path.join(working_dir, simularium_filename)
 
     # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
