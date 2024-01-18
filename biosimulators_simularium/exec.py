@@ -14,7 +14,7 @@ from biosimulators_utils.combine.data_model import CombineArchive, CombineArchiv
 def generate_simularium_file(
         working_dir: str,
         simularium_filename: str,
-        agent_params: Dict[str, Dict[str, float]],
+        agent_params: Dict[str, Dict[str, float]] = None,
         model_fp: str = None,
         use_json: bool = False,
 ) -> None:
@@ -25,7 +25,7 @@ def generate_simularium_file(
             working_dir:`str`: root directory in which to save the simularium file. If no `model_fp` is passed,
                 this working dir path is assumed to contain the Smoldyn model file.
             simularium_filename:`str`: filename by which to serialize the simularium data object(s).
-            agent_params:`Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
+            agent_params:`optional, Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
                 and the value is another dictionary with the keys 'density' and 'molecular_mass'.
 
                     For example, in the MinE model:
