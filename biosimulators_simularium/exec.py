@@ -23,6 +23,7 @@ def generate_simularium_file(
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
         overwrite: bool = False,
+        trajectory=None,
         **setup_config
 ) -> None:
     """Generate a simularium file from a Smoldyn configuration (model) file which resides inside an unzipped
@@ -63,19 +64,26 @@ def generate_simularium_file(
                 write out binary by default. Defaults to `False`.
             overwrite:`bool`: Generate a new output/simularium file regardless of the presence of
                 one already in the archive if `True`. Defaults to `False`.
+            trajectory:`TrajectoryData/SmoldynData`: preconfigured trajectory to translate and render.
+                Defaults to `None`.
             **setup_config:`kwargs`: spatial_units(str), temporal_units(str), box_size(float)
     """
     simularium_filepath = os.path.join(working_dir, simularium_filename + '.simularium')
     if not os.path.exists(simularium_filepath) or os.path.exists(simularium_filepath) and overwrite:
-        if not setup_config:
-            setup_config = {
-                'spatial_units': 'mm',
-                'temporal_units': 'ms',
-                'box_size': 10.0
-            }
+        if not trajectory:
+            if not setup_config:
+                setup_config = {
+                    'spatial_units': 'mm',
+                    'temporal_units': 'ms',
+                    'box_size': 10.0
+                }
+            trajectory = generate_output_data_object(
+                root_fp=working_dir,
+                agent_params=agent_params,
+                **setup_config
+            )
 
-        data = generate_output_data_object(root_fp=working_dir, agent_params=agent_params, **setup_config)
-        translated_data = translate_data_object(data=data, box_size=setup_config['box_size'])
+        translated_data = translate_data_object(data=trajectory, box_size=setup_config['box_size'])
 
         # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
         return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
