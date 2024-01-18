@@ -1,7 +1,11 @@
 import os
 from warnings import warn
 from typing import Tuple, Dict
-from biosimulators_simularium.convert import generate_output_data_object, translate_data_object
+from biosimulators_simularium.convert import (
+    generate_output_data_object,
+    translate_data_object,
+    generate_display_data_dict_from_model_file
+)
 from biosimulators_simularium.io import write_simularium_file
 from biosimulators_simularium.utils import get_model_fp, get_modelout_fp
 from smoldyn.biosimulators.combine import exec_sed_doc
@@ -64,8 +68,8 @@ def generate_simularium_file(
     """
 
     # TODO: Generate a .vtp/.vtk file instead of the modelout file here
-    if not model_fp:
-        model_fp = get_model_fp(working_dir)
+    if not agent_params:
+        agent_params = g
 
     # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
     data = generate_output_data_object(agent_params=agent_params, model=model_fp)

@@ -125,20 +125,20 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
         disable_smoldyn_graphics_in_simulation_configuration(sim_config)
         write_smoldyn_simulation_configuration(sim_config, model_fp)
 
-    if model_fp is not None:
+    if model_fp is not None and not agent_params:
         mol_outputs = run_model_file_simulation(model_fp)
-
+        config = generate_display_data_dict_from_model_file(model_fp=model_fp, config=config)
+        return output_data_object(**config)
     else:
         raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')
-
-    return output_data_object(**config)
 
 
 def generate_display_data_dict_from_model_file(
         rootpath: str = None,
         model_fp: str = None,
         mol_major: Optional[bool] = False,
-        config: Optional[Dict] = None
+        config: Optional[Dict] = None,
+        agent_params: Optional[Dict] = None
 ) -> Dict[str, DisplayData]:
     """If `mol_major`, then generate the display data based on each molecule in the output which is generally
         more computationally expensive, otherwise base it on the agents (species id) in the simulation.
@@ -148,6 +148,7 @@ def generate_display_data_dict_from_model_file(
             model_fp:`str`: smoldyn configuration fp.
             mol_major:`bool`: if `True`, bases the display data objects on each individual molecule in the output.
             config:`Dict`: Adds the display data dict to an already existing config if passed.
+            agent_params:`Dict`: Defaults to `None`.
     """
     model_fp = model_fp or get_smoldyn_model_filepath(rootpath)
     species_names = get_species_names_from_model_file(model_fp)
@@ -155,7 +156,8 @@ def generate_display_data_dict_from_model_file(
         species_names.remove('empty')
 
     # TODO: set the m and rho vals more dynamically.
-    agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
+    if not agent_params:
+        agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
 
     display_data = {}
     # extract data from the individual molecule array
