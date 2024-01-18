@@ -33,12 +33,6 @@ def get_archive_files(archive_rootpath: str) -> List[str]:
     return [os.path.join(archive_rootpath, f) for f in os.listdir(archive_rootpath)]
 
 
-def get_smoldyn_model_filepath(archive_rootpath: str) -> Union[str, None]:
-    files = get_archive_files(archive_rootpath)
-    for f in files:
-        return f if 'model.txt' in f else None
-
-
 def zip_archive(archive_rootpath: str, archive_filename: str) -> None:
     """Pack/Bundle a list of files derived from `rootpath` into a zip archive saved at `archive_filepath`.
     """
@@ -88,6 +82,7 @@ def write_simularium_file(
         else:
             writer = BinaryWriter()
         return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
+
 
 def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
     ''' Read a configuration for a Smoldyn simulation
@@ -139,3 +134,8 @@ def standardize_model_output_fn(working_dirpath: str):
                 new_prefix = 'modelout'
                 fp = os.path.join(root, new_prefix + extension)
                 os.rename(os.path.join(root, f), fp)
+
+
+def write_vtp_file(filename: str):
+    """Write out a vtp file and remove a smoldyn modelout file."""
+    pass

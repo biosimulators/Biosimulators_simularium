@@ -5,8 +5,7 @@ from biosimulators_simularium.convert import (
     generate_output_data_object,
     translate_data_object
 )
-from biosimulators_simularium.io import write_simularium_file
-from biosimulators_simularium.utils import get_model_fp, get_modelout_fp
+from biosimulators_simularium.io import write_simularium_file, get_model_fp, get_modelout_fp
 from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 from biosimulators_simularium.io import get_archive_files

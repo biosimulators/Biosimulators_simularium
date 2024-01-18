@@ -41,6 +41,7 @@ git push --tags
 python setup.py sdist bdist_wheel
 twine check dist/*
 twine upload dist/*
+# twine upload --repository biosimulators-simularium
 rm -r dist && rm -r build && rm -r biosimulators_simularium.egg-info
 
 echo "Version v$version has been published on PyPI and has a git tag."

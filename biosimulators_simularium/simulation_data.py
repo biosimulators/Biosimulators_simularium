@@ -2,7 +2,7 @@ from typing import Tuple, Dict, List, Optional
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
-from biosimulators_simularium.utils import get_model_fp
+from biosimulators_simularium.io import get_model_fp
 # from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
 
 
@@ -89,7 +89,7 @@ def generate_agent_params_from_model_file(
     params = {}
     if not rootpath and not model_fp:
         raise ValueError(f'You must pass either a model or root filepath.')
-    model_fp = model_fp or get_smoldyn_model_filepath(rootpath)
+    model_fp = model_fp or get_model_fp(rootpath)
     names = get_species_names_from_model_file(model_fp)
     for name in names:
         agent_config = config.get(f'{name}')
@@ -135,7 +135,7 @@ def validated_model(model_fp: str) -> Simulation:
         raise ValueError(f'{model_fp} is not valid.')
 
 
-def run_model_file_simulation(model_fp: str) -> List[float]:
+def run_model_file_simulation(model_fp: str) -> List[List[float]]:
     """Run a Smoldyn simulation from a given `model_fp` and return a 2d List of
         molecule outputs with a shape of (n, 6) where n
 

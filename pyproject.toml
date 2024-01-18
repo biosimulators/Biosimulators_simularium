@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biosimulators-simularium"
-version = "0.5.5"
+version = "0.5.11"
 description = "Converting Biosimulators spatial simulation outputs into a Simularium-compliant format."
 authors = ["Alex Patrie <alexanderpatrie@gmail.com>"]
 readme = "README.md"
@@ -14,6 +14,7 @@ biosimulators-utils = "*"
 python-libcombine = "*"
 kisao = "*"
 termcolor = "*"
+pyvista = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

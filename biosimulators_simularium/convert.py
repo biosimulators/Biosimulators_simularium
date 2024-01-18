@@ -17,10 +17,10 @@ from biosimulators_simularium.simulation_data import (
     run_model_file_simulation,
     calculate_agent_radius,
     get_species_names_from_model_file,
-    get_smoldyn_model_filepath,
     generate_agent_params_from_model_file
 )
-from biosimulators_simularium.utils import (
+from biosimulators_simularium.io import (
+    get_model_fp,
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
     write_smoldyn_simulation_configuration
@@ -115,7 +115,7 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
         model_fp = config.pop('model')
     else:
         root_fp = config.pop('rootpath')
-        model_fp = get_smoldyn_model_filepath(root_fp)
+        model_fp = get_model_fp(root_fp)
 
     modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
     config['file_data'] = modelout_fp
@@ -150,7 +150,7 @@ def generate_display_data_dict_from_model_file(
             config:`Dict`: Adds the display data dict to an already existing config if passed.
             agent_params:`Dict`: Defaults to `None`.
     """
-    model_fp = model_fp or get_smoldyn_model_filepath(rootpath)
+    model_fp = model_fp or get_model_fp(rootpath)
     species_names = get_species_names_from_model_file(model_fp)
     if 'empty' in species_names:
         species_names.remove('empty')
