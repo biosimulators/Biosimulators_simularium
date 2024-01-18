@@ -15,6 +15,7 @@ python-libcombine = "*"
 kisao = "*"
 termcolor = "*"
 pyvista = "*"
+ipython = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

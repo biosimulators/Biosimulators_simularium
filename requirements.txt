@@ -9,3 +9,7 @@ termcolor
 
 ##### Data Store
 zarr
+
+##### Misc
+ipython
+

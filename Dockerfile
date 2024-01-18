@@ -15,19 +15,18 @@ LABEL \
     # about.license="MIT" \
     # about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
-RUN apt-get update -y \
-    && apt-get install -y build-essential \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY . /app
 
-RUN pip install --upgrade pip && pip install python-libcombine>=0.2.19 smoldyn
-RUN pip install .
+RUN pip install poetry
+
+RUN /app/install.sh
+
 ENTRYPOINT ["biosimulators-simularium"]
-CMD []
+
+CMD ["poetry run ipython3"]
 
 # RUN pip install --upgrade pip \
 #     && pip install setuptools wheel twine \
