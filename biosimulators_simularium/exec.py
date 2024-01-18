@@ -23,6 +23,7 @@ def generate_simularium_file(
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
         overwrite: bool = False,
+        box_size: float = 10.0,
         trajectory=None,
         **setup_config
 ) -> None:
@@ -64,9 +65,12 @@ def generate_simularium_file(
                 write out binary by default. Defaults to `False`.
             overwrite:`bool`: Generate a new output/simularium file regardless of the presence of
                 one already in the archive if `True`. Defaults to `False`.
-            trajectory:`TrajectoryData/SmoldynData`: preconfigured trajectory to translate and render.
+            box_size:`float`: size by which to scale the universe/box. Defaults to `10.0`.
+                # TODO: Make box_size less arbitrary and move it.
+            trajectory:`TrajectoryData/SmoldynData`: preconfigured trajectory to translate and render. This
+                assumes you have already configured the traj.
                 Defaults to `None`.
-            **setup_config:`kwargs`: spatial_units(str), temporal_units(str), box_size(float)
+            **setup_config:`kwargs`: spatial_units(str), temporal_units(str)
     """
     simularium_filepath = os.path.join(working_dir, simularium_filename + '.simularium')
     if not os.path.exists(simularium_filepath) or os.path.exists(simularium_filepath) and overwrite:
@@ -75,7 +79,6 @@ def generate_simularium_file(
                 setup_config = {
                     'spatial_units': 'mm',
                     'temporal_units': 'ms',
-                    'box_size': 10.0
                 }
             trajectory = generate_output_data_object(
                 root_fp=working_dir,
