@@ -20,13 +20,13 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN chmod +x /app/install.sh
-
-RUN /app/install.sh
-
 RUN pip install poetry
 
-RUN /app/install.sh
+RUN chmod +x /app/install.sh
+
+RUN /bin/bash -c '/app/install.sh'
+
+# RUN /app/install.sh
 
 ENTRYPOINT ["biosimulators-simularium"]
 
