@@ -26,8 +26,24 @@ We recommend [installing and using Conda](https://conda.io/projects/conda/en/lat
    2. `import biosimulators_simularium as biosimularium`
    3. `biosimularium.__version__` should display the most recent version with no errors.
 
+## Installation (Building from Source) (Preferred)
+The preferred build-from-source method involves using Python Poetry. Please ensure that this
+is globally installed on your machine. The preferred method of installation from source
+is through the use of the `install-deps.sh` script that is included at the root of this
+repo. Follow the instructions below to install the environment on your machine (mac):
 
-## Installation (Building from Source)
+1. `git clone https://github.com/biosimulators/biosimulators-simularium.git`
+2. `cd Biosimulators_simularium`
+3. `chmod +x ./install.sh`
+4. `./install.sh`
+5. OPTIONAL: `poetry shell`
+6. `python3`
+7. `import biosimulators_simularium`
+
+If there are no errors, you are all set!
+
+
+## Installation (Building from Source) (Alternative)
 ### BEFORE STARTING: This application uses Smoldyn to generate simulation data. Please install Smoldyn into your local environment. Instructions below use the Mac silicon install and Python 3.10. More information on installing Smoldyn can be found [here](https://www.smoldyn.org/download.html)
 
 1. Set up a virtual environment. We recommend using Conda: `conda create -n biosimularium 
