@@ -60,7 +60,7 @@ def generate_agent_params_from_model_file(
         rootpath: Optional[str] = None,
         global_density: Optional[float] = None,
         basis_m: Optional[int] = None,
-        model_fp: Optional[str] = None
+        model_fp: Optional[str] = None,
         **config
 ) -> Dict:
     """Generate a dictionary of agent parameters for the purpose of simulation input configuration which define the
