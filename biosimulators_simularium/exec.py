@@ -23,11 +23,11 @@ def generate_simularium_file(
         working_dir: str,
         simularium_filename: str,
         agent_params: Dict[str, Dict[str, float]] = None,
-        model_fp: str = None,
         use_json: bool = False,
 ) -> None:
-    """If `model_fp` is `None` (by default), the working_dir passed into this function MUST be the parent(or contain)
-        the Smoldyn model file to run.
+    """Generate a simularium file from a Smoldyn configuration (model) file which resides inside an unzipped
+        archive directory found at `working_dir`. This is a high-level function that automatically generates
+        simulation/agent parameters from the specified `working_dir/model.txt` path.
 
         Args:
             working_dir:`str`: root directory in which to save the simularium file. If no `model_fp` is passed,
@@ -61,16 +61,12 @@ def generate_simularium_file(
                     to populate this field based on a given model file and starting parameters.
             use_json:`Optional[bool]`: if `True` then write the simularium file out as json, otherwise
                 write out binary by default. Defaults to `False`.
-            model_fp:`str`: path to the model file containing the simulation details. If not specified, the Smoldyn model
-                file is assumed to be a child of the `working_dir`. Defaults to `None`.
     """
 
     # TODO: Generate a .vtp/.vtk file instead of the modelout file here
-    if not model_fp:
-        model_fp = get_model_fp(working_dir)
 
     # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
-    data = generate_output_data_object(agent_params=agent_params, model=model_fp)
+    data = generate_output_data_object(agent_params=agent_params, rootpath=working_dir)
     translated_data = translate_data_object(data=data, box_size=20.0)
     return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
 
