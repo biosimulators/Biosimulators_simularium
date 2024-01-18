@@ -1,15 +1,13 @@
 import os
-from warnings import warn
-from typing import Tuple, Dict
+from typing import Dict
 from biosimulators_simularium.convert import (
     generate_output_data_object,
     translate_data_object
 )
-from biosimulators_simularium.io import write_simularium_file, get_model_fp, get_modelout_fp
+from biosimulators_simularium.io import write_simularium_file
 from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
-from biosimulators_simularium.io import get_archive_files
-from biosimulators_utils.combine.io import CombineArchiveWriter, CombineArchiveReader
+from biosimulators_utils.combine.io import CombineArchiveWriter
 from biosimulators_utils.combine.data_model import CombineArchive, CombineArchiveContent
 
 
@@ -24,7 +22,8 @@ def generate_simularium_file(
         simularium_filename: str,
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
-        overwrite: bool = False
+        overwrite: bool = False,
+        **units_config
 ) -> None:
     """Generate a simularium file from a Smoldyn configuration (model) file which resides inside an unzipped
         archive directory found at `working_dir`. This is a high-level function that automatically generates
@@ -62,20 +61,28 @@ def generate_simularium_file(
                     to populate this field based on a given model file and starting parameters.
             use_json:`Optional[bool]`: if `True` then write the simularium file out as json, otherwise
                 write out binary by default. Defaults to `False`.
+            overwrite:`bool`: Generate a new output/simularium file regardless of the prescense of
+                one already in the archive if `True`. Defaults to `False`.
     """
+    simularium_filepath = os.path.join(working_dir, simularium_filename + '.simularium')
+    if not os.path.exists(simularium_filepath) or os.path.exists(simularium_filepath) and overwrite:
+        if not units_config:
+            units_config = {
+                'spatial_units': 'mm',
+                'temporal_units': 'ms'
+            }
 
-    # TODO: Generate a .vtp/.vtk file instead of the modelout file here
-    if overwrite or not os.path.exists(os.path.join(working_dir, simularium_filename + '.simularium')):
-        data = generate_output_data_object(
-            root_fp=working_dir,
-            agent_params=agent_params,
-            spatial_units="mm",
-            temporal_units="mm"
-        )
+        data = generate_output_data_object(root_fp=working_dir, agent_params=agent_params, **units_config)
         translated_data = translate_data_object(data=data, box_size=10.0)
+
+        # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
         return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
     else:
-        raise Exception(f'A simularium file already exists!')
+        raise Exception(f'Overwrite is turned off and a simularium file already exists!')
+
+
+def generate_vtp_file(data):
+    pass
 
 
 def exec_combine_archive_and_simularium(
