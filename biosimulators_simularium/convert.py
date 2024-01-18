@@ -83,9 +83,12 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
 
             Args:
-                agent_params:`Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
+                agent_params:`optional, Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
                     and the value is another dictionary with the keys 'density' and 'molecular_mass'.
-                    For example, in the MinE model:
+                    If this value is passed as `None`, such a value is generated from the given `rootpath=...`
+                    passed as a kwarg in this function.
+
+                    For example, in the MinE model agent params would look something like:
 
                         agent_params = {
                             'MinD_ATP': {
@@ -106,13 +109,13 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
                             },
                         }
 
-                config:`kwargs`: output data configuration whose keyword arguments are as follows:
-                    rootpath:`optional, str`: path to the working directory which houses smoldyn model.
-                    file_data:`Union[str, InputFileData]` path to the output file(pass if not model),
-                    display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
-                    meta_data:`Optional[MetaData]`
-                    spatial_units:`str`: defaults to nm
-                    temporal_units:`str`: defaults to ns
+            Keyword Args:
+                rootpath:`str`: path to the working directory which houses smoldyn model.
+                file_data:`Union[str, InputFileData]` path to the output file,
+                display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
+                meta_data:`Optional[MetaData]`
+                spatial_units:`str`: defaults to nm
+                temporal_units:`str`: defaults to ns
     """
     # extract the archive files from the rootpath defined in the kwargs
     root_fp = config.pop('rootpath')
