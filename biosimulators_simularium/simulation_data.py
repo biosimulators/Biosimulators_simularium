@@ -6,6 +6,9 @@ from biosimulators_simularium.io import get_smoldyn_model_filepath
 # from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
 
 
+np.random.seed(42)
+
+
 def generate_molecules(model_fp: str, duration: int) -> np.ndarray:
     """Run the simulation model found at `model_fp` and return a numpy array of the `listmols` command output.
 

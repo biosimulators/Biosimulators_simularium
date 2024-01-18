@@ -17,6 +17,7 @@ from biosimulators_simularium.simulation_data import (
     run_model_file_simulation,
     calculate_agent_radius,
     get_species_names_from_model_file,
+    get_smoldyn_model_filepath,
     generate_agent_params_from_model_file
 )
 from biosimulators_simularium.utils import (
@@ -149,19 +150,29 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
 
 
 def generate_display_data_dict_from_model_file(
-        model_fp: str,
+        rootpath: str = None,
+        model_fp: str = None,
         mol_major: Optional[bool] = False,
         config: Optional[Dict] = None
 ) -> Dict[str, DisplayData]:
     """If `mol_major`, then generate the display data based on each molecule in the output which is generally
-        more computationally expensive.
+        more computationally expensive, otherwise base it on the agents (species id) in the simulation.
+
+        Args:
+            rootpath:`str`: path to the working directory in which resides the smoldyn model file.
+            model_fp:`str`: smoldyn configuration fp.
+            mol_major:`bool`: if `True`, bases the display data objects on each individual molecule in the output.
+            config:`Dict`: Adds the display data dict to an already existing config if passed.
     """
+    model_fp = model_fp or get_smoldyn_model_filepath(rootpath)
     species_names = get_species_names_from_model_file(model_fp)
-    agent_params = generate_agent_params_from_model_file(model_fp)
-    display_data = {}
     if 'empty' in species_names:
         species_names.remove('empty')
 
+    # TODO: set the m and rho vals more dynamically.
+    agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
+
+    display_data = {}
     # extract data from the individual molecule array
     if mol_major:
         mol_outputs = run_model_file_simulation(model_fp)
