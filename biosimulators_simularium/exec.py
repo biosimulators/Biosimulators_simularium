@@ -86,7 +86,7 @@ def generate_simularium_file(
                 **setup_config
             )
 
-        translated_data = translate_data_object(data=trajectory, box_size=setup_config['box_size'])
+        translated_data = translate_data_object(data=trajectory, box_size=box_size)
 
         # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
         return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
