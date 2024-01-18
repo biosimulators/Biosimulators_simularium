@@ -1,5 +1,6 @@
 ##### Visualization Library
 simulariumio
+# pyvista
 
 ##### Simulations
 python-libcombine

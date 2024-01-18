@@ -14,7 +14,7 @@ biosimulators-utils = "*"
 python-libcombine = "*"
 kisao = "*"
 termcolor = "*"
-pyvista = "*"
+# pyvista = "*"
 ipython = "*"
 
 [tool.poetry.group.dev.dependencies]
