@@ -17,6 +17,7 @@ setup(
     description='A Python tool for converting Biosimulators spatial simulation outputs into a Simularium-compliant format.',
     long_description=long_description,
     long_description_content_type="text/markdown",
+    scripts=["install.py"],
     entry_points={
             'console_scripts': [
                 'biosimulators-simularium = biosimulators_simularium.__main__:main',
