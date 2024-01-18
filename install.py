@@ -44,3 +44,7 @@ def install_linux():
     except CalledProcessError as e:
         print(f'An error occured: {e}. Exiting')
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    run_install()
