@@ -145,13 +145,11 @@ def run_model_file_simulation(model_fp: str) -> List[List[float]]:
 
     """
     simulation = validated_model(model_fp)
-    print(f'{isinstance(simulation, Simulation)}')
-    print(model_fp)
-    '''simulation.addOutputData('molecules')
+    simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
     simulation.runSim()
     molecule_output_data = simulation.getOutputData('molecules')
-    return molecule_output_data'''
+    return molecule_output_data
 
 
 def calculate_agent_radius(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:

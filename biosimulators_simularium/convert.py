@@ -124,17 +124,15 @@ def generate_output_data_object(
     """
     # extract the archive files from the rootpath defined in the kwargs
     model_fp = get_model_fp(root_fp)
-    modelout_fp = get_modelout_fp(root_fp)
+    # modelout_fp = get_modelout_fp(root_fp)
 
-    # generate a modelout file if it doesnt exist
-    if not os.path.exists(modelout_fp):
-        sim_config = read_smoldyn_simulation_configuration(model_fp)
-        disable_smoldyn_graphics_in_simulation_configuration(sim_config)
-        write_smoldyn_simulation_configuration(sim_config, model_fp)
-        mol_outputs = run_model_file_simulation(model_fp)
+    sim_config = read_smoldyn_simulation_configuration(model_fp)
+    disable_smoldyn_graphics_in_simulation_configuration(sim_config)
+    write_smoldyn_simulation_configuration(sim_config, model_fp)
+    mol_outputs = run_model_file_simulation(model_fp)
 
     # set the modelout file as input for simulariumio
-    config['file_data'] = InputFileData(modelout_fp)
+    config['file_data'] = InputFileData(model_fp.replace('model.txt', 'modelout.txt'))
 
     # set the display data dict from the model file inside the archive
     if not config.get('display_data'):

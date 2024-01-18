@@ -24,9 +24,7 @@ def generate_simularium_file(
         simularium_filename: str,
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
-        overwrite: bool = False,
         box_size: float = 10.0,
-        trajectory: SmoldynData = None,
         **setup_config
 ) -> None:
     """Generate a simularium file from a Smoldyn configuration (model) file which resides inside an unzipped
@@ -65,31 +63,22 @@ def generate_simularium_file(
                     to populate this field based on a given model file and starting parameters.
             use_json:`Optional[bool]`: if `True` then write the simularium file out as json, otherwise
                 write out binary by default. Defaults to `False`.
-            overwrite:`bool`: Generate a new output/simularium file regardless of the presence of
-                one already in the archive if `True`. Defaults to `False`.
             box_size:`float`: size by which to scale the universe/box. Defaults to `10.0`.
                 # TODO: Make box_size less arbitrary and move it.
-            trajectory:`TrajectoryData/SmoldynData`: preconfigured trajectory to translate and render. This
-                assumes you have already configured the traj.
-                Defaults to `None`.
             **setup_config:`kwargs`: spatial_units(str), temporal_units(str)
     """
     simularium_filepath: str = os.path.join(working_dir, simularium_filename + '.simularium')
-    if not isinstance(trajectory, SmoldynData):
-        trajectory = generate_output_data_object(
-            root_fp=working_dir,
-            agent_params=agent_params,
-            spatial_units=setup_config.get('spatial_units', 'mm'),
-            temporal_units=setup_config.get('temporal_units', 'ms')
-        )
+    trajectory: SmoldynData = generate_output_data_object(
+        root_fp=working_dir,
+        agent_params=agent_params,
+        spatial_units=setup_config.get('spatial_units', 'mm'),
+        temporal_units=setup_config.get('temporal_units', 'ms')
+    )
+    # In most cases you must translate the data such that negative values are accounted for as shown here
+    translated_data: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
 
-        # In most cases you must translate the data such that negative values are accounted for as shown here
-        translated_data: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
-
-        # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
-        return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
-    else:
-        raise Exception(f'Overwrite is turned off and a simularium file already exists!')
+    # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
+    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
 
 
 def generate_vtp_file(data=None):
