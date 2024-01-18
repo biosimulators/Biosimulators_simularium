@@ -18,7 +18,11 @@ LABEL \
 
 WORKDIR /app
 
-COPY . /app
+COPY . /app/
+
+RUN chmod +x /app/install.sh
+
+RUN /app/install.sh
 
 RUN pip install poetry
 
@@ -27,6 +31,7 @@ RUN /app/install.sh
 ENTRYPOINT ["biosimulators-simularium"]
 
 CMD ["poetry run ipython3"]
+
 
 # RUN pip install --upgrade pip \
 #     && pip install setuptools wheel twine \
