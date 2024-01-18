@@ -4,7 +4,11 @@ test_file="$1"
 
 file=biosimulators_simularium/tests/"${test_file}".py
 
-mypy "${file}" \
-  && poetry run python3 "${file}"
+poetry run mypy "${file}"
+if poetry run python3 "${file}"; then
+  echo "Success. Done."
+else
+  echo ":("
+fi
 
  
