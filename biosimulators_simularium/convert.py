@@ -1,5 +1,6 @@
 import os.path
 from typing import Dict, Union, Optional
+from functools import partial
 from uuid import uuid4
 import numpy as np
 from simulariumio import (
@@ -21,6 +22,8 @@ from biosimulators_simularium.simulation_data import (
 )
 from biosimulators_simularium.io import (
     get_model_fp,
+    get_modelout_fp,
+    get_archive_files,
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
     write_smoldyn_simulation_configuration
@@ -28,14 +31,14 @@ from biosimulators_simularium.io import (
 
 
 __all__ = [
-    'output_data_object',
+    'new_output_data_object',
     'generate_output_data_object',
-    'generate_display_data_dict_from_model_file',
+    'display_data_dict_from_archive_model_file',
     'translate_data_object'
 ]
 
 
-def output_data_object(
+def new_output_data_object(
     file_data: Union[InputFileData, str],
     display_data: Optional[Dict[str, DisplayData]] = None,
     meta_data: Optional[MetaData] = None,
@@ -74,6 +77,7 @@ def output_data_object(
     return data
 
 
+# noinspection PyBroadException
 def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
@@ -104,53 +108,56 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
 
                 config:`kwargs`: output data configuration whose keyword arguments are as follows:
                     rootpath:`optional, str`: path to the working directory which houses smoldyn model.
-                    model:`optional, str`: path to the model file.
                     file_data:`Union[str, InputFileData]` path to the output file(pass if not model),
                     display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
                     meta_data:`Optional[MetaData]`
                     spatial_units:`str`: defaults to nm
                     temporal_units:`str`: defaults to ns
     """
-    if not config.get('rootpath'):
-        model_fp = config.pop('model')
-    else:
-        root_fp = config.pop('rootpath')
-        model_fp = get_model_fp(root_fp)
+    # extract the archive files from the rootpath defined in the kwargs
+    root_fp = config.pop('rootpath')
+    model_fp = get_model_fp(root_fp)
+    try:
+        modelout_fp = get_modelout_fp(root_fp)
+    except:
+        # turn off graphics if necessary
+        sim_config = read_smoldyn_simulation_configuration(model_fp)
+        if 'graphic' in sim_config:
+            disable_smoldyn_graphics_in_simulation_configuration(sim_config)
+            write_smoldyn_simulation_configuration(sim_config, model_fp)
+        run_model_file_simulation(model_fp)
+        modelout_fp = get_modelout_fp(root_fp)
 
-    modelout_fp = model_fp.replace('model.txt', 'modelout.txt')
-    config['file_data'] = modelout_fp
+    # set the modelout file as input for simulariumio
+    config['file_data'] = InputFileData(modelout_fp)
 
-    sim_config = read_smoldyn_simulation_configuration(model_fp)
-    if 'graphic' in sim_config:
-        disable_smoldyn_graphics_in_simulation_configuration(sim_config)
-        write_smoldyn_simulation_configuration(sim_config, model_fp)
+    # set the display data dict from the model file inside the archive
+    if not config.get('display_data'):
+        display_data_dict = display_data_dict_from_archive_model_file(rootpath=root_fp)
+        config['display_data'] = display_data_dict
 
-    if model_fp is not None and not agent_params:
-        mol_outputs = run_model_file_simulation(model_fp)
-        config = generate_display_data_dict_from_model_file(model_fp=model_fp, config=config)
-        return output_data_object(**config)
-    else:
-        raise ValueError('You must pass a valid Smoldyn model file. Please pass the path to such a model file as "model" in the args of this function.`')
+    # return a configured instance
+    return new_output_data_object(**config)
 
 
-def generate_display_data_dict_from_model_file(
+def display_data_dict_from_archive_model_file(
         rootpath: str = None,
-        model_fp: str = None,
         mol_major: Optional[bool] = False,
-        config: Optional[Dict] = None,
         agent_params: Optional[Dict] = None
 ) -> Dict[str, DisplayData]:
-    """If `mol_major`, then generate the display data based on each molecule in the output which is generally
-        more computationally expensive, otherwise base it on the agents (species id) in the simulation.
+    """Generate agent parameters from the archive rootpath if none are passed and
+        iterate `simulariumio.DisplayData` instances in a dictionary over either agents or
+        individual molecules. If `mol_major`, then generate the display data based on each molecule
+        in the output which is generally more computationally expensive,
+        otherwise base it on the agents (species id) in the simulation.
+
 
         Args:
             rootpath:`str`: path to the working directory in which resides the smoldyn model file.
-            model_fp:`str`: smoldyn configuration fp.
             mol_major:`bool`: if `True`, bases the display data objects on each individual molecule in the output.
-            config:`Dict`: Adds the display data dict to an already existing config if passed.
             agent_params:`Dict`: Defaults to `None`.
     """
-    model_fp = model_fp or get_model_fp(rootpath)
+    model_fp = get_model_fp(rootpath)
     species_names = get_species_names_from_model_file(model_fp)
     if 'empty' in species_names:
         species_names.remove('empty')
@@ -160,7 +167,7 @@ def generate_display_data_dict_from_model_file(
         agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
 
     display_data = {}
-    # extract data from the individual molecule array
+    # extract data from the individual molecule array if mol major
     if mol_major:
         mol_outputs = run_model_file_simulation(model_fp)
         for mol in mol_outputs:
@@ -174,6 +181,7 @@ def generate_display_data_dict_from_model_file(
                 display_type=DISPLAY_TYPE.SPHERE,
                 radius=mol_radius
             )
+    # otherwise base it on the agents
     else:
         for agent in species_names:
             mol_params = agent_params[agent]
@@ -184,12 +192,8 @@ def generate_display_data_dict_from_model_file(
                 radius=0.01,
                 url=f'{agent}.obj'
             )
-    # TODO: possibly remove this
-    if config:
-        config['display_data'] = display_data
-        return config
-    else:
-        return display_data
+
+    return display_data
 
 
 def translate_data_object(

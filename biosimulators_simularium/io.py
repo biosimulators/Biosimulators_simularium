@@ -7,6 +7,7 @@ from simulariumio.smoldyn.smoldyn_data import SmoldynData
 
 
 __all__ = [
+    'get_modelout_fp',
     'get_model_fp',
     'write_simularium_file',
 ]
@@ -16,8 +17,10 @@ def get_fp(working_dir: str, identifier: str) -> str:
     """Search a working_dir for a file of a specified identifier."""
     for f in os.listdir(working_dir):
         fp = os.path.join(working_dir, f)
-        if identifier in fp:
+        if identifier in fp and os.path.exists(fp):
             return fp
+        else:
+            raise ValueError('There is no file of identifier present in the specified working dir.')
 
 
 def get_model_fp(working_dir: str) -> str:
@@ -25,7 +28,7 @@ def get_model_fp(working_dir: str) -> str:
 
 
 def get_modelout_fp(working_dir: str) -> str:
-    return get_fp(working_dir, 'out')
+    return get_fp(working_dir, 'modelout.txt')
 
 
 def get_archive_files(archive_rootpath: str) -> List[str]:
