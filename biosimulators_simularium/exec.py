@@ -51,6 +51,8 @@ def generate_simularium_file(
 
                 The `biosimulators_simularium.simulation_data.generate_agent_params()` function is available
                     to populate this field based on a given model file and starting parameters.
+            use_json:`Optional[bool]`: if `True` then write the simularium file out as json, otherwise
+                write out binary by default. Defaults to `False`.
             model_fp:`str`: path to the model file containing the simulation details. If not specified, the Smoldyn model
                 file is assumed to be a child of the `working_dir`. Defaults to `None`.
     """
@@ -60,7 +62,7 @@ def generate_simularium_file(
     # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
     data = generate_output_data_object(agent_params=agent_params, model=model_fp)
     translated_data = translate_data_object(data=data, box_size=10.0)
-    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=False)
+    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
 
 
 def exec_combine_archive_and_simularium(

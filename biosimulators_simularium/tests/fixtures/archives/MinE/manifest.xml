@@ -6,4 +6,5 @@
   <content location="simulation.simularium" format="application/octet-stream" master="false"/>
   <content location="reports.h5" format="http://purl.org/NET/mediatypes/text/smoldyn+plain" master="false"/>
   <content location="modelout.txt" format="text/plain" master="false"/>
+  <content location="temporal-model-out.txt" format="text/plain" master="false"/>
 </omexManifest>

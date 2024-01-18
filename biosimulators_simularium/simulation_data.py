@@ -2,6 +2,7 @@ from typing import Tuple, Dict, List, Optional
 from smoldyn import Simulation
 import numpy as np
 from biosimulators_simularium.validation import validate_model
+from biosimulators_simularium.io import get_smoldyn_model_filepath
 # from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
 
 
@@ -56,22 +57,26 @@ def generate_agent_params_for_minE(
 
 
 def generate_agent_params_from_model_file(
-        model_fp: str,
+        rootpath: Optional[str] = None,
         global_density: Optional[float] = None,
         basis_m: Optional[int] = None,
+        model_fp: Optional[str] = None
         **config
 ) -> Dict:
     """Generate a dictionary of agent parameters for the purpose of simulation input configuration which define the
         molecular mass and density inherent to a given agent based on a Smoldyn model file.
 
         Args:
-            model_fp:`str`: path to a Smoldyn model file.
+            rootpath:`str`: path to the "working directory" in which the smoldyn model/executable/configuration-file
+                resides that you wish to extract agent parameters from. If `None` is passed, you must pass the
+                path to a model file. Defaults to `None`.
             global_density:`Optional[float]`: Density by which all agent densities are set. NOTE: this value is
               required if not passing explicit agent configs (**config). Defaults to `None`.
             basis_m:`Optional[int]`: Upper bound value of the molecular mass by which to set the basis for the
               randomization of agent molecular masses in the `randomize_mass` function which takes in a basis
               integer and returns a random integer between 0 and that number. NOTE: this value is required
               if not passing explicit agent configs (**config). Defaults to `None`.
+            model_fp:`Optional[str]`: path to a smoldyn model file. Defaults to `None`.
         Keyword Args:
             <AGENT_NAME>:`dict`: an agent name (which should match that which is returned by
                 smoldyn.Simulation.getSpeciesName()) as the definition (for example: `MinE=`) and a dictionary with
@@ -79,6 +84,9 @@ def generate_agent_params_from_model_file(
 
     """
     params = {}
+    if not rootpath and not model_fp:
+        raise ValueError(f'You must pass either a model or root filepath.')
+    model_fp = model_fp or get_smoldyn_model_filepath(rootpath)
     names = get_species_names_from_model_file(model_fp)
     for name in names:
         agent_config = config.get(f'{name}')

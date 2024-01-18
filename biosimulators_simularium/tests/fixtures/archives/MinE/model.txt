@@ -107,10 +107,10 @@ endif
 compartment_mol NUMBER_MINE MinE cell
 
 
-output_files modelout.txt temporal-model-out.txt
+output_files modelout.txt  #temporal-model-out.txt
 cmd i 0 TIME_STOP 2 executiontime modelout.txt
 cmd i 0 TIME_STOP 2 listmols modelout.txt
-cmd i 0 TIME_STOP 2 listmols2 temporal-model-out.txt
+#cmd i 0 TIME_STOP 2 listmols2 temporal-model-out.txt
 
 
 end_file
