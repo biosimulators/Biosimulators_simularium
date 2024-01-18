@@ -28,8 +28,8 @@ define TIME_STOP	10	 # stopping time
 
 random_seed 1
 
-#graphics opengl
-#graphic_iter 100
+graphics none
+graphic_iter 100
 
 #tiff_name movie/MinMovie
 #tiff_iter 200

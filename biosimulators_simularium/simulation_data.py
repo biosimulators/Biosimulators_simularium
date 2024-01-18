@@ -59,20 +59,20 @@ def generate_agent_params_for_minE(
     return params
 
 
-def generate_agent_params_from_model_file(
-        rootpath: Optional[str] = None,
+def generate_agent_params(
+        species_names: List[str],
         global_density: Optional[float] = None,
         basis_m: Optional[int] = None,
         model_fp: Optional[str] = None,
         **config
 ) -> Dict:
     """Generate a dictionary of agent parameters for the purpose of simulation input configuration which define the
-        molecular mass and density inherent to a given agent based on a Smoldyn model file.
+        molecular mass and density inherent to a given agent based species names. We cannot call the species
+        names from the smoldyn model file here directly, so you MUST pass them in here.
 
         Args:
-            rootpath:`str`: path to the "working directory" in which the smoldyn model/executable/configuration-file
-                resides that you wish to extract agent parameters from. If `None` is passed, you must pass the
-                path to a model file. Defaults to `None`.
+            species_names:`List[str]`: List of species names which coorespond to the species names
+                in the the relative smoldyn model file being simulated.
             global_density:`Optional[float]`: Density by which all agent densities are set. NOTE: this value is
               required if not passing explicit agent configs (**config). Defaults to `None`.
             basis_m:`Optional[int]`: Upper bound value of the molecular mass by which to set the basis for the
@@ -87,21 +87,18 @@ def generate_agent_params_from_model_file(
 
     """
     params = {}
-    if not rootpath and not model_fp:
-        raise ValueError(f'You must pass either a model or root filepath.')
-    model_fp = model_fp or get_model_fp(rootpath)
-    names = get_species_names_from_model_file(model_fp)
-    for name in names:
+    if not config or not global_density and basis_m:
+        raise ValueError(
+            f'You must pass either keyword arguments where the keyword is the agent name and the value is a dict defining molecular_mass and density OR a density AND basis molecular mass.'
+        )
+    for name in species_names:
         agent_config = config.get(f'{name}')
         if agent_config:
             mass = agent_config['molecular_mass']
             density = agent_config['density']
         else:
-            try:
-                mass = randomize_mass(basis_m)
-                density = global_density
-            except:
-                raise ValueError('You must pass either a config for a given agent or a base mol mass and global density.')
+            mass = randomize_mass(basis_m)
+            density = global_density
         params[name] = {
             'density': density,
             'molecular_mass': mass
@@ -144,11 +141,13 @@ def run_model_file_simulation(model_fp: str) -> List[List[float]]:
 
     """
     simulation = validated_model(model_fp)
-    simulation.addOutputData('molecules')
+    print(f'{isinstance(simulation, Simulation)}')
+    print(model_fp)
+    '''simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
     simulation.runSim()
     molecule_output_data = simulation.getOutputData('molecules')
-    return molecule_output_data
+    return molecule_output_data'''
 
 
 def calculate_agent_radius(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:

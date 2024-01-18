@@ -15,12 +15,17 @@ LABEL \
     # about.license="MIT" \
     # about.tags="spatial simulations, particle-based simulations, molecular diffusion, surface interactions, chemical reactions, SBML, SED-ML, COMBINE, OMEX, BioSimulators"
 
+RUN apt-get update && apt-get install -y build-essential libxml2-dev libzip-dev
+
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR /app
 
 COPY . /app/
 
 RUN pip install poetry
+
+RUN poetry run pip install pyomexmeta
 
 RUN chmod +x /app/install.sh
 

@@ -24,6 +24,7 @@ def generate_simularium_file(
         simularium_filename: str,
         agent_params: Dict[str, Dict[str, float]] = None,
         use_json: bool = False,
+        overwrite: bool = False
 ) -> None:
     """Generate a simularium file from a Smoldyn configuration (model) file which resides inside an unzipped
         archive directory found at `working_dir`. This is a high-level function that automatically generates
@@ -64,11 +65,17 @@ def generate_simularium_file(
     """
 
     # TODO: Generate a .vtp/.vtk file instead of the modelout file here
-
-    # TODO: Port in function from process-bigraph that matches species types to individual molecule outputs
-    data = generate_output_data_object(agent_params=agent_params, rootpath=working_dir)
-    translated_data = translate_data_object(data=data, box_size=20.0)
-    return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
+    if overwrite or not os.path.exists(os.path.join(working_dir, simularium_filename + '.simularium')):
+        data = generate_output_data_object(
+            root_fp=working_dir,
+            agent_params=agent_params,
+            spatial_units="mm",
+            temporal_units="mm"
+        )
+        translated_data = translate_data_object(data=data, box_size=10.0)
+        return write_simularium_file(translated_data, simularium_filename=simularium_filename, json=use_json)
+    else:
+        raise Exception(f'A simularium file already exists!')
 
 
 def exec_combine_archive_and_simularium(

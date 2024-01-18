@@ -1,5 +1,5 @@
 import os.path
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, List
 from functools import partial
 from uuid import uuid4
 import numpy as np
@@ -78,11 +78,17 @@ def new_output_data_object(
 
 
 # noinspection PyBroadException
-def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -> SmoldynData:
+def generate_output_data_object(
+        root_fp: str,
+        agent_params: Optional[Dict] = None,
+        **config
+) -> SmoldynData:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
 
             Args:
+
+                root_fp:`str`: path to the working directory which houses smoldyn model.
                 agent_params:`optional, Dict`: a dictionary of agent parameters in which the outermost keys are species name (agent),
                     and the value is another dictionary with the keys 'density' and 'molecular_mass'.
                     If this value is passed as `None`, such a value is generated from the given `rootpath=...`
@@ -110,41 +116,71 @@ def generate_output_data_object(agent_params: Optional[Dict] = None, **config) -
                         }
 
             Keyword Args:
-                rootpath:`str`: path to the working directory which houses smoldyn model.
-                file_data:`Union[str, InputFileData]` path to the output file,
                 display_data:`Optional[Dict[str, DisplayData]]`--> defaults to `None`
                 meta_data:`Optional[MetaData]`
                 spatial_units:`str`: defaults to nm
                 temporal_units:`str`: defaults to ns
+
     """
     # extract the archive files from the rootpath defined in the kwargs
-    root_fp = config.pop('rootpath')
     model_fp = get_model_fp(root_fp)
-    try:
-        modelout_fp = get_modelout_fp(root_fp)
-    except:
-        # turn off graphics if necessary
+    modelout_fp = get_modelout_fp(root_fp)
+
+    # generate a modelout file if it doesnt exist
+    if not os.path.exists(modelout_fp):
         sim_config = read_smoldyn_simulation_configuration(model_fp)
-        if 'graphic' in sim_config:
-            disable_smoldyn_graphics_in_simulation_configuration(sim_config)
-            write_smoldyn_simulation_configuration(sim_config, model_fp)
-        run_model_file_simulation(model_fp)
-        modelout_fp = get_modelout_fp(root_fp)
+        disable_smoldyn_graphics_in_simulation_configuration(sim_config)
+        write_smoldyn_simulation_configuration(sim_config, model_fp)
+        mol_outputs = run_model_file_simulation(model_fp)
 
     # set the modelout file as input for simulariumio
     config['file_data'] = InputFileData(modelout_fp)
+    print(f'The config: {config}')
 
     # set the display data dict from the model file inside the archive
-    if not config.get('display_data'):
+    '''if not config.get('display_data'):
+        print('no display data')
         display_data_dict = display_data_dict_from_archive_model_file(rootpath=root_fp)
-        config['display_data'] = display_data_dict
+        config['display_data'] = display_data_dict'''
 
-    # return a configured instance
-    return new_output_data_object(**config)
+    print(config)
+    '''# return a configured instance
+    # return new_output_data_object(**config)'''
+
+
+def display_data_dict_mol_major(mol_outputs, species_names, agent_params):
+    display_data = {}
+    for mol in mol_outputs:
+        mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
+        mol_name = str(uuid4()).replace('-', '_')
+        mol_species_name = species_names[mol_species_id_index]
+        mol_params = agent_params[mol_species_name]
+        mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+        display_data[mol_name] = DisplayData(
+            name=mol_species_name,
+            display_type=DISPLAY_TYPE.SPHERE,
+            radius=mol_radius
+        )
+    return display_data
+
+
+def display_data_dict_agent_major(species_names, agent_params):
+    display_data = {}
+    for agent in species_names:
+        mol_params = agent_params[agent]
+        agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
+        display_data[agent] = DisplayData(
+            name=agent,
+            display_type=DISPLAY_TYPE.SPHERE,
+            radius=0.01,
+            url=f'{agent}.obj'
+        )
+    return display_data
 
 
 def display_data_dict_from_archive_model_file(
         rootpath: str = None,
+        mol_outputs: List[List[float]] = None,
         mol_major: Optional[bool] = False,
         agent_params: Optional[Dict] = None
 ) -> Dict[str, DisplayData]:
@@ -157,46 +193,24 @@ def display_data_dict_from_archive_model_file(
 
         Args:
             rootpath:`str`: path to the working directory in which resides the smoldyn model file.
+            mol_outputs:`str`: results of a smoldyn simulation with the listmols command. Defaults to None.
             mol_major:`bool`: if `True`, bases the display data objects on each individual molecule in the output.
             agent_params:`Dict`: Defaults to `None`.
     """
+    # get the model fp
     model_fp = get_model_fp(rootpath)
+
+    # get spec names from model fp
     species_names = get_species_names_from_model_file(model_fp)
-    if 'empty' in species_names:
-        species_names.remove('empty')
 
     # TODO: set the m and rho vals more dynamically.
+    # generate agent params if necessary from model_fp
     if not agent_params:
         agent_params = generate_agent_params_from_model_file(model_fp, global_density=1.0, basis_m=1000)
 
-    display_data = {}
-    # extract data from the individual molecule array if mol major
-    if mol_major:
-        mol_outputs = run_model_file_simulation(model_fp)
-        for mol in mol_outputs:
-            mol_species_id_index = int(mol[0]) - 1  # here we account for the removal of 'empty'
-            mol_name = str(uuid4()).replace('-', '_')
-            mol_species_name = species_names[mol_species_id_index]
-            mol_params = agent_params[mol_species_name]
-            mol_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
-            display_data[mol_name] = DisplayData(
-                name=mol_species_name,
-                display_type=DISPLAY_TYPE.SPHERE,
-                radius=mol_radius
-            )
-    # otherwise base it on the agents
-    else:
-        for agent in species_names:
-            mol_params = agent_params[agent]
-            agent_radius = calculate_agent_radius(m=mol_params['molecular_mass'], rho=mol_params['density'])
-            display_data[agent] = DisplayData(
-                name=agent,
-                display_type=DISPLAY_TYPE.SPHERE,
-                radius=0.01,
-                url=f'{agent}.obj'
-            )
-
-    return display_data
+    # return mol-based display data dict if mol_major; agent-based if not
+    return display_data_dict_mol_major(mol_outputs, species_names, agent_params) \
+        if mol_major else display_data_dict_agent_major(species_names, agent_params)
 
 
 def translate_data_object(
