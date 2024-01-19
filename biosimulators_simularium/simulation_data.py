@@ -21,15 +21,20 @@ def generate_molecules(model_fp: str, duration: int) -> np.ndarray:
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
     simulation.run(duration, simulation.dt)
-    return np.array(simulation.getOutputData('molecules'))
+    return {
+        'data': np.array(simulation.getOutputData('molecules')),
+        'simulation': simulation
+    }
 
 
-def generate_molecule_coordinates(model_fp: str, duration: int) -> np.ndarray:
-    data = generate_molecules(model_fp, duration)
+def generate_molecule_coordinates(model_fp: str, duration: int, molecule_data=None) -> Dict:
+    molecule_output = molecule_data or generate_molecules(model_fp, duration)
+    data = molecule_output['data']
     mol_coords = []
     for mol in data:
         mol_coords.append(mol[2:5])
-    return np.array(mol_coords)
+    molecule_output['coordinates'] = np.array(mol_coords)
+    return molecule_output
 
 
 def get_species_names_from_model_file(model_fp: str) -> List[str]:

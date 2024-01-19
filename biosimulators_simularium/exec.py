@@ -2,6 +2,7 @@ import os
 from typing import Dict
 from simulariumio import TrajectoryData
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
+import pyvista as pv
 from biosimulators_simularium.convert import (
     generate_output_trajectory,
     translate_data_object
@@ -19,9 +20,48 @@ __all__ = [
 ]
 
 
-def generate_simularium_file(
+def execute(
         working_dir: str,
-        simularium_filename: str,
+        output_dir: str = None,
+        agent_params: Dict[str, Dict[str, float]] = None,
+        translate: bool = True,
+        use_json: bool = False,
+        box_size: float = 10.0,
+        **setup_config
+):
+    # generate a trajectory from the smoldyn file within a given working_dir
+    trajectory, mesh = generate_output_trajectory(
+        root_fp=working_dir,
+        agent_params=agent_params,
+        spatial_units=setup_config.get('spatial_units', 'mm'),
+        temporal_units=setup_config.get('temporal_units', 'ms')
+    )
+
+    # generate vtp
+    vtp_filename = setup_config.get('vtp_filename', 'simulation.vtp')
+    vtp_filepath: str = os.path.join(working_dir, vtp_filename)
+    generate_vtp_file(mesh, vtp_filepath)
+
+    # generate a simularium file
+    return generate_simularium_file(
+        working_dir,
+        output_dir,
+        agent_params,
+        translate,
+        use_json,
+        box_size,
+        **setup_config
+    )
+
+
+def generate_vtp_file(mesh: pv.StructuredGrid, save_path):
+    # write the vtp file
+    return mesh.save(save_path)
+
+
+def generate_simularium_file(
+        trajectory: SmoldynData,
+        working_dir: str,
         output_dir: str = None,
         agent_params: Dict[str, Dict[str, float]] = None,
         translate: bool = True,
@@ -34,9 +74,9 @@ def generate_simularium_file(
         simulation/agent parameters from the specified `working_dir/model.txt` path.
 
         Args:
+            trajectory:`SmoldynData`.
             working_dir:`str`: root directory in which to save the simularium file. If no `model_fp` is passed,
                 this working dir path is assumed to contain the Smoldyn model file.
-            simularium_filename:`str`: filename by which to serialize the simularium data object(s).
             output_dir:`optional, str`: path to the root of the directory in which you wish to save
                 the outputs (simularium file, vtp). If `None` is passed, then this value will be set to
                 `working_dir`. Defaults to `None`.
@@ -72,26 +112,18 @@ def generate_simularium_file(
                 write out binary by default. Defaults to `False`.
             box_size:`float`: size by which to scale the universe/box. Defaults to `10.0`.
                 # TODO: Make box_size less arbitrary and move it.
-            **setup_config:`kwargs`: spatial_units(str), temporal_units(str)
+            **setup_config:`kwargs`: simularium_filename, vtp_filename, spatial_units(str), temporal_units(str)
     """
-    # generate a trajectory from the smoldyn file within a given working_dir
-    trajectory: SmoldynData = generate_output_trajectory(
-        root_fp=working_dir,
-        agent_params=agent_params,
-        spatial_units=setup_config.get('spatial_units', 'mm'),
-        temporal_units=setup_config.get('temporal_units', 'ms')
-    )
-
     # handle output allocation
     if output_dir:
         working_dir = output_dir
+    simularium_filename = setup_config.get('simularium_filename', 'simulation')
     simularium_filepath: str = os.path.join(working_dir, simularium_filename)
 
     if translate:
         # In most cases you must translate the data such that negative values are accounted for as shown here
         trajectory: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
 
-    # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
     return write_simularium_file(trajectory, simularium_filename=simularium_filepath, json=use_json)
 
 

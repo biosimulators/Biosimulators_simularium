@@ -14,8 +14,10 @@ biosimulators-utils = "*"
 python-libcombine = "*"
 kisao = "*"
 termcolor = "*"
-# pyvista = "*"
 ipython = "*"
+notebook = "7.0.6"
+jupyter = "^1.0.0"
+pyvista = "^0.43.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

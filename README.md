@@ -12,6 +12,9 @@ available on PyPI cleanly on Linux.
 
 The easiest way to interact with `Biosimulators_simularium` is via the Python Package Index and a
 [virtual environment](https://docs.python.org/3/tutorial/venv.html). 
+
+   1. `poetry use python3.10`
+2. 
 We recommend [installing and using Conda](https://conda.io/projects/conda/en/latest/user-guide/concepts/environments.html):
    
    After you have created the environment...

@@ -2,6 +2,7 @@ import os
 import re
 import zipfile
 from typing import Union, List
+import pyvista as pv
 from simulariumio import TrajectoryData, BinaryWriter, JsonWriter
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 
@@ -12,6 +13,8 @@ __all__ = [
     'write_simularium_file',
     'normalize_modelout_path_in_root'
 ]
+
+
 
 
 def get_fp(working_dir: str, identifier: str) -> Union[str, List[str]]:
@@ -147,11 +150,6 @@ def standardize_model_output_fn(working_dirpath: str):
                 new_prefix = 'modelout'
                 fp = os.path.join(root, new_prefix + extension)
                 os.rename(os.path.join(root, f), fp)
-
-
-def write_vtp_file(filename: str):
-    """Write out a vtp file and remove a smoldyn modelout file."""
-    pass
 
 
 def normalize_modelout_path_in_root(root_fp):

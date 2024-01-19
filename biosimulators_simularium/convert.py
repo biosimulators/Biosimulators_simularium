@@ -3,6 +3,7 @@ from typing import Dict, Union, Optional, List
 from functools import partial
 from uuid import uuid4
 import numpy as np
+from smoldyn import Simulation
 from simulariumio import (
     InputFileData,
     DisplayData,
@@ -17,9 +18,11 @@ from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
 from simulariumio.filters.translate_filter import TranslateFilter
 from biosimulators_simularium.simulation_data import (
     run_model_file_simulation,
+    generate_molecule_coordinates,
     calculate_agent_radius,
     get_species_names_from_model_file,
-    generate_agent_params
+    generate_agent_params,
+    get_axis
 )
 from biosimulators_simularium.io import (
     get_model_fp,
@@ -31,14 +34,14 @@ from biosimulators_simularium.io import (
 
 
 __all__ = [
-    'new_output_data_object',
+    'new_output_trajectory',
     'generate_output_trajectory',
     'display_data_dict_from_archive_model',
     'translate_data_object'
 ]
 
 
-def new_output_data_object(
+def new_output_trajectory(
     file_data: Union[InputFileData, str],
     display_data: Optional[Dict[str, DisplayData]] = None,
     meta_data: Optional[MetaData] = None,
@@ -82,9 +85,10 @@ def generate_output_trajectory(
         root_fp: str,
         agent_params: Optional[Dict] = None,
         **config
-) -> SmoldynData:
+) -> Tuple[SmoldynData, pv.StructuredGrid]:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
-        directory as the model file, and generate a configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
+        directory as the model file, and generate a two-tuple of configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
+        as well as `pyvista.StructuredGrid`.
 
             Args:
 
@@ -129,7 +133,12 @@ def generate_output_trajectory(
     sim_config = read_smoldyn_simulation_configuration(model_fp)
     disable_smoldyn_graphics_in_simulation_configuration(sim_config)
     write_smoldyn_simulation_configuration(sim_config, model_fp)
-    mol_outputs = run_model_file_simulation(model_fp)
+
+    # run the simulation and generate an output
+    mol_outputs: Dict = run_model_file_simulation(model_fp)
+
+    # generate vtk
+    mesh = generate_pyvista(model_fp, mol_outputs['data'], mol_outputs['simulation'])
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
@@ -149,7 +158,8 @@ def generate_output_trajectory(
         config['meta_data'] = generate_metadata_object()
 
     # return a configured instance
-    return new_output_data_object(**config)
+    trajectory = new_output_trajectory(**config)
+    return trajectory, mesh
 
 
 def display_data_dict_from_archive_model(
@@ -291,6 +301,22 @@ def generate_metadata_object(
         model_meta_data=ModelMetaData(**model_metadata_params)
     )
 
+
+def generate_mesh(fp: str, molecule_data: np.ndarray, simulation: Simulation) -> pv.StructuredGrid:
+    """Generate an instance of `pv.StructuredGrid` configured to simulation outputs.
+    """
+    mol_coords: np.ndarray = generate_molecule_coordinates(
+        model_fp=fp,
+        duration=simulation.stop,
+        molecule_data=molecule_data
+    )
+    mesh = pv.PolyData(mol_coords)
+    y = get_axis(mol_coords, axis=1)
+    z = get_axis(mol_coords, axis=2)
+    mesh_grid = pv.StructuredGrid(molecule_coords)
+    mesh['height'] = mesh.points[:, 1]
+    mesh['id'] = np.arange(mesh.n_cells)
+    return mesh
 
 def translate_data_object(
     data: SmoldynData,
