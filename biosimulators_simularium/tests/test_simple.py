@@ -1,11 +1,14 @@
 import os
 import tempfile
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
-from biosimulators_simularium import generate_simularium_file
 from biosimulators_simularium.io import get_model_fp, get_archive_files
-from biosimulators_simularium.convert import generate_output_trajectory, display_data_dict_agent_major, get_species_names_from_model_file, display_data_dict_from_archive_model
 from biosimulators_simularium.simulation_data import generate_agent_params
 from biosimulators_simularium.exec import generate_simularium_file
+from biosimulators_simularium.convert import (
+    generate_output_trajectory,
+    get_species_names_from_model_file,
+    display_data_dict_from_archive_model
+)
 
 
 def assert_clause(clause: bool) -> int:
