@@ -15,4 +15,3 @@ def generate_agent_parameters(sim: Simulation) -> Dict[str, Dict]:
         for spec_name in species_names
     }
     return agent_params
-

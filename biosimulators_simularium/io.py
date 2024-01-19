@@ -10,6 +10,7 @@ __all__ = [
     'get_modelout_fp',
     'get_model_fp',
     'write_simularium_file',
+    'normalize_modelout_path_in_root'
 ]
 
 
@@ -151,3 +152,13 @@ def standardize_model_output_fn(working_dirpath: str):
 def write_vtp_file(filename: str):
     """Write out a vtp file and remove a smoldyn modelout file."""
     pass
+
+
+def normalize_modelout_path_in_root(root_fp):
+    for root, dirs, files in os.walk(root_fp):
+        for filename in files:
+            print(filename)
+            if filename.endswith('out.txt'):
+                original_path = os.path.join(root, filename)
+                new_path = os.path.join(root, 'modelout.txt')
+                os.rename(original_path, new_path)
