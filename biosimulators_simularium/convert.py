@@ -9,7 +9,8 @@ from simulariumio import (
     UnitData,
     MetaData,
     TrajectoryData,
-    DISPLAY_TYPE
+    DISPLAY_TYPE,
+    ModelMetaData
 )
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
@@ -31,7 +32,7 @@ from biosimulators_simularium.io import (
 
 __all__ = [
     'new_output_data_object',
-    'generate_output_data_object',
+    'generate_output_trajectory',
     'display_data_dict_from_archive_model',
     'translate_data_object'
 ]
@@ -77,7 +78,7 @@ def new_output_data_object(
 
 
 # noinspection PyBroadException
-def generate_output_data_object(
+def generate_output_trajectory(
         root_fp: str,
         agent_params: Optional[Dict] = None,
         **config
@@ -136,8 +137,14 @@ def generate_output_data_object(
 
     # set the display data dict from the model file inside the archive
     if not config.get('display_data'):
-        display_data_dict = display_data_dict_from_archive_model(rootpath=root_fp, agent_params=agent_params)
-        config['display_data'] = display_data_dict
+        config['display_data'] = display_data_dict_from_archive_model(
+            rootpath=root_fp,
+            agent_params=agent_params
+        )
+
+    # handle metadata and generate if none is present  TODO: extract this from a Biosimulations abstract
+    if not config.get('meta_data'):
+        config['meta_data'] = generate_metadata_object()
 
     print(f'final traj config: {config}')
     # return a configured instance
@@ -261,6 +268,29 @@ def display_data_dict_agent_major(
     return display_data
 
 
+def generate_metadata_object(
+        box_size: float = 50.0,
+        trajectory_title: str = "A spatial simulation trajectory",
+        **model_metadata_params
+) -> MetaData:
+    """Generate a metadata object configured for the particular simulation. Also generates model metadata
+        which you must define parameters of via this function's kwargs.
+
+        Args:
+            box_size:`float`: size by which we scale each dimension.
+            trajectory_title:`str`: title of the trajectory/data_object.
+            **model_metadata_params:`kwargs`: params required by the `simulariumio.ModelMetadata` constructor.
+                The kwargs are as follows: title, version, authors, description, doi, source_code_url,
+                    source_code_license_url, input_data_url, raw_output_data_url. Keep in mind that
+                    these kwargs pertain to the model only.
+    """
+    return MetaData(
+        box_size=np.array([box_size, box_size, box_size]),
+        trajectory_title=trajectory_title,
+        model_meta_data=ModelMetaData(**model_metadata_params)
+    )
+
+
 def translate_data_object(
     data: SmoldynData,
     box_size: float,
@@ -283,3 +313,4 @@ def translate_data_object(
     return SmoldynConverter(data).filter_data(
         [TranslateFilter(translation_per_type={}, default_translation=translation_magnitude * np.ones(n_dim))]
     )
+

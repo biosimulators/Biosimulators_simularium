@@ -10,7 +10,7 @@ import biosimulators_simularium
 from biosimulators_simularium.exec import generate_simularium_file, exec_combine_archive_and_simularium
 from biosimulators_simularium.convert import (
     display_data_dict_from_archive_model,
-    generate_output_data_object,
+    generate_output_trajectory,
     new_output_data_object,
     translate_data_object
 )
@@ -21,7 +21,7 @@ __all__ = [
     'generate_simularium_file',
     'exec_combine_archive_and_simularium',
     'display_data_dict_from_archive_model',
-    'generate_output_data_object',
+    'generate_output_trajectory',
     'new_output_data_object',
     'translate_data_object'
 ]

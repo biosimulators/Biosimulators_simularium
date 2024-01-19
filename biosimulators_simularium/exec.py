@@ -3,7 +3,7 @@ from typing import Dict
 from simulariumio import TrajectoryData
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from biosimulators_simularium.convert import (
-    generate_output_data_object,
+    generate_output_trajectory,
     translate_data_object
 )
 from biosimulators_simularium.io import write_simularium_file
@@ -72,7 +72,7 @@ def generate_simularium_file(
             **setup_config:`kwargs`: spatial_units(str), temporal_units(str)
     """
     # generate a trajectory from the smoldyn file within a given working_dir
-    trajectory: SmoldynData = generate_output_data_object(
+    trajectory: SmoldynData = generate_output_trajectory(
         root_fp=working_dir,
         agent_params=agent_params,
         spatial_units=setup_config.get('spatial_units', 'mm'),
