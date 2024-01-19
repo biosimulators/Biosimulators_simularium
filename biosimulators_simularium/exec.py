@@ -24,6 +24,7 @@ def generate_simularium_file(
         simularium_filename: str,
         output_dir: str = None,
         agent_params: Dict[str, Dict[str, float]] = None,
+        translate: bool = True,
         use_json: bool = False,
         box_size: float = 10.0,
         **setup_config
@@ -65,6 +66,8 @@ def generate_simularium_file(
 
                 The `biosimulators_simularium.simulation_data.generate_agent_params()` function is available
                     to populate this field based on a given model file and starting parameters.
+            translate:`Optional[bool]`: translate negative values of trajectory and generate a new instance
+                of `TrajectoryData` from the `SmoldynData` object. Defaults to `True`.
             use_json:`Optional[bool]`: if `True` then write the simularium file out as json, otherwise
                 write out binary by default. Defaults to `False`.
             box_size:`float`: size by which to scale the universe/box. Defaults to `10.0`.
@@ -79,16 +82,17 @@ def generate_simularium_file(
         temporal_units=setup_config.get('temporal_units', 'ms')
     )
 
-    # In most cases you must translate the data such that negative values are accounted for as shown here
-    translated_data: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
+    # handle output allocation
     if output_dir:
         working_dir = output_dir
-
     simularium_filepath: str = os.path.join(working_dir, simularium_filename)
 
+    if translate:
+        # In most cases you must translate the data such that negative values are accounted for as shown here
+        trajectory: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
+
     # TODO: remove modelout.txt since InputFileData is loaded and generate VTP
-    print(simularium_filepath)
-    return write_simularium_file(translated_data, simularium_filename=simularium_filepath, json=use_json)
+    return write_simularium_file(trajectory, simularium_filename=simularium_filepath, json=use_json)
 
 
 def generate_vtp_file(data=None):

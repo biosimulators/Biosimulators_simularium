@@ -19,11 +19,23 @@ def assert_clause(clause: bool) -> int:
         return 1
 
 
-def test_simple_convert():
+def test_simple_convert_minE():
     archive_root = 'biosimulators_simularium/tests/fixtures/MinE'
     simularium_name = 'simulation'
     is_json = True
     generate_simularium_file(working_dir=archive_root, simularium_filename='simulation', use_json=True)
+    assert_clause(os.path.exists(os.path.join(archive_root, simularium_name + '.simularium')))
+
+
+def test_simple_convert_crowding():
+    archive_root = 'biosimulators_simularium/tests/fixtures/crowding'
+    simularium_name = 'simulation'
+    is_json = True
+    generate_simularium_file(
+        working_dir=archive_root,
+        simularium_filename='simulation',
+        use_json=True
+    )
     assert_clause(os.path.exists(os.path.join(archive_root, simularium_name + '.simularium')))
 
 
@@ -46,7 +58,6 @@ def test_trajectory_object():
     display_dict = display_data_dict_from_archive_model(rootpath=archive_root, agent_params=params, mol_major=False)
     trajectory = generate_output_trajectory(root_fp=archive_root)
     assert_clause(isinstance(trajectory, SmoldynData))
-
 
 
 

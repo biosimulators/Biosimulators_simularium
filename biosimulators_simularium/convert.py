@@ -125,10 +125,12 @@ def generate_output_trajectory(
     # extract the archive files from the rootpath defined in the kwargs
     model_fp = get_model_fp(root_fp)
 
+    # disable graphics if necessary
     sim_config = read_smoldyn_simulation_configuration(model_fp)
     disable_smoldyn_graphics_in_simulation_configuration(sim_config)
     write_smoldyn_simulation_configuration(sim_config, model_fp)
     mol_outputs = run_model_file_simulation(model_fp)
+
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
 
@@ -146,7 +148,6 @@ def generate_output_trajectory(
     if not config.get('meta_data'):
         config['meta_data'] = generate_metadata_object()
 
-    print(f'final traj config: {config}')
     # return a configured instance
     return new_output_data_object(**config)
 
