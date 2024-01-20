@@ -1,9 +1,10 @@
 import os.path
-from typing import Dict, Union, Optional, List
+from typing import Dict, Union, Optional, List, Tuple
 from functools import partial
 from uuid import uuid4
 import numpy as np
 from smoldyn import Simulation
+import pyvista as pv
 from simulariumio import (
     InputFileData,
     DisplayData,
@@ -310,13 +311,30 @@ def generate_mesh(fp: str, molecule_data: np.ndarray, simulation: Simulation) ->
         duration=simulation.stop,
         molecule_data=molecule_data
     )
-    mesh = pv.PolyData(mol_coords)
+
+    # define particle points as a mesh
+    points = pv.PolyData(mol_coords)
     y = get_axis(mol_coords, axis=1)
     z = get_axis(mol_coords, axis=2)
-    mesh_grid = pv.StructuredGrid(molecule_coords)
-    mesh['height'] = mesh.points[:, 1]
-    mesh['id'] = np.arange(mesh.n_cells)
-    return mesh
+
+    # define the grid into which we interpolate this
+    boundaries = np.array(simulation.getBoundaries())
+    mesh_grid = pv.PolyData(boundaries)
+
+    p = pv.Plotter()
+    p.add_mesh(points, scalars="val", render_points_as_spheres=True)
+
+    p.add_mesh(surface)
+    interpolated = surface.interpolate(points, radius=12.0)
+
+    print(type(interpolated))
+
+    p = pv.Plotter()
+    p.add_mesh(points, scalars="val", point_size=30.0, render_points_as_spheres=True)
+    p.add_mesh(interpolated, scalars="val")
+    # mesh['height'] = mesh.points[:, 1]
+    # mesh['id'] = np.arange(mesh.n_cells)
+    return interpolated
 
 def translate_data_object(
     data: SmoldynData,

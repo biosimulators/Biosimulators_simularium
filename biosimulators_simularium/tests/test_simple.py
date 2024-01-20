@@ -3,7 +3,7 @@ import tempfile
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from biosimulators_simularium.io import get_model_fp, get_archive_files
 from biosimulators_simularium.simulation_data import generate_agent_params
-from biosimulators_simularium.exec import generate_simularium_file
+from biosimulators_simularium.exec import execute, generate_simularium_file
 from biosimulators_simularium.convert import (
     generate_output_trajectory,
     get_species_names_from_model_file,
