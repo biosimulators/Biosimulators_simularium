@@ -10,6 +10,22 @@ from biosimulators_simularium.io import get_model_fp
 np.random.seed(42)
 
 
+def generate_output(**kwargs) -> Dict:
+    """Run the simulation model found at `model_fp` for the duration
+        specified therein and return a dictionary of a numpy array of the `listmols` command output and the
+        `smoldyn.Simulation` instance used to generate said output.
+        Extract molecule coordinates from the output of a smoldyn listmols command via either the passed
+        molecule_output or from the given smoldyn model file.
+        We choose to not specify a duration as this is already required in the SEDML configuration.
+
+    Keyword Args:
+         model_fp:`optional, str`
+         molecule_output:`optional, Dict`
+
+    """
+    return generate_molecule_coordinates(**kwargs)
+
+
 def generate_molecules(model_fp: str = None, dir_fp: str = None) -> Dict[str, Union[np.ndarray, Simulation]]:
     """Run the simulation model found at `model_fp` for the duration
         specified therein and return a dictionary of a numpy array of the `listmols` command output and the
@@ -33,14 +49,19 @@ def generate_molecules(model_fp: str = None, dir_fp: str = None) -> Dict[str, Un
     }
 
 
-def generate_molecule_coordinates(model_fp: str = None, molecule_output=None, *args) -> Dict:
+def generate_molecule_coordinates(
+        model_fp: str = None,
+        dir_fp: str = None,
+        molecule_output: Dict = None,
+        *args
+) -> Dict:
     """Extract molecule coordinates from the output of a smoldyn listmols command via either the passed
-        molecule_output or from the given smoldyn model file.
+        molecule_output or from the given smoldyn model file or dirpath which wraps `generate_molecules`.
     """
     if molecule_output is None:
         if not model_fp:
             raise ValueError('You must pass a model filepath if not passing molecule_output')
-        molecule_output = generate_molecules(model_fp=model_fp)
+        molecule_output = generate_molecules(model_fp=model_fp, dir_fp=dir_fp)
 
     data = molecule_output['data']
     mol_coords = []
