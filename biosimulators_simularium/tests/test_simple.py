@@ -18,6 +18,15 @@ def assert_clause(clause: bool) -> int:
     except:
         return 1
 
+MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
+CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
+SIMULARIUM_TEST_NAME = 'simularium'
+USE_JSON = True
+
+
+def test_simple_execute():
+    execute(working_dir=CROWDING_DIR, use_json=USE_JSON)
+
 
 def test_simple_convert_minE():
     archive_root = 'biosimulators_simularium/tests/fixtures/MinE'
