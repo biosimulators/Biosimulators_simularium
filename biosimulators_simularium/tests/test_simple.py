@@ -2,6 +2,7 @@ import os
 import tempfile
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from biosimulators_simularium.io import get_model_fp, get_archive_files
+from biosimulators_simularium.tests import make_test_dir
 from biosimulators_simularium.simulation_data import generate_agent_params
 from biosimulators_simularium.exec import execute, generate_simularium_file
 from biosimulators_simularium.convert import (
@@ -28,8 +29,7 @@ USE_JSON = True
 
 def test_simple_execute(output_dir=OUTPUT_DIR, archive_root=MIN_E_DIR, test_name=DOC_TEST_NAME, json=USE_JSON):
     archive_root = MIN_E_DIR
-    if not os.path.exists(OUTPUT_DIR):
-        os.mkdir(OUTPUT_DIR)
+    make_test_dir(output_dir)
     execute(working_dir=archive_root, use_json=json, output_dir=output_dir)
     assert_clause(os.path.exists(os.path.join(archive_root, test_name + '.simularium')))
 
