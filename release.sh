@@ -5,8 +5,8 @@
 # basic checks to avoid mistakes in releases, for example tags not
 # matching PyPI.
 
-set -e
 
+set +e 
 use_poetry="$1"
 version=$(grep "__version__" setup.py | awk -F\' '{print $2}')
 
