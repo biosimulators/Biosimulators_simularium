@@ -18,6 +18,7 @@ def assert_clause(clause: bool) -> int:
     except:
         return 1
 
+
 MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
 CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
 SIMULARIUM_TEST_NAME = 'simularium'

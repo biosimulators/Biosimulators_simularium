@@ -31,7 +31,7 @@ def generate_molecules(model_fp: str) -> Dict[str, Union[np.ndarray, Simulation]
     }
 
 
-def generate_molecule_coordinates(model_fp: str = None, molecule_output=None) -> Dict:
+def generate_molecule_coordinates(model_fp: str = None, molecule_output=None, *args) -> Dict:
     """Extract molecule coordinates from the output of a smoldyn listmols command via either the passed
         molecule_output or from the given smoldyn model file.
     """
