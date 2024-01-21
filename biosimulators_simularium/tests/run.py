@@ -10,4 +10,4 @@ USE_JSON = True
 
 mol_output = generate_output(dir_fp=MIN_E_DIR)
 mesh = generate_interpolated_mesh(mol_output=mol_output)
-print(mesh.point_normals)
+print(dir(mesh))

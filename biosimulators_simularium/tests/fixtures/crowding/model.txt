@@ -18,7 +18,7 @@ boundaries z 0 20
 
 frame_thickness 0
 
-define TIME_STOP 10
+define TIME_STOP 3
 
 time_start 0
 time_stop TIME_STOP

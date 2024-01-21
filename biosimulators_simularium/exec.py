@@ -41,10 +41,11 @@ def execute(
     # generate vtp
     vtp_filename = setup_config.get('vtp_filename', 'simulation.vtp')
     vtp_filepath: str = os.path.join(working_dir, vtp_filename)
-    generate_vtp_file(mesh, vtp_filepath)
+    generate_vtp_file(mesh, filename=vtp_filepath)
 
     # generate a simularium file
     return generate_simularium_file(
+        trajectory,
         working_dir,
         output_dir,
         agent_params,
@@ -55,9 +56,16 @@ def execute(
     )
 
 
-def generate_vtp_file(mesh: pv.PolyData, save_path):
-    # write the vtp file
-    return mesh.save(save_path)
+def generate_vtp_file(mesh: pv.PolyData, **kwargs):
+    """write a vtp file to `save_path` based on the `mesh`. Kwargs according to `pv.PolyData().save()` args.
+
+        Keyword Args:
+            filename:`str`: path in which to save the vtp file.
+            binary: bool = True,
+            texture: Any = None,
+            recompute_normals: Any
+    """
+    return mesh.save(kwargs['filename'])
 
 
 def generate_simularium_file(
@@ -126,10 +134,6 @@ def generate_simularium_file(
         trajectory: TrajectoryData = translate_data_object(data=trajectory, box_size=box_size)
 
     return write_simularium_file(trajectory, simularium_filename=simularium_filepath, json=use_json)
-
-
-def generate_vtp_file(data=None):
-    pass
 
 
 def execute_generate(write_simularium, write_vtp, **kwargs):
