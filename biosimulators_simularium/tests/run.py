@@ -4,7 +4,7 @@ from biosimulators_simularium.convert import generate_interpolated_mesh  # , gen
 from biosimulators_simularium.tests.test_simple import test_simple_execute
 
 
-OUTPUT_DIR = 'biosimulators_simularium/OUTPUT'
+OUTPUT_DIR = 'biosimulators-simularium/OUTPUT'
 MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
 CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
 DOC_NAME = 'simulation'
