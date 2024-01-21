@@ -18,6 +18,7 @@ if poetry run pytest; then
   echo "All tests successfully passed."
 else
   echo "Tests did not pass. Exiting."
+  exit 1
 fi
 
 # Check version is valid
