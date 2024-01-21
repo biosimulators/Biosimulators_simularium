@@ -20,6 +20,7 @@ def generate_output(**kwargs) -> Dict:
 
     Keyword Args:
          model_fp:`optional, str`
+         dir_fp:`optional, str`: dirpath containing smoldyn config.
          molecule_output:`optional, Dict`
 
     """
@@ -59,8 +60,6 @@ def generate_molecule_coordinates(
         molecule_output or from the given smoldyn model file or dirpath which wraps `generate_molecules`.
     """
     if molecule_output is None:
-        if not model_fp:
-            raise ValueError('You must pass a model filepath if not passing molecule_output')
         molecule_output = generate_molecules(model_fp=model_fp, dir_fp=dir_fp)
 
     data = molecule_output['data']
