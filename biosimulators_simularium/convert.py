@@ -316,7 +316,7 @@ def generate_interpolated_mesh(
                 depending on the size of the molecule output. Defaults to `False`.
 
         Keyword Args:
-            mol_coords:`optional, np.ndarray`: Nd array of shape (n, 3) representing each molecule's coordinates.
+            coordinates:`optional, np.ndarray`: Nd array of shape (n, 3) representing each molecule's coordinates.
                 If `None` is passed, you must pass the path to a smoldyn model file or simulation instance.
                 Defaults to `None`.
             mol_output:`optional, Dict`: dictionary of molecule outputs that define 'data', 'simulation',
@@ -330,20 +330,15 @@ def generate_interpolated_mesh(
 
     """
     # helper for standalone functionality
-    if kwargs.get('mol_coords') is None:
-        mol_output = kwargs.get('mol_output')
-        arg = {}
-        if isinstance(mol_output, dict):
-            args = mol_output.get('simulation', kwargs['model_fp'])
-            mol_result = generate_molecule_coordinates(arg)
-        else:
-            mol_result = generate_molecule_coordinates(model_fp=kwargs['model_fp'])
-
-        mol_coords = mol_result['coordinates']
+    mol_output = kwargs.get('mol_output')
+    if isinstance(mol_output, dict):
+        mol_coords = mol_output['coordinates']
+    else:
+        mol_coords = kwargs['coordinates']
 
     # define the grid into which we interpolate the passed coordinates
-    simulation = kwargs.get('simulation', )
-    boundaries = kwargs.get('boundaries', np.array(kwargs['simulation'].getBoundaries()))
+    simulation = kwargs.get('simulation', mol_output['simulation'])
+    boundaries = kwargs.get('boundaries', np.array(simulation.getBoundaries()))
     surface = pv.PolyData(boundaries)
 
     # define particle points as a mesh and compute vectors
