@@ -14,4 +14,4 @@ USE_JSON = True
 if __name__ == '__main__':
     #mol_output = generate_output(dir_fp=MIN_E_DIR)
     #mesh = generate_interpolated_mesh(mol_output=mol_output)
-    test_simple_execute(MIN_E_DIR, DOC_NAME, USE_JSON, output_dir=OUTPUT_DIR)
+    test_simple_execute()
