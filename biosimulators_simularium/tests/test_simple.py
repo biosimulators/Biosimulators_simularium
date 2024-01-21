@@ -19,14 +19,17 @@ def assert_clause(clause: bool) -> int:
         return 1
 
 
+OUTPUT_DIR = 'Biosimulators_simularium/OUTPUT'
 MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
 CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
 DOC_TEST_NAME = 'simularium'
 USE_JSON = True
 
 
-def test_simple_execute(output_dir: str, archive_root=MIN_E_DIR, test_name=DOC_TEST_NAME, json=USE_JSON):
+def test_simple_execute(output_dir=OUTPUT_DIR, archive_root=MIN_E_DIR, test_name=DOC_TEST_NAME, json=USE_JSON):
     archive_root = MIN_E_DIR
+    if not os.path.exists(OUTPUT_DIR):
+        os.mkdir(OUTPUT_DIR)
     execute(working_dir=archive_root, use_json=json, output_dir=output_dir)
     assert_clause(os.path.exists(os.path.join(archive_root, test_name + '.simularium')))
 
