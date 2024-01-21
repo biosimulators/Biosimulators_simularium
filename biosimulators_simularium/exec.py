@@ -15,6 +15,7 @@ from biosimulators_utils.combine.data_model import CombineArchive, CombineArchiv
 
 
 __all__ = [
+    'execute',
     'generate_simularium_file',
     'exec_combine_archive_and_simularium'
 ]
@@ -54,7 +55,7 @@ def execute(
     )
 
 
-def generate_vtp_file(mesh: pv.StructuredGrid, save_path):
+def generate_vtp_file(mesh: pv.PolyData, save_path):
     # write the vtp file
     return mesh.save(save_path)
 

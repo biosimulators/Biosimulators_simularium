@@ -23,7 +23,8 @@ from biosimulators_simularium.simulation_data import (
     calculate_agent_radius,
     get_species_names_from_model_file,
     generate_agent_params,
-    get_axis
+    get_axis,
+    compute_vectors
 )
 from biosimulators_simularium.io import (
     get_model_fp,
@@ -139,7 +140,7 @@ def generate_output_trajectory(
     mol_outputs: Dict = run_model_file_simulation(model_fp)
 
     # generate vtk
-    mesh = generate_pyvista(model_fp, mol_outputs['data'], mol_outputs['simulation'])
+    mesh = generate_interpolated_mesh(fp=model_fp, molecule_data=mol_outputs['data'])
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
@@ -303,37 +304,51 @@ def generate_metadata_object(
     )
 
 
-def generate_mesh(fp: str, molecule_data: np.ndarray, simulation: Simulation) -> pv.StructuredGrid:
-    """Generate an instance of `pv.StructuredGrid` configured to simulation outputs.
+def generate_interpolated_mesh(fp: str = None, molecule_data: np.ndarray = None) -> pv.PolyData:
+    """Generate an instance of a surface mesh into which molecule points are interpolated from a Smoldyn
+        configuration(model) found at `fp`.
+
+        Args:
+            fp:`optional, str`: filepath to the smoldyn configuration. Defaults to `None`.
+            molecule_data:`optional, np.ndarray`: numpy array of molecule outputs. Must be passed if no
+                filepath is passed. Defaults to `None`.
     """
+    # generate coordinates
     mol_coords: np.ndarray = generate_molecule_coordinates(
         model_fp=fp,
-        duration=simulation.stop,
-        molecule_data=molecule_data
+        molecule_output=molecule_data
     )
-
-    # define particle points as a mesh
-    points = pv.PolyData(mol_coords)
-    y = get_axis(mol_coords, axis=1)
-    z = get_axis(mol_coords, axis=2)
 
     # define the grid into which we interpolate this
     boundaries = np.array(simulation.getBoundaries())
-    mesh_grid = pv.PolyData(boundaries)
+    surface = pv.PolyData(boundaries)
 
+    # define particle points as a mesh and compute vectors
+    points = pv.PolyData(mol_coords)
+    point_vectors = compute_vectors(points)
+    y = get_axis(mol_coords, axis=1)
+    z = get_axis(mol_coords, axis=2)
+
+    # add the vectors to the mesh and configure viz arrows
+    points['vectors'] = point_vectors
+    vector_arrows = points.glyph(
+        orient='vectors',
+        scale=False,
+        factor=3.0
+    )
+
+    # create a plotter and use it to create an interpolated mesh from the surface.
     p = pv.Plotter()
-    p.add_mesh(points, scalars="val", render_points_as_spheres=True)
-
+    p.add_mesh(points)
     p.add_mesh(surface)
     interpolated = surface.interpolate(points, radius=12.0)
 
-    print(type(interpolated))
+    # p = pv.Plotter()
+    # p.add_mesh(points, scalars="val", point_size=30.0, render_points_as_spheres=True)
+    # p.add_mesh(interpolated, scalars="val")
+    # interpolated['height'] = interpolated.points[:, 1]
+    # interpolated['id'] = np.arange(interpolated.n_cells)
 
-    p = pv.Plotter()
-    p.add_mesh(points, scalars="val", point_size=30.0, render_points_as_spheres=True)
-    p.add_mesh(interpolated, scalars="val")
-    # mesh['height'] = mesh.points[:, 1]
-    # mesh['id'] = np.arange(mesh.n_cells)
     return interpolated
 
 def translate_data_object(

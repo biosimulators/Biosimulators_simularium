@@ -9,26 +9,35 @@ from biosimulators_simularium.io import get_model_fp
 np.random.seed(42)
 
 
-def generate_molecules(model_fp: str, duration: int) -> np.ndarray:
-    """Run the simulation model found at `model_fp` and return a numpy array of the `listmols` command output.
+def generate_molecules(model_fp: str) -> np.ndarray:
+    """Run the simulation model found at `model_fp` for the duation
+        specified therein and return a numpy array of the `listmols` command output.
+        We choose to not specify a duration as this is already required in the SEDML configuration.
 
         Args:
-            model_fp:`str`
-            duration:`int`: duration by which to run the simulation.
+            model_fp:`str`: path to the smoldyn configuration
 
     """
     simulation = Simulation.fromFile(model_fp)
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
-    simulation.run(duration, simulation.dt)
+    # simulation.run(duration, simulation.dt)
+    simulation.runSim()
     return {
         'data': np.array(simulation.getOutputData('molecules')),
         'simulation': simulation
     }
 
 
-def generate_molecule_coordinates(model_fp: str, duration: int, molecule_data=None) -> Dict:
-    molecule_output = molecule_data or generate_molecules(model_fp, duration)
+def generate_molecule_coordinates(model_fp: str = None, molecule_output=None) -> Dict:
+    """Extract molecule coordinates from the output of a smoldyn listmols command via either the passed
+        molecule_output or from the given smoldyn model file.
+    """
+    if molecule_output is None:
+        if not model_fp:
+            raise ValueError('You must pass a model filepath if not passing molecule_output')
+        molecule_output = generate_molecules(model_fp)
+
     data = molecule_output['data']
     mol_coords = []
     for mol in data:
@@ -131,6 +140,13 @@ def get_axis(agent_coordinates: list[list[float]], axis: int) -> np.ndarray:
             A 1d scalar array of the chosen axis.
     """
     return np.array([agent_coord[axis] for agent_coord in agent_coordinates])
+
+
+def compute_vectors(mesh: pv.PolyData) -> pv.pyvista_ndarray:
+    origin = mesh.center
+    vectors = mesh.points - origin
+    vectors = vectors / np.linalg.norm(vectors, axis=1)[:, None]
+    return vectors
 
 
 def validated_model(model_fp: str) -> Simulation:
