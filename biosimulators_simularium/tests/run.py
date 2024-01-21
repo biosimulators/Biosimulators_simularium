@@ -8,4 +8,4 @@ SIMULARIUM_TEST_NAME = 'simularium'
 USE_JSON = True
 
 
-
+print(CROWDING_DIR)
