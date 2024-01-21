@@ -1,6 +1,7 @@
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Union
 from smoldyn import Simulation
 import numpy as np
+import pyvista as pv
 from biosimulators_simularium.validation import validate_model
 from biosimulators_simularium.io import get_model_fp
 # from biosimulators_simularium.utils import get_modelout_fp, standardize_model_output_fn
@@ -9,9 +10,10 @@ from biosimulators_simularium.io import get_model_fp
 np.random.seed(42)
 
 
-def generate_molecules(model_fp: str) -> np.ndarray:
-    """Run the simulation model found at `model_fp` for the duation
-        specified therein and return a numpy array of the `listmols` command output.
+def generate_molecules(model_fp: str) -> Dict[str, Union[np.ndarray, Simulation]]:
+    """Run the simulation model found at `model_fp` for the duration
+        specified therein and return a dictionary of a numpy array of the `listmols` command output and the
+        `smoldyn.Simulation` instance used to generate said output.
         We choose to not specify a duration as this is already required in the SEDML configuration.
 
         Args:
@@ -155,22 +157,6 @@ def validated_model(model_fp: str) -> Simulation:
         return simulation
     else:
         raise ValueError(f'{model_fp} is not valid.')
-
-
-def run_model_file_simulation(model_fp: str) -> List[List[float]]:
-    """Run a Smoldyn simulation from a given `model_fp` and return a 2d List of
-        molecule outputs with a shape of (n, 6) where n
-
-        Please Note: This function will run the model file IN ADDITION to the `listmols` command.
-            All commands (if present) will be run in the Smoldyn model file.
-
-    """
-    simulation = validated_model(model_fp)
-    simulation.addOutputData('molecules')
-    simulation.addCommand(cmd='listmols molecules', cmd_type='E')
-    simulation.runSim()
-    molecule_output_data = simulation.getOutputData('molecules')
-    return molecule_output_data
 
 
 def calculate_agent_radius(m: float, rho: float, scaling_factor: float = 10**(-2)) -> float:

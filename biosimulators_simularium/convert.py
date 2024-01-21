@@ -137,10 +137,10 @@ def generate_output_trajectory(
     write_smoldyn_simulation_configuration(sim_config, model_fp)
 
     # run the simulation and generate an output
-    mol_outputs: Dict = run_model_file_simulation(model_fp)
+    mol_outputs: Dict = generate_molecule_coordinates(model_fp)
 
     # generate vtk
-    mesh = generate_interpolated_mesh(fp=model_fp, molecule_data=mol_outputs['data'])
+    mesh = generate_interpolated_mesh(molecule_data=mol_outputs['data'])
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
@@ -304,23 +304,26 @@ def generate_metadata_object(
     )
 
 
-def generate_interpolated_mesh(fp: str = None, molecule_data: np.ndarray = None) -> pv.PolyData:
-    """Generate an instance of a surface mesh into which molecule points are interpolated from a Smoldyn
-        configuration(model) found at `fp`.
+def generate_interpolated_mesh(mol_coords: np.ndarray = None, **kwargs) -> pv.PolyData:
+    """Generate a surface mesh from the given simulation run's `smoldyn.Simulation.fromFile()`
+        instance into which passed molecule coordinate points are interpolated.
 
         Args:
-            fp:`optional, str`: filepath to the smoldyn configuration. Defaults to `None`.
-            molecule_data:`optional, np.ndarray`: numpy array of molecule outputs. Must be passed if no
-                filepath is passed. Defaults to `None`.
-    """
-    # generate coordinates
-    mol_coords: np.ndarray = generate_molecule_coordinates(
-        model_fp=fp,
-        molecule_output=molecule_data
-    )
+            mol_coords:`np.ndarray`: Nd array of shape (n, 3) representing each molecule's coordinates.
+            boundaries:`optional, Tuple[List[float], List[float]`: a two-tuple of lists of floats where
+                the 0th entry are the lower bounds of x, y, z and the 1th entry being the same for higher bounds.
+            simulation:`optional, smoldyn.Simulation`: simulation instance used to generate molecule coordinates used
+                to define boundaries if boundaries are not passed.
+            model_fp:`str`: if no `mol_coords` are passed, the path to the smoldyn configuration by which you
+                generate the coordinates for the mesh.
 
-    # define the grid into which we interpolate this
-    boundaries = np.array(simulation.getBoundaries())
+        # TODO: Enable standalone functionality with an optional smoldyn `fp`.
+    """
+    if mol_coords is None:
+        mol_coords = generate_molecule_coordinates(model_fp=kwargs['model_fp']).get('coordinates')
+
+    # define the grid into which we interpolate the passed coordinates
+    boundaries = kwargs.get('boundaries', np.array(kwargs['simulation'].getBoundaries()))
     surface = pv.PolyData(boundaries)
 
     # define particle points as a mesh and compute vectors
