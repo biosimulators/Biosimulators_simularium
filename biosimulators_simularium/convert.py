@@ -308,7 +308,9 @@ def generate_interpolated_mesh(
         **kwargs,
 ) -> pv.PolyData:
     """Generate a surface mesh from the given simulation run's `smoldyn.Simulation.fromFile()`
-        instance into which passed molecule coordinate points are interpolated.
+        instance into which passed molecule coordinate points are interpolated. You have to either pass
+        a `mol_output` dict or a np.array of molecule coordinates ALONG with a cooresponding simulation
+        instance.
 
         Args:
             include_vectors:`optional, bool`: Compute the point vectors and include them as an attribute to
