@@ -10,16 +10,18 @@ from biosimulators_simularium.io import get_model_fp
 np.random.seed(42)
 
 
-def generate_molecules(model_fp: str) -> Dict[str, Union[np.ndarray, Simulation]]:
+def generate_molecules(model_fp: str = None, dir_fp: str = None) -> Dict[str, Union[np.ndarray, Simulation]]:
     """Run the simulation model found at `model_fp` for the duration
         specified therein and return a dictionary of a numpy array of the `listmols` command output and the
         `smoldyn.Simulation` instance used to generate said output.
         We choose to not specify a duration as this is already required in the SEDML configuration.
 
         Args:
-            model_fp:`str`: path to the smoldyn configuration
+            model_fp:`str`: path to the smoldyn configuration. Defaults to `None`.
+            dir_fp:`str`: path to the directory containing the smoldyn configuration. Defaults to `None`.
 
     """
+    model_fp = model_fp or get_model_fp(dir_fp)
     simulation = Simulation.fromFile(model_fp)
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')
@@ -38,7 +40,7 @@ def generate_molecule_coordinates(model_fp: str = None, molecule_output=None, *a
     if molecule_output is None:
         if not model_fp:
             raise ValueError('You must pass a model filepath if not passing molecule_output')
-        molecule_output = generate_molecules(model_fp)
+        molecule_output = generate_molecules(model_fp=model_fp)
 
     data = molecule_output['data']
     mol_coords = []
