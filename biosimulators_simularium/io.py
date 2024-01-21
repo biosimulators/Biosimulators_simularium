@@ -100,6 +100,18 @@ def write_simularium_file(
     return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
 
 
+def write_vtp_file(mesh: pv.PolyData, **kwargs):
+    """write a vtp file to `save_path` based on the `mesh`. Kwargs according to `pv.PolyData().save()` args.
+
+        Keyword Args:
+            filename:`str`: path in which to save the vtp file.
+            binary: bool = True,
+            texture: Any = None,
+            recompute_normals: Any
+    """
+    return mesh.save(kwargs['filename'])
+
+
 def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
     ''' Read a configuration for a Smoldyn simulation
 

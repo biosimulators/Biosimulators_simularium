@@ -331,6 +331,7 @@ def generate_interpolated_mesh(
                 generate the coordinates for the mesh.
 
     """
+    print('Generating interpolated mesh -------------')
     # helper for standalone functionality
     mol_output = kwargs.get('mol_output')
     if isinstance(mol_output, dict):

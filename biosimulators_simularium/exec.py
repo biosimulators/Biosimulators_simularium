@@ -7,7 +7,7 @@ from biosimulators_simularium.convert import (
     generate_output_trajectory,
     translate_data_object
 )
-from biosimulators_simularium.io import write_simularium_file
+from biosimulators_simularium.io import write_simularium_file, write_vtp_file
 from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 from biosimulators_utils.combine.io import CombineArchiveWriter
@@ -65,7 +65,14 @@ def generate_vtp_file(mesh: pv.PolyData, **kwargs):
             texture: Any = None,
             recompute_normals: Any
     """
-    return mesh.save(kwargs['filename'])
+    print('Writing trajectory to VTP -------------')
+    try:
+        write_vtp_file(mesh, **kwargs)
+        print(f"Successfully wrote VTP file to {kwargs['filename']}.")
+        return
+    except IOError as e:
+        print(e)
+        raise e
 
 
 def generate_simularium_file(
