@@ -139,7 +139,7 @@ def generate_output_trajectory(
     mol_outputs: Dict = generate_molecule_coordinates(model_fp)
 
     # generate vtk
-    mesh = generate_interpolated_mesh(molecule_data=mol_outputs['data'])
+    mesh = generate_interpolated_mesh(mol_output=mol_outputs)
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
@@ -318,11 +318,11 @@ def generate_interpolated_mesh(
                 depending on the size of the molecule output. Defaults to `False`.
 
         Keyword Args:
+            mol_output:`optional, Dict`: dictionary of molecule outputs that define 'data', 'simulation',
+                'coordinates', and 'boundaries'. NOTE: This is the preferred input type for this function.
             coordinates:`optional, np.ndarray`: Nd array of shape (n, 3) representing each molecule's coordinates.
                 If `None` is passed, you must pass the path to a smoldyn model file or simulation instance.
                 Defaults to `None`.
-            mol_output:`optional, Dict`: dictionary of molecule outputs that define 'data', 'simulation',
-                'coordinates', and 'boundaries'.
             boundaries:`optional, Tuple[List[float], List[float]`: a two-tuple of lists of floats where
                 the 0th entry are the lower bounds of x, y, z and the 1th entry being the same for higher bounds.
             simulation:`optional, smoldyn.Simulation`: simulation instance used to generate molecule coordinates used
