@@ -40,7 +40,7 @@ def execute(
 
     # generate vtp
     vtp_filename = setup_config.get('vtp_filename', 'simulation.vtp')
-    vtp_filepath: str = os.path.join(working_dir, vtp_filename)
+    vtp_filepath: str = os.path.join(output_dir, vtp_filename)
     generate_vtp_file(mesh, filename=vtp_filepath)
 
     # generate a simularium file
