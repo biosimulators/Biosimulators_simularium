@@ -112,6 +112,11 @@ def write_vtp_file(mesh: pv.PolyData, **kwargs):
     return mesh.save(kwargs['filename'])
 
 
+def read_vtp_file(fp: str):
+    """Return an object instance from Pyvista configured by the `fp` in vtp format."""
+    return pv.get_reader(fp).read()
+
+
 def read_smoldyn_simulation_configuration(filename: str) -> List[str]:
     ''' Read a configuration for a Smoldyn simulation
 

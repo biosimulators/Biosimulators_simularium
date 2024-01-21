@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 # noinspection PyProtectedMember
 
-__version__ = '0.5.17'
+__version__ = '0.5.18'
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
