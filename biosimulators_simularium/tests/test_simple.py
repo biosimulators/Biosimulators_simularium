@@ -25,7 +25,9 @@ USE_JSON = True
 
 
 def test_simple_execute():
-    execute(working_dir=CROWDING_DIR, use_json=USE_JSON)
+    archive_root = MIN_E_DIR
+    execute(working_dir=archive_root, use_json=USE_JSON)
+    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
 
 
 def test_simple_convert_minE():
@@ -33,7 +35,7 @@ def test_simple_convert_minE():
     simularium_name = 'simulation'
     is_json = True
     generate_simularium_file(working_dir=archive_root, simularium_filename='simulation', use_json=True)
-    assert_clause(os.path.exists(os.path.join(archive_root, simularium_name + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
 
 
 def test_simple_convert_crowding():
@@ -45,7 +47,7 @@ def test_simple_convert_crowding():
         simularium_filename='simulation',
         use_json=True
     )
-    assert_clause(os.path.exists(os.path.join(archive_root, simularium_name + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
 
 
 def test_tempdir_convert():
@@ -55,7 +57,7 @@ def test_tempdir_convert():
     out_dir = tempfile.mkdtemp()
     generate_simularium_file(working_dir=archive_root, simularium_filename=simularium_name, output_dir=out_dir)
     print(f'Output dir: {get_archive_files(out_dir)}')
-    assert_clause(os.path.exists(os.path.join(out_dir, simularium_name + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(out_dir, SIMULARIUM_TEST_NAME + '.simularium')))
 
 
 def test_trajectory_object():
