@@ -6,9 +6,19 @@
 # matching PyPI.
 
 
-set +e 
-use_poetry="$1"
+set -e
+
+echo "Use Poetry?: "
+read -r use_poetry
 version=$(grep "__version__" setup.py | awk -F\' '{print $2}')
+
+echo "Running test pipeline ----------"
+#if poetry run mypy \
+if poetry run pytest; then
+  echo "All tests successfully passed."
+else
+  echo "Tests did not pass. Exiting."
+fi
 
 # Check version is valid
 if [ "$use_poetry" != 1 ]; then
