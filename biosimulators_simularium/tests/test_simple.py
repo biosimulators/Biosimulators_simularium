@@ -21,14 +21,14 @@ def assert_clause(clause: bool) -> int:
 
 MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
 CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
-SIMULARIUM_TEST_NAME = 'simularium'
+DOC_TEST_NAME = 'simularium'
 USE_JSON = True
 
 
-def test_simple_execute():
+def test_simple_execute(output_dir: str, archive_root=MIN_E_DIR, test_name=DOC_TEST_NAME, json=USE_JSON):
     archive_root = MIN_E_DIR
-    execute(working_dir=archive_root, use_json=USE_JSON)
-    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
+    execute(working_dir=archive_root, use_json=json, output_dir=output_dir)
+    assert_clause(os.path.exists(os.path.join(archive_root, test_name + '.simularium')))
 
 
 def test_simple_convert_minE():
@@ -36,7 +36,7 @@ def test_simple_convert_minE():
     simularium_name = 'simulation'
     is_json = True
     generate_simularium_file(working_dir=archive_root, simularium_filename='simulation', use_json=True)
-    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(archive_root, DOC_TEST_NAME + '.simularium')))
 
 
 def test_simple_convert_crowding():
@@ -48,7 +48,7 @@ def test_simple_convert_crowding():
         simularium_filename='simulation',
         use_json=True
     )
-    assert_clause(os.path.exists(os.path.join(archive_root, SIMULARIUM_TEST_NAME + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(archive_root, DOC_TEST_NAME + '.simularium')))
 
 
 def test_tempdir_convert():
@@ -58,7 +58,7 @@ def test_tempdir_convert():
     out_dir = tempfile.mkdtemp()
     generate_simularium_file(working_dir=archive_root, simularium_filename=simularium_name, output_dir=out_dir)
     print(f'Output dir: {get_archive_files(out_dir)}')
-    assert_clause(os.path.exists(os.path.join(out_dir, SIMULARIUM_TEST_NAME + '.simularium')))
+    assert_clause(os.path.exists(os.path.join(out_dir, DOC_TEST_NAME + '.simularium')))
 
 
 def test_trajectory_object():

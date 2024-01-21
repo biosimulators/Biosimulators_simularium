@@ -86,10 +86,10 @@ def generate_output_trajectory(
         root_fp: str,
         agent_params: Optional[Dict] = None,
         **config
-) -> Tuple[SmoldynData, pv.StructuredGrid]:
+) -> Tuple[SmoldynData, pv.PolyData]:
     """Run a Smoldyn simulation from a given `model` filepath if a `modelout.txt` is not in the same working
         directory as the model file, and generate a two-tuple of configured instance of `simulariumio.smoldyn.smoldyn_data.SmoldynData`.
-        as well as `pyvista.StructuredGrid`.
+        as well as `pyvista.PolyData` with interpolated point values.
 
             Args:
 
