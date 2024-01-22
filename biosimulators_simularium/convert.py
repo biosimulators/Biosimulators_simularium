@@ -344,19 +344,22 @@ def generate_interpolated_mesh(
     boundaries = kwargs.get('boundaries', np.array(simulation.getBoundaries()))
     surface = pv.PolyData(boundaries)
 
-    # define particle points as a mesh and compute vectors
+    # define particle points as a mesh
     points = pv.PolyData(mol_coords)
-    point_vectors = compute_vectors(points)
-    y = get_axis(mol_coords, axis=1)
-    z = get_axis(mol_coords, axis=2)
 
-    # add the vectors to the mesh and configure viz arrows
-    points['vectors'] = point_vectors
-    vector_arrows = points.glyph(
-        orient='vectors',
-        scale=False,
-        factor=3.0
-    )
+    if include_vectors:
+        # compute vectors
+        point_vectors = compute_vectors(points)
+        y = get_axis(mol_coords, axis=1)
+        z = get_axis(mol_coords, axis=2)
+
+        # add the vectors to the mesh and configure viz arrows
+        points['vectors'] = point_vectors
+        vector_arrows = points.glyph(
+            orient='vectors',
+            scale=False,
+            factor=3.0
+        )
 
     # create a plotter and use it to create an interpolated mesh from the surface.
     p = pv.Plotter()
