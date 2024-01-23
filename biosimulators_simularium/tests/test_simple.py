@@ -31,6 +31,7 @@ def test_simple_execute(archive_root=MIN_E_DIR, test_name=DOC_TEST_NAME, is_json
     archive_root = MIN_E_DIR
     make_test_dir(OUTPUT_DIR)
     execute(working_dir=archive_root, use_json=is_json, output_dir=OUTPUT_DIR)
+    print(f'out files: {get_archive_files(OUTPUT_DIR)}')
     assert_clause(os.path.exists(os.path.join(archive_root, test_name + '.simularium')))
 
 

@@ -38,7 +38,9 @@ def generate_molecules(model_fp: str = None, dir_fp: str = None) -> Dict[str, Un
             dir_fp:`str`: path to the directory containing the smoldyn configuration. Defaults to `None`.
 
     """
-    model_fp = model_fp or get_model_fp(dir_fp)
+    if model_fp is None:
+        model_fp = get_model_fp(dir_fp)
+
     simulation = Simulation.fromFile(model_fp)
     simulation.addOutputData('molecules')
     simulation.addCommand(cmd='listmols molecules', cmd_type='E')

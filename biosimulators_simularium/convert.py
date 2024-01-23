@@ -19,6 +19,7 @@ from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
 from simulariumio.filters.translate_filter import TranslateFilter
 from biosimulators_simularium.simulation_data import (
     generate_molecule_coordinates,
+    generate_output,
     calculate_agent_radius,
     get_species_names_from_model_file,
     generate_agent_params,
@@ -136,10 +137,10 @@ def generate_output_trajectory(
     write_smoldyn_simulation_configuration(sim_config, model_fp)
 
     # run the simulation and generate an output
-    mol_outputs: Dict = generate_molecule_coordinates(model_fp)
+    mol_outputs: Dict = generate_output(model_fp=model_fp)
 
     # generate vtk
-    mesh = generate_interpolated_mesh(mol_output=mol_outputs)
+    mesh = generate_point_mesh(mol_output=mol_outputs)
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)
@@ -303,13 +304,15 @@ def generate_metadata_object(
     )
 
 
-def generate_interpolated_mesh(
+def generate_point_mesh(
         include_vectors: bool = False,
-        **kwargs,
+        **kwargs
 ) -> pv.PolyData:
-    """Generate a surface mesh from the given simulation run's `smoldyn.Simulation.fromFile()`
-        instance into which passed molecule coordinate points are interpolated. You have to either pass
-        a `mol_output` dict or a np.array of molecule coordinates ALONG with a cooresponding simulation
+    """Generate a mesh from the given simulation run's `smoldyn.Simulation.fromFile()`
+        instance into which passed molecule coordinate points are represented. Currently, this
+        function only returns the points as a mesh without an explicit surface: the user may easily
+        reconstruct the surface from the output of this function with: `generate_interpolated_mesh().reconstruct_surface()`.
+        You have to either pass a `mol_output` dict or a np.array of molecule coordinates ALONG with a cooresponding simulation
         instance.
 
         Args:
@@ -331,18 +334,14 @@ def generate_interpolated_mesh(
                 generate the coordinates for the mesh.
 
     """
-    print('Generating interpolated mesh -------------')
+    print('Generating point mesh -------------')
+
     # helper for standalone functionality
     mol_output = kwargs.get('mol_output')
     if isinstance(mol_output, dict):
         mol_coords = mol_output['coordinates']
     else:
         mol_coords = kwargs['coordinates']
-
-    # define the grid into which we interpolate the passed coordinates
-    simulation = kwargs.get('simulation', mol_output['simulation'])
-    boundaries = kwargs.get('boundaries', np.array(simulation.getBoundaries()))
-    surface = pv.PolyData(boundaries)
 
     # define particle points as a mesh
     points = pv.PolyData(mol_coords)
@@ -360,20 +359,49 @@ def generate_interpolated_mesh(
             scale=False,
             factor=3.0
         )
+    print('Point mesh Generated!')
 
-    # create a plotter and use it to create an interpolated mesh from the surface.
-    p = pv.Plotter()
-    p.add_mesh(points)
-    p.add_mesh(surface)
-    interpolated = surface.interpolate(points, radius=12.0)
+    return points
 
-    # p = pv.Plotter()
-    # p.add_mesh(points, scalars="val", point_size=30.0, render_points_as_spheres=True)
-    # p.add_mesh(interpolated, scalars="val")
-    # interpolated['height'] = interpolated.points[:, 1]
-    # interpolated['id'] = np.arange(interpolated.n_cells)
 
-    return interpolated
+def generate_interpolated_mesh(
+        include_vectors: bool = False,
+        points: pv.PolyData = None,
+        **kwargs,
+) -> pv.PolyData:
+    """Generate an interpolated surface of reconstructed point surface and points.
+        You have to either pass a `mol_output` dict or a np.array of molecule coordinates ALONG with a cooresponding simulation
+        instance.
+
+        Args:
+            include_vectors:`optional, bool`: Compute the point vectors and include them as an attribute to
+                the points `pv.PolyData` instance. NOTE: This may be computationally expensive
+                depending on the size of the molecule output. Defaults to `False`.
+            points:`optional, pv.PolyData`: polydata instance of mol points. Defaults to `None`.
+
+        Keyword Args:
+            mol_output:`optional, Dict`: dictionary of molecule outputs that define 'data', 'simulation',
+                'coordinates', and 'boundaries'. NOTE: This is the preferred input type for this function.
+            coordinates:`optional, np.ndarray`: Nd array of shape (n, 3) representing each molecule's coordinates.
+                If `None` is passed, you must pass the path to a smoldyn model file or simulation instance.
+                Defaults to `None`.
+            boundaries:`optional, Tuple[List[float], List[float]`: a two-tuple of lists of floats where
+                the 0th entry are the lower bounds of x, y, z and the 1th entry being the same for higher bounds.
+            simulation:`optional, smoldyn.Simulation`: simulation instance used to generate molecule coordinates used
+                to define boundaries if boundaries are not passed.
+            model_fp:`optional, str`: if no `mol_coords` are passed, the path to the smoldyn configuration by which you
+                generate the coordinates for the mesh.
+
+    """
+    print('Generating interpolated mesh -------------')
+    if not points:
+        points = generate_point_mesh(include_vectors, **kwargs)
+
+    # reconstruct the surface from the points in the mesh
+    surface = points.reconstruct_surface()
+
+    # interpolate the points into the surface
+    return surface.interpolate(points, radius=12.0)
 
 
 def translate_data_object(

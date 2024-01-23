@@ -30,6 +30,11 @@ def execute(
         box_size: float = 10.0,
         **setup_config
 ):
+
+    # define vtp filenames
+    vtp_filename = setup_config.get('vtp_filename', 'simulation-')
+    vtp_filepath: str = os.path.join(output_dir, vtp_filename)
+
     # generate a trajectory from the smoldyn file within a given working_dir
     trajectory, mesh = generate_output_trajectory(
         root_fp=working_dir,
@@ -38,10 +43,12 @@ def execute(
         temporal_units=setup_config.get('temporal_units', 'ms')
     )
 
-    # generate vtp
-    vtp_filename = setup_config.get('vtp_filename', 'simulation.vtp')
-    vtp_filepath: str = os.path.join(output_dir, vtp_filename)
-    generate_vtp_file(mesh, filename=vtp_filepath)
+    # reconstruct the surface from the mesh points
+    # surface: pv.PolyData = mesh.reconstruct_surface()
+
+    # generate vtp files for both polydata instances
+    generate_vtp_file(mesh, filename=vtp_filepath + 'points.vtp')
+    # generate_vtp_file(surface, filename=vtp_filepath + 'surface.vtp')
 
     # generate a simularium file
     return generate_simularium_file(
