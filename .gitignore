@@ -14,3 +14,6 @@ crowding4_new.simularium
 polymer_mid.simularium
 /biosimulators_simularium/tests/fixtures/archives/MinE/temporal-model-out.txt
 scripts/release.sh
+viz.ipynb
+simulation.vtk
+simulation.simularium
