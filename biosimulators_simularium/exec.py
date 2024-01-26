@@ -29,8 +29,7 @@ def execute(
         use_json: bool = False,
         box_size: float = 10.0,
         **setup_config
-):
-
+) -> None:
     # define vtp filenames
     vtp_filename = setup_config.get('vtp_filename', 'simulation-')
     vtp_filepath: str = os.path.join(output_dir, vtp_filename)
