@@ -6,6 +6,13 @@
 
 python_version="$1"
 
+if [ "$python_version" == "" ]; then
+  echo "Enter the python version to install: "
+  read -r python_version
+else
+  echo "Installing with python""$python_version"
+fi
+
 poetry env use python"${python_version}"
 poetry run pip install --upgrade pip
 poetry lock --no-update

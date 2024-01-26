@@ -6,6 +6,13 @@
 
 version="$1"
 
+if [ "$version" == "" ]; then
+  echo "Please enter the version: "
+  read -r version
+else
+  echo "Removing""${version}"
+fi
+
 if sudo poetry env remove python"${version}"; then
    echo "Python ${version} env successfully removed."
    ./clear-cache.sh
