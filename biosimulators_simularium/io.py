@@ -3,7 +3,7 @@ import re
 import zipfile
 from typing import Union, List
 import pyvista as pv
-from vtk import vtkPolyDataWriter
+from vtk import vtkPolyDataWriter, vtkPolyDataReader, vtkPolyData
 from simulariumio import TrajectoryData, BinaryWriter, JsonWriter
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 
@@ -108,6 +108,14 @@ def write_vtk_file(fp: str, data):
     writer.SetFileName(fp)
     writer.SetInputData(data)
     return writer.Write()
+
+
+def read_vtk_file(fp: str) -> vtkPolyData:
+    """Read vtk and return read-in polydata object"""
+    reader = vtkPolyDataReader()
+    reader.SetFileName(fp)
+    reader.Update()
+    return reader.GetOutput()
 
 
 def write_vtp_file(mesh: pv.PolyData, **kwargs):

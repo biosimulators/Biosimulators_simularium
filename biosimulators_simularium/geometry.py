@@ -24,15 +24,20 @@ class Geometry(ABC):
 
     @staticmethod
     def extract_surface(value, boundaries: List[float]):
+        # Combine the shapes using vtkImplicitBoolean
+        ib = vtkImplicitBoolean()
+        ib.SetOperationTypeToUnion()
+        ib.AddFunction(value)
+
         # Sample the sphere shape
         sample = vtkSampleFunction()
-        sample.SetImplicitFunction(value)
+        sample.SetImplicitFunction(ib)
         sample.SetModelBounds(*boundaries)  # Bounds should encompass the sphere
         sample.SetSampleDimensions(40, 40, 40)
 
         # Extract the surface
         surface = vtkContourFilter()
-        surface.SetInputConnection(sample.GetOutput())
+        surface.SetInputConnection(sample.GetOutputPort())
         # surface.SetValue(0, 0.0)
         return surface
 
@@ -44,9 +49,12 @@ class Sphere(Geometry):
         self.y = y or 0
         self.z = z or 0
         self.radius = radius or 0.5
-        self.value = vtkSphere()
-        self.value.SetCenter(self.x, self.y, self.z)
-        self.value.SetRadius(self.radius)
+        value = vtkSphere()
+        value.SetCenter(self.x, self.y, self.z)
+        value.SetRadius(self.radius)
+        # self.value = self.extract_surface(value, boundaries)
+        self.value = value
+
 
 
 class CapsuleSurface:
@@ -121,10 +129,11 @@ def read_geometry(fp: str, sim, coords):
         cap_surface = CapsuleSurface(boundaries)
         cap_points = CapsulePoints(coords)
         print('generated capsule.')
-        return Capsule(cap_surface, cap_points)
+        return Capsule(cap_surface, cap_points).value
     elif 'sphere' in geometry:
         print('generated sphere')
-        return Sphere(boundaries)
+        sphere = Sphere(boundaries)
+        return sphere.extract_surface(sphere.value, boundaries).GetOutput()
     else:
         points = vtkPoints()
         vertices = vtkCellArray()
