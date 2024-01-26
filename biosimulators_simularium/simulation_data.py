@@ -80,6 +80,24 @@ def get_species_names_from_model_file(model_fp: str) -> List[str]:
     return species_names
 
 
+def get_simulation_boundaries(simulation: Simulation) -> List[float]:
+    """Returned a flattened list of values representing simulation boundaries in the shape of:
+        `[xLow, xHigh, yLow, yHigh, zLow, zHigh]`
+    """
+    bounds = []
+    boundaries = dict(zip(['x', 'y', 'z'], [[], [], []]))
+    bounds_from_file = simulation.getBoundaries()
+    for b in bounds_from_file:
+        boundaries['x'].append(b[0])
+        boundaries['y'].append(b[1])
+        boundaries['z'].append(b[2])
+    for k in boundaries.keys():
+        axis = boundaries[k]
+        for val in axis:
+            bounds.append(val)
+    return bounds
+
+
 def generate_agent_params_for_minE(
         model_fp: str,
         base_molecular_mass: int,

@@ -17,6 +17,7 @@ from simulariumio import (
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 from simulariumio.smoldyn.smoldyn_converter import SmoldynConverter
 from simulariumio.filters.translate_filter import TranslateFilter
+from biosimulators_simularium.geometry import get_config_geometry, read_geometry
 from biosimulators_simularium.simulation_data import (
     generate_molecule_coordinates,
     generate_output,
@@ -31,7 +32,7 @@ from biosimulators_simularium.io import (
     normalize_modelout_path_in_root,
     read_smoldyn_simulation_configuration,
     disable_smoldyn_graphics_in_simulation_configuration,
-    write_smoldyn_simulation_configuration
+    write_smoldyn_simulation_configuration,
 )
 
 
@@ -140,7 +141,8 @@ def generate_output_trajectory(
     mol_outputs: Dict = generate_output(model_fp=model_fp)
 
     # generate vtk
-    mesh = generate_point_mesh(mol_output=mol_outputs)
+    # mesh = generate_point_mesh(mol_output=mol_outputs)
+    mesh = read_geometry(fp=model_fp, sim=mol_outputs['simulation'], coords=mol_outputs['coordinates'])
 
     # standardize the output name
     normalize_modelout_path_in_root(root_fp)

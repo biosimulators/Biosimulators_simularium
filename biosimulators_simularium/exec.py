@@ -7,7 +7,7 @@ from biosimulators_simularium.convert import (
     generate_output_trajectory,
     translate_data_object
 )
-from biosimulators_simularium.io import write_simularium_file, write_vtp_file
+from biosimulators_simularium.io import write_simularium_file, write_vtp_file, write_vtk_file
 from smoldyn.biosimulators.combine import exec_sed_doc
 from biosimulators_simularium.config import Config
 from biosimulators_utils.combine.io import CombineArchiveWriter
@@ -35,6 +35,9 @@ def execute(
     vtp_filename = setup_config.get('vtp_filename', 'simulation-')
     vtp_filepath: str = os.path.join(output_dir, vtp_filename)
 
+    vtk_filename = setup_config.get('vtk_filename', 'simulation.vtk')
+    vtk_filepath: str = os.path.join(output_dir, vtk_filename)
+
     # generate a trajectory from the smoldyn file within a given working_dir
     trajectory, mesh = generate_output_trajectory(
         root_fp=working_dir,
@@ -47,8 +50,8 @@ def execute(
     # surface: pv.PolyData = mesh.reconstruct_surface()
 
     # generate vtp files for both polydata instances
-    generate_vtp_file(mesh, filename=vtp_filepath + 'points.vtp')
-    # generate_vtp_file(surface, filename=vtp_filepath + 'surface.vtp')
+    # generate_vtp_file(mesh, filename=vtp_filepath + 'points.vtp')
+    generate_vtk_file(fp=vtk_filepath, data=mesh)
 
     # generate a simularium file
     return generate_simularium_file(
@@ -61,6 +64,17 @@ def execute(
         box_size,
         **setup_config
     )
+
+
+def generate_vtk_file(fp, data):
+    print('Writing trajectory to VTK -------------')
+    try:
+        write_vtk_file(fp, data)
+        print(f"Successfully wrote VTK file to {fp}.")
+        return
+    except IOError as e:
+        print(e)
+        raise e
 
 
 def generate_vtp_file(mesh: pv.PolyData, **kwargs):

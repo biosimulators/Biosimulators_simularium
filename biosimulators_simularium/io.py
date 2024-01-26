@@ -3,6 +3,7 @@ import re
 import zipfile
 from typing import Union, List
 import pyvista as pv
+from vtk import vtkPolyDataWriter
 from simulariumio import TrajectoryData, BinaryWriter, JsonWriter
 from simulariumio.smoldyn.smoldyn_data import SmoldynData
 
@@ -98,6 +99,15 @@ def write_simularium_file(
     else:
         writer = BinaryWriter()
     return writer.save(trajectory_data=data, output_path=simularium_filename, validate_ids=validate)
+
+
+def write_vtk_file(fp: str, data):
+    """Write the append filter output to file"""
+    # Write the combined data to a file
+    writer = vtkPolyDataWriter()
+    writer.SetFileName(fp)
+    writer.SetInputData(data)
+    return writer.Write()
 
 
 def write_vtp_file(mesh: pv.PolyData, **kwargs):
