@@ -17,3 +17,4 @@ scripts/release.sh
 viz.ipynb
 simulation.vtk
 simulation.simularium
+OUTPUT/
