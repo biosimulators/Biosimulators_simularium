@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version3" level="1" version="3">
+  <listOfModels>
+    <model id="model" language="urn:sedml:language:smoldyn" source="model.txt">
+      <listOfChanges>
+        <changeAttribute target="difc MinD_ATP(solution)" newValue="D_D"/>
+        <changeAttribute target="difc MinD_ATP(front)" newValue="D_d"/>
+        <changeAttribute target="difc MinD_ADP(solution)" newValue="D_D"/>
+        <changeAttribute target="difc MinE(solution)" newValue="D_E"/>
+        <changeAttribute target="difc MinDMinE(front)" newValue="D_de"/>
+        <changeAttribute target="fixmolcount MinD_ATP" newValue="4000.0"/>
+        <changeAttribute target="fixmolcount MinD_ADP" newValue="0.0"/>
+        <changeAttribute target="fixmolcount MinE" newValue="1400.0"/>
+        <changeAttribute target="fixmolcount MinDMinE" newValue="0.0"/>
+        <changeAttribute target="fixmolcountincmpt MinD_ATP cell" newValue="D_de"/>
+        <changeAttribute target="fixmolcountincmpt MinD_ADP cell" newValue="D_de"/>
+        <changeAttribute target="fixmolcountincmpt MinE cell" newValue="D_de"/>
+        <changeAttribute target="fixmolcountincmpt MinDMinE cell" newValue="D_de"/>
+        <changeAttribute target="fixmolcountonsurf MinD_ATP membrane" newValue="D_de"/>
+        <changeAttribute target="fixmolcountonsurf MinD_ADP membrane" newValue="D_de"/>
+        <changeAttribute target="fixmolcountonsurf MinE membrane" newValue="D_de"/>
+        <changeAttribute target="fixmolcountonsurf MinDMinE membrane" newValue="D_de"/>
+      </listOfChanges>
+    </model>
+  </listOfModels>
+  <listOfSimulations>
+    <uniformTimeCourse id="simulation" initialTime="0" outputStartTime="0" outputEndTime="2" numberOfPoints="1000">
+      <algorithm kisaoID="KISAO:0000057"/>
+    </uniformTimeCourse>
+  </listOfSimulations>
+  <listOfTasks>
+    <task id="task" modelReference="model" simulationReference="simulation"/>
+  </listOfTasks>
+  <listOfDataGenerators>
+    <dataGenerator id="data_generator_time" name="Time">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> time </ci>
+      </math>
+      <listOfVariables>
+        <variable id="time" name="Time" symbol="urn:sedml:symbol:time" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ATP" name="Count of species &quot;MinD_ATP&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ATP </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ATP" name="Count of species &quot;MinD_ATP&quot;" target="molcount MinD_ATP" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ATP_compartment_cell" name="Count of species &quot;MinD_ATP&quot; in compartment &quot;cell&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ATP_compartment_cell </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ATP_compartment_cell" name="Count of species &quot;MinD_ATP&quot; in compartment &quot;cell&quot;" target="molcountincmpt MinD_ATP cell" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ATP_surface_membrane" name="Count of species &quot;MinD_ATP&quot; in surface &quot;membrane&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ATP_surface_membrane </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ATP_surface_membrane" name="Count of species &quot;MinD_ATP&quot; in surface &quot;membrane&quot;" target="molcountonsurf MinD_ATP membrane" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ADP" name="Count of species &quot;MinD_ADP&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ADP </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ADP" name="Count of species &quot;MinD_ADP&quot;" target="molcount MinD_ADP" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ADP_compartment_cell" name="Count of species &quot;MinD_ADP&quot; in compartment &quot;cell&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ADP_compartment_cell </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ADP_compartment_cell" name="Count of species &quot;MinD_ADP&quot; in compartment &quot;cell&quot;" target="molcountincmpt MinD_ADP cell" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinD_ADP_surface_membrane" name="Count of species &quot;MinD_ADP&quot; in surface &quot;membrane&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinD_ADP_surface_membrane </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinD_ADP_surface_membrane" name="Count of species &quot;MinD_ADP&quot; in surface &quot;membrane&quot;" target="molcountonsurf MinD_ADP membrane" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinE" name="Count of species &quot;MinE&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinE </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinE" name="Count of species &quot;MinE&quot;" target="molcount MinE" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinE_compartment_cell" name="Count of species &quot;MinE&quot; in compartment &quot;cell&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinE_compartment_cell </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinE_compartment_cell" name="Count of species &quot;MinE&quot; in compartment &quot;cell&quot;" target="molcountincmpt MinE cell" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinE_surface_membrane" name="Count of species &quot;MinE&quot; in surface &quot;membrane&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinE_surface_membrane </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinE_surface_membrane" name="Count of species &quot;MinE&quot; in surface &quot;membrane&quot;" target="molcountonsurf MinE membrane" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinDMinE" name="Count of species &quot;MinDMinE&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinDMinE </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinDMinE" name="Count of species &quot;MinDMinE&quot;" target="molcount MinDMinE" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinDMinE_compartment_cell" name="Count of species &quot;MinDMinE&quot; in compartment &quot;cell&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinDMinE_compartment_cell </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinDMinE_compartment_cell" name="Count of species &quot;MinDMinE&quot; in compartment &quot;cell&quot;" target="molcountincmpt MinDMinE cell" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="data_generator_count_species_MinDMinE_surface_membrane" name="Count of species &quot;MinDMinE&quot; in surface &quot;membrane&quot;">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> count_species_MinDMinE_surface_membrane </ci>
+      </math>
+      <listOfVariables>
+        <variable id="count_species_MinDMinE_surface_membrane" name="Count of species &quot;MinDMinE&quot; in surface &quot;membrane&quot;" target="molcountonsurf MinDMinE membrane" taskReference="task"/>
+      </listOfVariables>
+    </dataGenerator>
+  </listOfDataGenerators>
+  <listOfOutputs>
+    <report id="report">
+      <listOfDataSets>
+        <dataSet id="data_set_time" name="Time" label="time" dataReference="data_generator_time"/>
+        <dataSet id="data_set_count_species_MinD_ATP" name="Count of species &quot;MinD_ATP&quot;" label="count_species_MinD_ATP" dataReference="data_generator_count_species_MinD_ATP"/>
+        <dataSet id="data_set_count_species_MinD_ATP_compartment_cell" name="Count of species &quot;MinD_ATP&quot; in compartment &quot;cell&quot;" label="count_species_MinD_ATP_compartment_cell" dataReference="data_generator_count_species_MinD_ATP_compartment_cell"/>
+        <dataSet id="data_set_count_species_MinD_ATP_surface_membrane" name="Count of species &quot;MinD_ATP&quot; in surface &quot;membrane&quot;" label="count_species_MinD_ATP_surface_membrane" dataReference="data_generator_count_species_MinD_ATP_surface_membrane"/>
+        <dataSet id="data_set_count_species_MinD_ADP" name="Count of species &quot;MinD_ADP&quot;" label="count_species_MinD_ADP" dataReference="data_generator_count_species_MinD_ADP"/>
+        <dataSet id="data_set_count_species_MinD_ADP_compartment_cell" name="Count of species &quot;MinD_ADP&quot; in compartment &quot;cell&quot;" label="count_species_MinD_ADP_compartment_cell" dataReference="data_generator_count_species_MinD_ADP_compartment_cell"/>
+        <dataSet id="data_set_count_species_MinD_ADP_surface_membrane" name="Count of species &quot;MinD_ADP&quot; in surface &quot;membrane&quot;" label="count_species_MinD_ADP_surface_membrane" dataReference="data_generator_count_species_MinD_ADP_surface_membrane"/>
+        <dataSet id="data_set_count_species_MinE" name="Count of species &quot;MinE&quot;" label="count_species_MinE" dataReference="data_generator_count_species_MinE"/>
+        <dataSet id="data_set_count_species_MinE_compartment_cell" name="Count of species &quot;MinE&quot; in compartment &quot;cell&quot;" label="count_species_MinE_compartment_cell" dataReference="data_generator_count_species_MinE_compartment_cell"/>
+        <dataSet id="data_set_count_species_MinE_surface_membrane" name="Count of species &quot;MinE&quot; in surface &quot;membrane&quot;" label="count_species_MinE_surface_membrane" dataReference="data_generator_count_species_MinE_surface_membrane"/>
+        <dataSet id="data_set_count_species_MinDMinE" name="Count of species &quot;MinDMinE&quot;" label="count_species_MinDMinE" dataReference="data_generator_count_species_MinDMinE"/>
+        <dataSet id="data_set_count_species_MinDMinE_compartment_cell" name="Count of species &quot;MinDMinE&quot; in compartment &quot;cell&quot;" label="count_species_MinDMinE_compartment_cell" dataReference="data_generator_count_species_MinDMinE_compartment_cell"/>
+        <dataSet id="data_set_count_species_MinDMinE_surface_membrane" name="Count of species &quot;MinDMinE&quot; in surface &quot;membrane&quot;" label="count_species_MinDMinE_surface_membrane" dataReference="data_generator_count_species_MinDMinE_surface_membrane"/>
+      </listOfDataSets>
+    </report>
+  </listOfOutputs>
+</sedML>
