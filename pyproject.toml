@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biosimulators-simularium"
-version = "0.5.22"
+version = "0.5.23"
 description = "Converting Biosimulators spatial simulation outputs into a Simularium-compliant format."
 authors = ["Alex Patrie <alexanderpatrie@gmail.com>"]
 readme = "README.md"
