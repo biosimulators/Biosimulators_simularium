@@ -1,6 +1,5 @@
 # Biosimulators_simularium
-Converting Biosimulators spatial simulation outputs into a Simularium-compliant format. This tooling acts as a 
-superset of `Biosimulators_utils`.
+Converting Biosimulators spatial simulation outputs into a Simularium-compliant format.
 
 
 *PLEASE NOTE:*
