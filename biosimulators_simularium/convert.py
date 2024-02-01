@@ -277,7 +277,7 @@ def display_data_dict_agent_major(
             name=agent,
             display_type=DISPLAY_TYPE.SPHERE,
             radius=0.001,
-            url=f'{agent}.obj'
+            # url=f'{agent}.obj'
         )
 
     return display_data
