@@ -276,7 +276,7 @@ def display_data_dict_agent_major(
         display_data[agent] = DisplayData(
             name=agent,
             display_type=DISPLAY_TYPE.SPHERE,
-            radius=0.01,
+            radius=0.001,
             url=f'{agent}.obj'
         )
 
@@ -284,7 +284,7 @@ def display_data_dict_agent_major(
 
 
 def generate_metadata_object(
-        box_size: float = 50.0,
+        box_size: float = 10.0,
         trajectory_title: str = "A spatial simulation trajectory",
         **model_metadata_params
 ) -> MetaData:
