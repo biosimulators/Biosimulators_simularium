@@ -35,7 +35,8 @@ fi
 
 # Check working directory is clean
 if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then
-    echo "You have changes that have yet to be committed."
+    echo "You have changes that have yet to be committed: "
+    git status
     echo "Aborting PyPI upload and attempting to commit your changes."
     ./commit.sh
 fi

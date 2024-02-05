@@ -1,23 +1,26 @@
 [tool.poetry]
 name = "biosimulators-simularium"
-version = "0.5.27"
+version = "0.5.28"
 description = "Converting Biosimulators spatial simulation outputs into a Simularium-compliant format."
 authors = ["Alex Patrie <alexanderpatrie@gmail.com>"]
 readme = "README.md"
 packages = [{include = "biosimulators_simularium"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.8"
 zarr = "*"
 simulariumio = "*"
-# biosimulators-utils = "*"
 python-libcombine = "*"
 kisao = "*"
 termcolor = "*"
 ipython = "*"
-notebook = "^7.0.6"
-jupyter = "^1.0.0"
-pyvista = "^0.43.2"
+notebook = "*"
+jupyter = "*"
+pyvista = "*"
+# biosimulators-utils = "*"
+# notebook = "^7.0.6"
+# jupyter = "^1.0.0"
+# pyvista = "^0.43.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
