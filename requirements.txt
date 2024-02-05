@@ -5,7 +5,7 @@ pyvista
 ##### Simulations
 python-libcombine
 kisao
-# smoldyn
+smoldyn
 termcolor
 
 ##### Data Store
