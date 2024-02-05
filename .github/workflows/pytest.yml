@@ -19,7 +19,7 @@ jobs:
         python-version: 3.10.x
 
     - name: Install dependencies
-      run: pip install -e .
+      run: pip install --upgrade pip && pip install -r requirements.txt
 
     - name: Run pytest
       run: pytest

@@ -1,6 +1,6 @@
 ##### Visualization Library
 simulariumio
-# pyvista
+pyvista
 
 ##### Simulations
 python-libcombine
@@ -13,4 +13,7 @@ zarr
 
 ##### Misc
 ipython
+
+###### Tests
+pytest
 
