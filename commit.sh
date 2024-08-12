@@ -1,9 +1,27 @@
-#!/bin/bash
-# !/bin/zsh
+#!/bin/zsh
 
-# This is a helper script for active development
 
-git add --all \
-  && echo "enter your commit message: " \
-  && read -r msg \
-  && git commit -m "$msg" && git push
+function commit {
+  set -e
+  echo "enter commit msg: "
+  read -r msg
+
+  echo "Current status: "
+  git status
+  echo "Press enter to accept all these changes, otherwise enter files to stage for commit: "
+  read -r accept_type
+
+  if [ "${accept_type}" != "" ]; then
+    git add "${accept_type}"
+  else
+    git add --all
+  fi
+
+  git commit -m "${msg}"
+  git push origin
+}
+
+commit
+
+
+
