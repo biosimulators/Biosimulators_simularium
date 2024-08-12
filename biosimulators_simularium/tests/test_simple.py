@@ -22,7 +22,7 @@ def assert_clause(clause: bool) -> int:
 
 # OUTPUT_DIR = 'Biosimulators_simularium/OUTPUT'
 OUTPUT_DIR = tempfile.mkdtemp()
-MIN_E_DIR = 'biosimulators_simularium/tests/fixtures/MinE'
+MIN_E_DIR = './fixtures/MinE'
 CROWDING_DIR = 'biosimulators_simularium/tests/fixtures/crowding'
 DOC_TEST_NAME = 'simularium'
 USE_JSON = True
