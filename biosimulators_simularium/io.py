@@ -16,14 +16,12 @@ __all__ = [
 ]
 
 
-
-
 def get_fp(working_dir: str, identifier: str) -> Union[str, List[str]]:
     """Search a working_dir for a file of a specified identifier."""
     id_files = []
     for f in os.listdir(working_dir):
         fp = os.path.join(working_dir, f)
-        if identifier in fp or fp.startswith(identifier):
+        if identifier in f or fp.startswith(identifier) or fp.endswith(identifier):
             id_files.append(fp)
     if len(id_files) > 1:
         return id_files
@@ -32,11 +30,11 @@ def get_fp(working_dir: str, identifier: str) -> Union[str, List[str]]:
 
 
 def get_model_fp(working_dir: str):
-    return os.path.join(working_dir, 'model.txt')
+    return get_fp(working_dir, '.txt')
 
 
 def get_modelout_fp(working_dir: str):
-    return os.path.join(working_dir, 'modelout.txt')
+    return get_fp(working_dir, 'modelout.txt')
 
 
 def model_fp(working_dir: str) -> str:
