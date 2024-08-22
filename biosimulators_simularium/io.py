@@ -23,7 +23,7 @@ def get_fp(working_dir: str, identifier: str) -> Union[str, List[str]]:
     id_files = []
     for f in os.listdir(working_dir):
         fp = os.path.join(working_dir, f)
-        if identifier in fp:
+        if identifier in fp or fp.startswith(identifier):
             id_files.append(fp)
     if len(id_files) > 1:
         return id_files

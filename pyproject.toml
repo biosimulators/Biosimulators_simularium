@@ -7,21 +7,11 @@ readme = "README.md"
 packages = [{include = "biosimulators_simularium"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
-# zarr = "*"
-# python-libcombine = "*"
-# kisao = "*"
-# termcolor = "*"
-# ipython = "*"
-# notebook = "*"
-# jupyter = "*"
-# biosimulators-utils = "*"
-# notebook = "^7.0.6"
-# jupyter = "^1.0.0"
+python = ">=3.10"
+smoldyn = "*"
 toml = "^0.10.2"
 simulariumio = "^1.11.0"
 pyvista = "^0.44.1"
-smoldyn = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

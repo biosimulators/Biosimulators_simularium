@@ -23,7 +23,7 @@ rm $tarball_name
 # install smoldyn from the source
 cd $dist_dir || return
 
-if sudo -H ./install.sh; then
+if ./install.sh; then
   cd ..
   # remove the smoldyn dist
   rm -r $dist_dir
