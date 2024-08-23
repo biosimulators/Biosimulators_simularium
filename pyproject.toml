@@ -25,6 +25,11 @@ python_files = "test_*.py"
 python_functions = "test_*"
 addopts = "--ignore=setup.py"
 
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
